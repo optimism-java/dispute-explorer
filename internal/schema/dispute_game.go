@@ -1,0 +1,31 @@
+package schema
+
+// 0-In progress 1- Challenger wins 2- Defender wins
+
+const (
+	InProgress    = "0"
+	ChallengerWin = "1"
+	DefenderWin   = "2"
+)
+
+type DisputeGame struct {
+	Base
+	SyncBlockID     int64  `json:"sync_block_id"`
+	Blockchain      string `json:"blockchain"`
+	BlockTime       int64  `json:"block_time"`
+	BlockNumber     int64  `json:"block_number"`
+	BlockHash       string `json:"block_hash"`
+	BlockLogIndexed int64  `json:"block_log_indexed"`
+	TxIndex         int64  `json:"tx_index"`
+	TxHash          string `json:"tx_hash"`
+	EventName       string `json:"event_name"`
+	EventHash       string `json:"event_hash"`
+	ContractAddress string `json:"contract_address"`
+	Data            string `json:"data"`
+	L2BlockNumber   int64  `json:"l_2_block_number"`
+	Status          string `json:"status"`
+}
+
+func (DisputeGame) TableName() string {
+	return "sync_events"
+}
