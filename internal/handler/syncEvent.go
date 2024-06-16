@@ -98,7 +98,7 @@ func HandlePendingBlock(ctx *svc.ServiceContext, block schema.SyncBlock) error {
 					log.Errorf("[Handler.SyncEvent.PendingBlock]Batch Events Update SyncBlock Status err: %s\n ", err)
 					return errors.WithStack(err)
 				}
-				err = BatchFilterAddAndRemove(ctx, BatchEvents)
+				err = BatchFilterAddAndRemove(BatchEvents)
 				if err != nil {
 					log.Errorf("[Handler.SyncEvent.PendingBlock] BatchFilterAddAndRemove err: %s\n ", err)
 					return errors.WithStack(err)
