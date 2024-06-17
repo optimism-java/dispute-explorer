@@ -11,6 +11,7 @@ type Config struct {
 	LogLevel string `env:"LOG_LEVEL" envDefault:"info"`
 	// "console","json"
 	LogFormat                string `env:"LOG_FORMAT" envDefault:"console"`
+	PostgresqlDataSource     string `env:"POSTGRESQL_DATA_SOURCE" envDefault:"host=localhost port=5433 user=postgres password=postgres dbname=dispute_explorer sslmode=disable"`
 	MySQLDataSource          string `env:"MYSQL_DATA_SOURCE" envDefault:"root:root@tcp(127.0.0.1:3366)/dispute_explorer?charset=utf8mb4&parseTime=True&loc=Local&multiStatements=true"`
 	MySQLMaxIdleConns        int    `env:"MYSQL_MAX_IDLE_CONNS" envDefault:"10"`
 	MySQLMaxOpenConns        int    `env:"MYSQL_MAX_OPEN_CONNS" envDefault:"20"`

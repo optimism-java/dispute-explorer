@@ -1,13 +1,13 @@
 package svc
 
 import (
+	"gorm.io/driver/postgres"
 	"log"
 	"time"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/optimism-java/dispute-explorer/internal/types"
-	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 )
@@ -24,13 +24,12 @@ type ServiceContext struct {
 }
 
 func NewServiceContext(cfg *types.Config) *ServiceContext {
-	storage, err := gorm.Open(mysql.Open(cfg.MySQLDataSource), &gorm.Config{
+	storage, err := gorm.Open(postgres.Open(cfg.PostgresqlDataSource), &gorm.Config{
 		Logger: logger.Default.LogMode(logger.Error),
 	})
 	if err != nil {
 		log.Panicf("[svc]gorm get db panic: %s\n", err)
 	}
-
 	sqlDB, err := storage.DB()
 	if err != nil {
 		log.Panicf("[svc]gorm get sqlDB panic: %s\n", err)

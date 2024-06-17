@@ -70,25 +70,17 @@ func HandlePendingBlock(ctx *svc.ServiceContext, block schema.SyncBlock) error {
 		log.Infof("[Handler.SyncEvent.PendingBlock]Don't match block hash\n")
 		return nil
 	} else if eventCount > 0 && events[0].BlockHash == block.BlockHash {
-		BatchEvents := make([]*schema.SyncEvent, 0)
-		for _, event := range events {
-			var one schema.SyncEvent
-			log.Infof("[Handler.SyncEvent.PendingBlock]BlockLogIndexed %d ,TxHash %s,EventHash %s", event.BlockLogIndexed, event.TxHash, event.EventHash)
-			err = ctx.DB.Select("id").Where("sync_block_id=? AND block_log_indexed=? AND tx_hash=? AND event_hash=? ",
-				block.ID, event.BlockLogIndexed, event.TxHash, event.EventHash).First(&one).Error
-			if err != nil && err != gorm.ErrRecordNotFound {
-				log.Errorf("[Handler.SyncEvent.PendingBlock]Query SyncEvent err: %s\n ", err)
-				return errors.WithStack(err)
-			} else if err == gorm.ErrRecordNotFound {
-				BatchEvents = append(BatchEvents, event)
-				log.Infof("[Handler.SyncEvent.PendingBlock]block %d, BatchEvents len is %d:", block.BlockNumber, len(BatchEvents))
-			}
+		var games = make([]schema.DisputeGame, 0)
+		ctx.DB.Where("block_number=?", block.BlockNumber).Delete(&games)
+		for _, game := range games {
+			var claimData = make([]schema.GameClaimData, 0)
+			ctx.DB.Where("game_contract=?", game.GameContract).Delete(&claimData)
 		}
-		if len(BatchEvents) > 0 {
+		if len(events) > 0 {
 			err = ctx.DB.Transaction(func(tx *gorm.DB) error {
-				err = tx.CreateInBatches(&BatchEvents, 200).Error
+				err = BatchFilterAddAndRemove(ctx, events)
 				if err != nil {
-					log.Errorf("[Handler.SyncEvent.PendingBlock] CreateInBatches err: %s\n ", err)
+					log.Errorf("[Handler.SyncEvent.PendingBlock] BatchFilterAddAndRemove err: %s\n ", err)
 					return errors.WithStack(err)
 				}
 				block.Status = schema.BlockValid
@@ -96,11 +88,6 @@ func HandlePendingBlock(ctx *svc.ServiceContext, block schema.SyncBlock) error {
 				err = tx.Save(&block).Error
 				if err != nil {
 					log.Errorf("[Handler.SyncEvent.PendingBlock] Batch Events Update SyncBlock Status err: %s\n ", err)
-					return errors.WithStack(err)
-				}
-				err = BatchFilterAddAndRemove(ctx, BatchEvents)
-				if err != nil {
-					log.Errorf("[Handler.SyncEvent.PendingBlock] BatchFilterAddAndRemove err: %s\n ", err)
 					return errors.WithStack(err)
 				}
 				return nil
