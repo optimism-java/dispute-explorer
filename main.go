@@ -28,5 +28,4 @@ func main() {
 		log.Errorf("start error %s", err)
 		return
 	}
-
 }

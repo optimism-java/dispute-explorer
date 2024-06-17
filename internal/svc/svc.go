@@ -1,9 +1,10 @@
 package svc
 
 import (
-	"gorm.io/driver/postgres"
 	"log"
 	"time"
+
+	"gorm.io/driver/postgres"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"

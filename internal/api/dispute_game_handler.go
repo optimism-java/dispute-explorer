@@ -1,11 +1,12 @@
 package api
 
 import (
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 	"github.com/optimism-java/dispute-explorer/internal/schema"
 	"github.com/optimism-java/dispute-explorer/pkg/util"
 	"gorm.io/gorm"
-	"net/http"
 )
 
 type DisputeGameHandler struct {
@@ -19,7 +20,7 @@ func NewDisputeGameHandler(db *gorm.DB) *DisputeGameHandler {
 }
 
 func (h DisputeGameHandler) ListDisputeGames(c *gin.Context) {
-	var games = make([]schema.DisputeGame, 0)
+	games := make([]schema.DisputeGame, 0)
 	p := util.NewPagination(c)
 	results := h.DB.Order("block_number desc").Find(&games)
 	totalRows := results.RowsAffected
@@ -36,7 +37,7 @@ func (h DisputeGameHandler) ListDisputeGames(c *gin.Context) {
 
 func (h DisputeGameHandler) GetClaimData(c *gin.Context) {
 	address := c.Param("address")
-	var claimData = make([]schema.GameClaimData, 0)
+	claimData := make([]schema.GameClaimData, 0)
 	h.DB.Where("game_contract = ?", address).Order("data_index").Find(&claimData)
 	c.JSON(http.StatusOK, gin.H{
 		"data": claimData,
