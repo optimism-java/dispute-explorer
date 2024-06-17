@@ -21,11 +21,12 @@ type DisputeGame struct {
 	EventName       string `json:"event_name"`
 	EventHash       string `json:"event_hash"`
 	ContractAddress string `json:"contract_address"`
-	Data            string `json:"data"`
+	GameContract    string `json:"game_contract"`
+	GameType        uint32 `json:"game_type"`
 	L2BlockNumber   int64  `json:"l_2_block_number"`
-	Status          string `json:"status"`
+	Status          uint8  `json:"status"`
 }
 
 func (DisputeGame) TableName() string {
-	return "sync_events"
+	return "dispute_game"
 }

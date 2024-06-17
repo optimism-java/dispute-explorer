@@ -88,17 +88,17 @@ func HandlePendingBlock(ctx *svc.ServiceContext, block schema.SyncBlock) error {
 			err = ctx.DB.Transaction(func(tx *gorm.DB) error {
 				err = tx.CreateInBatches(&BatchEvents, 200).Error
 				if err != nil {
-					log.Errorf("[Handler.SyncEvent.PendingBlock]CreateInBatches err: %s\n ", err)
+					log.Errorf("[Handler.SyncEvent.PendingBlock] CreateInBatches err: %s\n ", err)
 					return errors.WithStack(err)
 				}
 				block.Status = schema.BlockValid
 				block.EventCount = int64(eventCount)
 				err = tx.Save(&block).Error
 				if err != nil {
-					log.Errorf("[Handler.SyncEvent.PendingBlock]Batch Events Update SyncBlock Status err: %s\n ", err)
+					log.Errorf("[Handler.SyncEvent.PendingBlock] Batch Events Update SyncBlock Status err: %s\n ", err)
 					return errors.WithStack(err)
 				}
-				err = BatchFilterAddAndRemove(BatchEvents)
+				err = BatchFilterAddAndRemove(ctx, BatchEvents)
 				if err != nil {
 					log.Errorf("[Handler.SyncEvent.PendingBlock] BatchFilterAddAndRemove err: %s\n ", err)
 					return errors.WithStack(err)
@@ -106,7 +106,7 @@ func HandlePendingBlock(ctx *svc.ServiceContext, block schema.SyncBlock) error {
 				return nil
 			})
 			if err != nil {
-				return err
+				panic(err)
 			}
 			return nil
 		}

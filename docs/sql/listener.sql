@@ -84,7 +84,8 @@ CREATE TABLE `dispute_game`
     `event_name`        varchar(32) NOT NULL COMMENT ' event_name',
     `event_hash`        varchar(66) NOT NULL COMMENT ' event_hash',
     `contract_address`  varchar(42) NOT NULL COMMENT ' contract_address',
-    `data`              json        NOT NULL COMMENT ' data',
+    `game_contract`     varchar(42) NOT NULL COMMENT ' game_contract',
+    `game_type`         int         NOT NULL COMMENT ' game_type',
     `l2_block_number`   bigint      NOT NULL COMMENT ' l2_block_number',
     `status`            varchar(32) NOT NULL COMMENT ' status -1-initial  0-In progress 1- Challenger wins 2- Defender wins',
     PRIMARY KEY (`id`),
@@ -104,14 +105,14 @@ CREATE TABLE `game_claim_data`
     `created_at`        datetime     NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `updated_at`        datetime     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     `game_contract`     varchar(42)  NOT NULL COMMENT ' game_contract',
-    `data_index`        int          NOT NULL COMMENT ' index',
+    `data_index`        int          NOT NULL COMMENT ' data_index',
     `parent_index`      bigint       NOT NULL COMMENT ' parent_index',
     `countered_by`      varchar(42)  NOT NULL COMMENT ' countered_by',
-    `claimant`          varchar(42)  NOT NULL COMMENT ' claimant',
+    `claimant`          varchar(64)  NOT NULL COMMENT ' claimant',
     `bond`              bigint       NOT NULL COMMENT ' bond',
-    `claim`             varchar(42)  NOT NULL COMMENT ' claim',
+    `claim`             varchar(64)  NOT NULL COMMENT ' claim',
     `position`          bigint       NOT NULL COMMENT ' position',
-    `clock`             timestamp    NOT NULL COMMENT ' clock',
+    `clock`             bigint       NOT NULL COMMENT ' clock',
     PRIMARY KEY (`id`)
 ) ENGINE = InnoDB
   AUTO_INCREMENT = 1011299
