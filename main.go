@@ -23,12 +23,13 @@ func main() {
 
 	disputeGameHandler := api.NewDisputeGameHandler(sCtx.DB)
 
-	router.GET("/games", disputeGameHandler.ListDisputeGames)
-	router.GET("/games/:address/claim-data", disputeGameHandler.GetClaimData)
+	router.GET("/disputegames", disputeGameHandler.ListDisputeGames)
+	router.GET("/disputegames/:address/claimdatas", disputeGameHandler.GetClaimData)
 
 	err := router.Run()
 	if err != nil {
 		log.Errorf("start error %s", err)
 		return
 	}
+
 }
