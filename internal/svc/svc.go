@@ -1,6 +1,7 @@
 package svc
 
 import (
+	"context"
 	"log"
 	"time"
 
@@ -22,9 +23,10 @@ type ServiceContext struct {
 	LatestBlockNumber int64
 	SyncedBlockNumber int64
 	SyncedBlockHash   common.Hash
+	Context           context.Context
 }
 
-func NewServiceContext(cfg *types.Config) *ServiceContext {
+func NewServiceContext(ctx context.Context, cfg *types.Config) *ServiceContext {
 	storage, err := gorm.Open(postgres.Open(cfg.PostgresqlDataSource), &gorm.Config{
 		Logger: logger.Default.LogMode(logger.Error),
 	})
@@ -48,10 +50,10 @@ func NewServiceContext(cfg *types.Config) *ServiceContext {
 	}
 
 	svc = &ServiceContext{
-		Config: cfg,
-		L1RPC:  rpc,
-		DB:     storage,
+		Config:  cfg,
+		L1RPC:   rpc,
+		DB:      storage,
+		Context: ctx,
 	}
-
 	return svc
 }

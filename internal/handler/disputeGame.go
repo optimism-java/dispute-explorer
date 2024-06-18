@@ -12,6 +12,7 @@ import (
 	"github.com/optimism-java/dispute-explorer/internal/svc"
 	"github.com/optimism-java/dispute-explorer/pkg/contract"
 	"github.com/optimism-java/dispute-explorer/pkg/event"
+	"golang.org/x/time/rate"
 	"gorm.io/gorm"
 )
 
@@ -91,19 +92,21 @@ func addDisputeGame(ctx *svc.ServiceContext, evt *schema.SyncEvent) error {
 	if err != nil {
 		return fmt.Errorf("[addDisputeGame] event data to DisputeGameCreated err: %s", err)
 	}
+
 	newDisputeGame, err := contract.NewDisputeGame(common.HexToAddress(disputeGame.DisputeProxy), ctx.L1RPC)
 	if err != nil {
 		return fmt.Errorf("[addDisputeGame] init dispute game contract client err: %s", err)
 	}
-	l2Block, err := newDisputeGame.L2BlockNumber(&bind.CallOpts{})
+	retryLimitGame := contract.NewRateAndRetryDisputeGameClient(newDisputeGame, rate.Limit(ctx.Config.RPCRateLimit), ctx.Config.RPCRateBurst)
+	l2Block, err := retryLimitGame.RetryL2BlockNumber(ctx.Context, &bind.CallOpts{})
 	if err != nil {
 		return fmt.Errorf("[addDisputeGame] GET game L2BlockNumber err: %s", err)
 	}
-	status, err := newDisputeGame.Status(&bind.CallOpts{})
+	status, err := retryLimitGame.RetryStatus(ctx.Context, &bind.CallOpts{})
 	if err != nil {
 		return fmt.Errorf("[addDisputeGame] GET game status err: %s", err)
 	}
-	claimData, err := newDisputeGame.ClaimData(&bind.CallOpts{}, big.NewInt(0))
+	claimData, err := retryLimitGame.RetryClaimData(ctx.Context, &bind.CallOpts{}, big.NewInt(0))
 	if err != nil {
 		return fmt.Errorf("[addDisputeGame] GET index 0 ClaimData err: %s", err)
 	}
