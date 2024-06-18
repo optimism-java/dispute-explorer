@@ -70,12 +70,6 @@ func HandlePendingBlock(ctx *svc.ServiceContext, block schema.SyncBlock) error {
 		log.Infof("[Handler.SyncEvent.PendingBlock]Don't match block hash\n")
 		return nil
 	} else if eventCount > 0 && events[0].BlockHash == block.BlockHash {
-		games := make([]schema.DisputeGame, 0)
-		ctx.DB.Where("block_number=?", block.BlockNumber).Delete(&games)
-		for _, game := range games {
-			claimData := make([]schema.GameClaimData, 0)
-			ctx.DB.Where("game_contract=?", game.GameContract).Delete(&claimData)
-		}
 		if len(events) > 0 {
 			err = ctx.DB.Transaction(func(tx *gorm.DB) error {
 				err = BatchFilterAddAndRemove(ctx, events)
