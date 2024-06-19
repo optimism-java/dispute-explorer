@@ -3,6 +3,7 @@ package handler
 import (
 	"encoding/hex"
 	"fmt"
+	"github.com/optimism-java/dispute-explorer/pkg/log"
 	"math/big"
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
@@ -46,13 +47,14 @@ func filterAddAndRemove(ctx *svc.ServiceContext, evt *schema.SyncEvent) error {
 			return fmt.Errorf("[FilterDisputeContractAndAdd] event data to DisputeGameResolved err: %s", err)
 		}
 		var game schema.DisputeGame
-		err = ctx.DB.Where(" contract_address = ? ", evt.ContractAddress).First(&game).Error
+		err = ctx.DB.Where(" game_address = ? ", evt.ContractAddress).First(&game).Error
 		if err != nil {
 			return fmt.Errorf("[FilterDisputeContractAndAdd] resolved event find game err: %s", err)
 		}
 		game.Status = disputeResolved.Status
 		ctx.DB.Save(game)
 		blockchain.RemoveContract(evt.ContractAddress)
+		log.Infof("resolve event remove %s", evt.ContractAddress)
 	}
 	disputeGameMove := event.DisputeGameMove{}
 	if evt.EventName == disputeGameMove.Name() && evt.EventHash == disputeGameMove.EventHash().String() {
