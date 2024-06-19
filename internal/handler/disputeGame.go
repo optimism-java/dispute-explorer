@@ -47,7 +47,7 @@ func filterAddAndRemove(ctx *svc.ServiceContext, evt *schema.SyncEvent) error {
 			return fmt.Errorf("[FilterDisputeContractAndAdd] event data to DisputeGameResolved err: %s", err)
 		}
 		var game schema.DisputeGame
-		err = ctx.DB.Where(" game_address = ? ", evt.ContractAddress).First(&game).Error
+		err = ctx.DB.Where(" game_contract = ? ", evt.ContractAddress).First(&game).Error
 		if err != nil {
 			return fmt.Errorf("[FilterDisputeContractAndAdd] resolved event find game err: %s", err)
 		}
