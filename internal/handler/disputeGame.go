@@ -3,7 +3,6 @@ package handler
 import (
 	"encoding/hex"
 	"fmt"
-	"github.com/optimism-java/dispute-explorer/pkg/log"
 	"math/big"
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
@@ -13,6 +12,7 @@ import (
 	"github.com/optimism-java/dispute-explorer/internal/svc"
 	"github.com/optimism-java/dispute-explorer/pkg/contract"
 	"github.com/optimism-java/dispute-explorer/pkg/event"
+	"github.com/optimism-java/dispute-explorer/pkg/log"
 	"golang.org/x/time/rate"
 	"gorm.io/gorm"
 )
