@@ -8,7 +8,6 @@ import (
 func TestRemoveContract(t *testing.T) {
 	contracts = GetContracts()
 	fmt.Println(GetContracts())
-	AddContract("AA")
 	AddContract("BB")
 	AddContract("CC")
 	fmt.Println(GetContracts())

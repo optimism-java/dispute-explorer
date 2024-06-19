@@ -42,17 +42,6 @@ func filterAddAndRemove(ctx *svc.ServiceContext, evt *schema.SyncEvent) error {
 	}
 	disputeResolved := event.DisputeGameResolved{}
 	if evt.EventName == disputeResolved.Name() && evt.EventHash == disputeResolved.EventHash().String() {
-		err := disputeResolved.ToObj(evt.Data)
-		if err != nil {
-			return fmt.Errorf("[FilterDisputeContractAndAdd] event data to DisputeGameResolved err: %s", err)
-		}
-		var game schema.DisputeGame
-		err = ctx.DB.Where(" game_contract = ? ", evt.ContractAddress).First(&game).Error
-		if err != nil {
-			return fmt.Errorf("[FilterDisputeContractAndAdd] resolved event find game err: %s", err)
-		}
-		game.Status = disputeResolved.Status
-		ctx.DB.Save(game)
 		blockchain.RemoveContract(evt.ContractAddress)
 		log.Infof("resolve event remove %s", evt.ContractAddress)
 	}
