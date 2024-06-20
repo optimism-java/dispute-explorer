@@ -24,6 +24,29 @@ CREATE INDEX if not exists status_index ON sync_blocks (status);
 CREATE INDEX if not exists tx_count_index ON sync_blocks (tx_count);
 CREATE INDEX if not exists check_count_index ON sync_blocks (check_count);
 
+-- Create sync_events table
+DROP TABLE sync_events;
+CREATE TABLE IF NOT EXISTS sync_events
+(
+    id                SERIAL PRIMARY KEY,
+    created_at        TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at        TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    sync_block_id     BIGINT      NOT NULL,
+    blockchain        VARCHAR(32) NOT NULL,
+    block_time        BIGINT      NOT NULL,
+    block_number      BIGINT      NOT NULL,
+    block_hash        VARCHAR(66) NOT NULL,
+    block_log_indexed BIGINT      NOT NULL,
+    tx_index          BIGINT      NOT NULL,
+    tx_hash           VARCHAR(66) NOT NULL,
+    event_name        VARCHAR(32) NOT NULL,
+    event_hash        VARCHAR(66) NOT NULL,
+    contract_address  VARCHAR(42) NOT NULL,
+    data              JSONB       NOT NULL,
+    status            VARCHAR(32) NOT NULL,
+    retry_count       BIGINT               DEFAULT 0
+);
+
 -- ----------------------------
 -- Table structure for dispute_game
 -- ----------------------------
@@ -49,6 +72,7 @@ CREATE TABLE IF NOT EXISTS dispute_game
     l2_block_number   bigint      NOT NULL,
     status            int         NOT NULL
 );
+CREATE INDEX if not exists dispute_game_index ON dispute_game (contract_address, game_contract);
 
 -- ----------------------------
 -- Table structure for game_claim_data
@@ -68,4 +92,5 @@ CREATE TABLE IF NOT EXISTS game_claim_data
     claim             varchar(64)  NOT NULL,
     position          bigint       NOT NULL,
     clock             bigint       NOT NULL
-)
+);
+CREATE INDEX if not exists dispute_game_data_index ON game_claim_data (game_contract, data_index);

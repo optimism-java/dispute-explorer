@@ -11,4 +11,6 @@ func Run(ctx *svc.ServiceContext) {
 	go SyncBlock(ctx)
 	// sync events
 	go SyncEvent(ctx)
+	// sync dispute game
+	go SyncDispute(ctx)
 }

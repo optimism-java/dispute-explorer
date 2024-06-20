@@ -3,9 +3,12 @@ package schema
 // 0-In progress 1- Challenger wins 2- Defender wins
 
 const (
-	InProgress    = "0"
-	ChallengerWin = "1"
-	DefenderWin   = "2"
+	DisputeGameStatusInProgress    = 0
+	DisputeGameStatusChallengerWin = 1
+	DisputeGameStatusDefenderWin   = 2
+
+	DisputeGameInit     = 0
+	DisputeGameComplete = 1
 )
 
 type DisputeGame struct {
@@ -25,6 +28,7 @@ type DisputeGame struct {
 	GameType        uint32 `json:"game_type"`
 	L2BlockNumber   int64  `json:"l_2_block_number"`
 	Status          uint8  `json:"status"`
+	InitStatus      uint8  `json:""`
 }
 
 func (DisputeGame) TableName() string {

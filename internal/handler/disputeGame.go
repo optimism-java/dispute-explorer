@@ -1,109 +1,148 @@
 package handler
 
 import (
+	"context"
 	"encoding/hex"
 	"fmt"
-	"math/big"
-
-	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/optimism-java/dispute-explorer/internal/blockchain"
-	"github.com/optimism-java/dispute-explorer/internal/schema"
-	"github.com/optimism-java/dispute-explorer/internal/svc"
-	"github.com/optimism-java/dispute-explorer/pkg/contract"
-	"github.com/optimism-java/dispute-explorer/pkg/event"
+	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/optimism-java/dispute-explorer/pkg/log"
 	"golang.org/x/time/rate"
+	"math/big"
+	"strings"
+
+	"github.com/ethereum/go-ethereum/accounts/abi/bind"
+	"github.com/optimism-java/dispute-explorer/internal/blockchain"
+	"github.com/optimism-java/dispute-explorer/internal/schema"
+	"github.com/optimism-java/dispute-explorer/pkg/contract"
+	"github.com/optimism-java/dispute-explorer/pkg/event"
 	"gorm.io/gorm"
 )
 
-func BatchFilterAddAndRemove(ctx *svc.ServiceContext, events []*schema.SyncEvent) error {
-	for _, evt := range events {
-		err := filterAddAndRemove(ctx, evt)
-		if err != nil {
-			return fmt.Errorf("[BatchFilterAddAndRemove] filterAddAndRemove: %s", err)
-		}
-	}
-	return nil
+type RetryDisputeGameClient struct {
+	Client *contract.RateAndRetryDisputeGameClient
+	DB     *gorm.DB
 }
 
-func filterAddAndRemove(ctx *svc.ServiceContext, evt *schema.SyncEvent) error {
+func NewRetryDisputeGameClient(db *gorm.DB, address common.Address, rpc *ethclient.Client, limit rate.Limit,
+	burst int) (*RetryDisputeGameClient, error) {
+	newDisputeGame, err := contract.NewDisputeGame(address, rpc)
+	if err != nil {
+		return nil, err
+	}
+	retryLimitGame := contract.NewRateAndRetryDisputeGameClient(newDisputeGame, limit, burst)
+	return &RetryDisputeGameClient{Client: retryLimitGame, DB: db}, nil
+}
+
+func (r *RetryDisputeGameClient) ProcessDisputeGameCreated(ctx context.Context, evt *schema.SyncEvent) error {
 	dispute := event.DisputeGameCreated{}
-	if evt.EventName == dispute.Name() && evt.EventHash == dispute.EventHash().String() {
-		err := dispute.ToObj(evt.Data)
-		if err != nil {
-			return fmt.Errorf("[FilterDisputeContractAndAdd] event data to DisputeGameCreated err: %s", err)
-		}
-		err = addDisputeGame(ctx, evt)
-		if err != nil {
-			return fmt.Errorf("[FilterDisputeContractAndAdd] addDisputeGame err: %s", err)
-		}
-		blockchain.AddContract(dispute.DisputeProxy)
+	err := dispute.ToObj(evt.Data)
+	if err != nil {
+		return fmt.Errorf("[processDisputeGameCreated] event data to DisputeGameCreated err: %s", err)
 	}
-	disputeResolved := event.DisputeGameResolved{}
-	if evt.EventName == disputeResolved.Name() && evt.EventHash == disputeResolved.EventHash().String() {
-		blockchain.RemoveContract(evt.ContractAddress)
-		log.Infof("resolve event remove %s", evt.ContractAddress)
+	err = r.addDisputeGame(ctx, evt)
+	if err != nil {
+		return fmt.Errorf("[processDisputeGameCreated] addDisputeGame err: %s", err)
 	}
-	disputeGameMove := event.DisputeGameMove{}
-	if evt.EventName == disputeGameMove.Name() && evt.EventHash == disputeGameMove.EventHash().String() {
-		err := disputeGameMove.ToObj(evt.Data)
-		if err != nil {
-			return fmt.Errorf("[FilterDisputeContractAndAdd] event data to disputeGameMove err: %s", err)
-		}
-		newDisputeGame, err := contract.NewDisputeGame(common.HexToAddress(evt.ContractAddress), ctx.L1RPC)
-		if err != nil {
-			return fmt.Errorf("[addDisputeGame] init dispute game contract client err: %s", err)
-		}
-		index := disputeGameMove.ParentIndex.Add(disputeGameMove.ParentIndex, big.NewInt(1))
-		data, err := newDisputeGame.ClaimData(&bind.CallOpts{}, index)
-		if err != nil {
-			return fmt.Errorf("[addDisputeGame] contract: %s, index: %d move event get claim data err: %s", evt.ContractAddress, index, err)
-		}
-		claimData := &schema.GameClaimData{
-			GameContract: evt.ContractAddress,
-			DataIndex:    index.Int64(),
-			ParentIndex:  data.ParentIndex,
-			CounteredBy:  data.CounteredBy.Hex(),
-			Claimant:     data.Claimant.Hex(),
-			Bond:         data.Bond.Uint64(),
-			Claim:        hex.EncodeToString(data.Claim[:]),
-			Position:     data.Position.Uint64(),
-			Clock:        data.Clock.Int64(),
-		}
-		ctx.DB.Save(claimData)
-	}
-
+	blockchain.AddContract(dispute.DisputeProxy)
 	return nil
 }
 
-func addDisputeGame(ctx *svc.ServiceContext, evt *schema.SyncEvent) error {
+func (r *RetryDisputeGameClient) ProcessDisputeGameMove(ctx context.Context, evt *schema.SyncEvent) error {
+	disputeGameMove := event.DisputeGameMove{}
+	err := disputeGameMove.ToObj(evt.Data)
+	if err != nil {
+		return fmt.Errorf("[processDisputeGameMove] event data to disputeGameMove err: %s", err)
+	}
+	index := disputeGameMove.ParentIndex.Add(disputeGameMove.ParentIndex, big.NewInt(1))
+	data, err := r.Client.RetryClaimData(ctx, &bind.CallOpts{}, index)
+	if err != nil {
+		return fmt.Errorf("[processDisputeGameMove] contract: %s, index: %d move event get claim data err: %s", evt.ContractAddress, index, err)
+	}
+
+	claimData := &schema.GameClaimData{
+		GameContract: evt.ContractAddress,
+		DataIndex:    index.Int64(),
+		ParentIndex:  data.ParentIndex,
+		CounteredBy:  data.CounteredBy.Hex(),
+		Claimant:     data.Claimant.Hex(),
+		Bond:         data.Bond.Uint64(),
+		Claim:        hex.EncodeToString(data.Claim[:]),
+		Position:     data.Position.Uint64(),
+		Clock:        data.Clock.Int64(),
+	}
+	err = r.DB.Transaction(func(tx *gorm.DB) error {
+		err = tx.Save(claimData).Error
+		if err != nil {
+			return fmt.Errorf("[processDisputeGameMove] save dispute game err: %s\n ", err)
+		}
+		evt.Status = schema.EventValid
+		err = tx.Save(evt).Error
+		if err != nil {
+			return fmt.Errorf("[processDisputeGameMove] save event err: %s\n ", err)
+		}
+		return nil
+	})
+	if err != nil {
+		panic(err)
+	}
+	return nil
+}
+
+func (r *RetryDisputeGameClient) ProcessDisputeGameResolve(ctx context.Context, evt *schema.SyncEvent) error {
+	disputeResolved := event.DisputeGameResolved{}
+	err := disputeResolved.ToObj(evt.Data)
+	if err != nil {
+		return fmt.Errorf("[processDisputeGameResolve] event data to disputeResolved err: %s", err)
+	}
+	disputeGame := &schema.DisputeGame{}
+	err = r.DB.Where("game_contract=?", evt.ContractAddress).First(disputeGame).Error
+	if err != nil && err != gorm.ErrRecordNotFound {
+		return fmt.Errorf("[processDisputeGameResolve] resolve event can not find dispute game err: %s", err)
+	}
+	disputeGame.Status = disputeResolved.Status
+	err = r.DB.Transaction(func(tx *gorm.DB) error {
+		err = tx.Save(disputeGame).Error
+		if err != nil {
+			return fmt.Errorf("[processDisputeGameMove] update dispute game status err: %s\n ", err)
+		}
+		evt.Status = schema.EventValid
+		err = tx.Save(evt).Error
+		if err != nil {
+			return fmt.Errorf("[processDisputeGameMove] update event err: %s\n ", err)
+		}
+		return nil
+	})
+	if err != nil {
+		panic(err)
+	}
+	blockchain.RemoveContract(evt.ContractAddress)
+	log.Infof("remove contract: %s", evt.ContractAddress)
+	return nil
+}
+
+func (r *RetryDisputeGameClient) addDisputeGame(ctx context.Context, evt *schema.SyncEvent) error {
 	disputeGame := event.DisputeGameCreated{}
 	err := disputeGame.ToObj(evt.Data)
 	if err != nil {
 		return fmt.Errorf("[addDisputeGame] event data to DisputeGameCreated err: %s", err)
 	}
 
-	newDisputeGame, err := contract.NewDisputeGame(common.HexToAddress(disputeGame.DisputeProxy), ctx.L1RPC)
-	if err != nil {
-		return fmt.Errorf("[addDisputeGame] init dispute game contract client err: %s", err)
-	}
-	retryLimitGame := contract.NewRateAndRetryDisputeGameClient(newDisputeGame, rate.Limit(ctx.Config.RPCRateLimit), ctx.Config.RPCRateBurst)
-	l2Block, err := retryLimitGame.RetryL2BlockNumber(ctx.Context, &bind.CallOpts{})
+	l2Block, err := r.Client.RetryL2BlockNumber(ctx, &bind.CallOpts{})
 	if err != nil {
 		return fmt.Errorf("[addDisputeGame] GET game L2BlockNumber err: %s", err)
 	}
-	status, err := retryLimitGame.RetryStatus(ctx.Context, &bind.CallOpts{})
+	status, err := r.Client.RetryStatus(ctx, &bind.CallOpts{})
 	if err != nil {
 		return fmt.Errorf("[addDisputeGame] GET game status err: %s", err)
 	}
-	claimData, err := retryLimitGame.RetryClaimData(ctx.Context, &bind.CallOpts{}, big.NewInt(0))
+	claimData, err := r.Client.RetryClaimData(ctx, &bind.CallOpts{}, big.NewInt(0))
 	if err != nil {
 		return fmt.Errorf("[addDisputeGame] GET index 0 ClaimData err: %s", err)
 	}
 
 	gameClaim := &schema.GameClaimData{
-		GameContract: disputeGame.DisputeProxy,
+		GameContract: strings.ToLower(disputeGame.DisputeProxy),
 		DataIndex:    0,
 		ParentIndex:  claimData.ParentIndex,
 		CounteredBy:  claimData.CounteredBy.Hex(),
@@ -126,19 +165,25 @@ func addDisputeGame(ctx *svc.ServiceContext, evt *schema.SyncEvent) error {
 		EventName:       evt.EventName,
 		EventHash:       evt.EventHash,
 		ContractAddress: evt.ContractAddress,
-		GameContract:    disputeGame.DisputeProxy,
+		GameContract:    strings.ToLower(disputeGame.DisputeProxy),
 		GameType:        disputeGame.GameType,
 		L2BlockNumber:   l2Block.Int64(),
 		Status:          status,
+		InitStatus:      schema.DisputeGameInit,
 	}
-	err = ctx.DB.Transaction(func(tx *gorm.DB) error {
-		err = tx.Save(game).Error
-		if err != nil {
-			return fmt.Errorf("[addDisputeGame] save dispute game err: %s\n ", err)
-		}
+	err = r.DB.Transaction(func(tx *gorm.DB) error {
 		err = tx.Save(gameClaim).Error
 		if err != nil {
-			return fmt.Errorf("[addDisputeGame] save game claim err: %s\n ", err)
+			return fmt.Errorf("[addDisputeGame] save dispute game claim: %s", err)
+		}
+		err = tx.Save(game).Error
+		if err != nil {
+			return fmt.Errorf("[addDisputeGame] save dispute game err: %s ", err)
+		}
+		evt.Status = schema.EventValid
+		err = tx.Save(evt).Error
+		if err != nil {
+			return fmt.Errorf("[addDisputeGame] save event err: %s ", err)
 		}
 		return nil
 	})
