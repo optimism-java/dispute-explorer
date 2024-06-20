@@ -4,12 +4,13 @@ import (
 	"context"
 	"encoding/hex"
 	"fmt"
+	"math/big"
+	"strings"
+
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/optimism-java/dispute-explorer/pkg/log"
 	"golang.org/x/time/rate"
-	"math/big"
-	"strings"
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/optimism-java/dispute-explorer/internal/blockchain"
@@ -25,7 +26,8 @@ type RetryDisputeGameClient struct {
 }
 
 func NewRetryDisputeGameClient(db *gorm.DB, address common.Address, rpc *ethclient.Client, limit rate.Limit,
-	burst int) (*RetryDisputeGameClient, error) {
+	burst int,
+) (*RetryDisputeGameClient, error) {
 	newDisputeGame, err := contract.NewDisputeGame(address, rpc)
 	if err != nil {
 		return nil, err
@@ -34,13 +36,13 @@ func NewRetryDisputeGameClient(db *gorm.DB, address common.Address, rpc *ethclie
 	return &RetryDisputeGameClient{Client: retryLimitGame, DB: db}, nil
 }
 
-func (r *RetryDisputeGameClient) ProcessDisputeGameCreated(ctx context.Context, evt *schema.SyncEvent) error {
+func (r *RetryDisputeGameClient) ProcessDisputeGameCreated(ctx context.Context, evt schema.SyncEvent) error {
 	dispute := event.DisputeGameCreated{}
 	err := dispute.ToObj(evt.Data)
 	if err != nil {
 		return fmt.Errorf("[processDisputeGameCreated] event data to DisputeGameCreated err: %s", err)
 	}
-	err = r.addDisputeGame(ctx, evt)
+	err = r.addDisputeGame(ctx, &evt)
 	if err != nil {
 		return fmt.Errorf("[processDisputeGameCreated] addDisputeGame err: %s", err)
 	}
@@ -48,7 +50,7 @@ func (r *RetryDisputeGameClient) ProcessDisputeGameCreated(ctx context.Context, 
 	return nil
 }
 
-func (r *RetryDisputeGameClient) ProcessDisputeGameMove(ctx context.Context, evt *schema.SyncEvent) error {
+func (r *RetryDisputeGameClient) ProcessDisputeGameMove(ctx context.Context, evt schema.SyncEvent) error {
 	disputeGameMove := event.DisputeGameMove{}
 	err := disputeGameMove.ToObj(evt.Data)
 	if err != nil {
@@ -89,7 +91,7 @@ func (r *RetryDisputeGameClient) ProcessDisputeGameMove(ctx context.Context, evt
 	return nil
 }
 
-func (r *RetryDisputeGameClient) ProcessDisputeGameResolve(ctx context.Context, evt *schema.SyncEvent) error {
+func (r *RetryDisputeGameClient) ProcessDisputeGameResolve(evt schema.SyncEvent) error {
 	disputeResolved := event.DisputeGameResolved{}
 	err := disputeResolved.ToObj(evt.Data)
 	if err != nil {
