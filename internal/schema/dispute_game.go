@@ -28,7 +28,6 @@ type DisputeGame struct {
 	GameType        uint32 `json:"game_type"`
 	L2BlockNumber   int64  `json:"l_2_block_number"`
 	Status          uint8  `json:"status"`
-	InitStatus      uint8  `json:""`
 }
 
 func (DisputeGame) TableName() string {

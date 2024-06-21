@@ -171,7 +171,6 @@ func (r *RetryDisputeGameClient) addDisputeGame(ctx context.Context, evt *schema
 		GameType:        disputeGame.GameType,
 		L2BlockNumber:   l2Block.Int64(),
 		Status:          status,
-		InitStatus:      schema.DisputeGameInit,
 	}
 	err = r.DB.Transaction(func(tx *gorm.DB) error {
 		err = tx.Save(gameClaim).Error
