@@ -15,6 +15,8 @@ import (
 )
 
 func SyncEvent(ctx *svc.ServiceContext) {
+	log.Infof("Initializes the monitored contract address...\n")
+	initMonitoredContract(ctx)
 	for {
 		var blocks []schema.SyncBlock
 		err := ctx.DB.Where("status=? OR status=?", schema.BlockPending, schema.BlockRollback).Order("block_number").Limit(50).Find(&blocks).Error
@@ -141,4 +143,17 @@ func HandleRollbackBlock(ctx *svc.ServiceContext, block schema.SyncBlock) error 
 		return errors.WithStack(err)
 	}
 	return nil
+}
+
+func initMonitoredContract(s *svc.ServiceContext) {
+	//var disputeGames []schema.DisputeGame
+	//err := s.DB.Where("status=?", uint8(0)).Find(disputeGames).Error
+	var disputeGames []schema.DisputeGame
+	err := s.DB.Where("status = ? ", 0).Order("block_number").Find(&disputeGames).Error
+	if err != nil && err != gorm.ErrRecordNotFound {
+		panic(err)
+	}
+	for _, game := range disputeGames {
+		blockchain.AddContract(game.GameContract)
+	}
 }

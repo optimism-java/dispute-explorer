@@ -134,10 +134,6 @@ func (r *RetryDisputeGameClient) addDisputeGame(ctx context.Context, evt *schema
 	if err != nil {
 		return fmt.Errorf("[addDisputeGame] GET game L2BlockNumber err: %s", err)
 	}
-	status, err := r.Client.RetryStatus(ctx, &bind.CallOpts{})
-	if err != nil {
-		return fmt.Errorf("[addDisputeGame] GET game status err: %s", err)
-	}
 	claimData, err := r.Client.RetryClaimData(ctx, &bind.CallOpts{}, big.NewInt(0))
 	if err != nil {
 		return fmt.Errorf("[addDisputeGame] GET index 0 ClaimData err: %s", err)
@@ -170,7 +166,7 @@ func (r *RetryDisputeGameClient) addDisputeGame(ctx context.Context, evt *schema
 		GameContract:    strings.ToLower(disputeGame.DisputeProxy),
 		GameType:        disputeGame.GameType,
 		L2BlockNumber:   l2Block.Int64(),
-		Status:          status,
+		Status:          schema.DisputeGameStatusInProgress,
 	}
 	err = r.DB.Transaction(func(tx *gorm.DB) error {
 		err = tx.Save(gameClaim).Error

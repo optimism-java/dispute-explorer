@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-
 	"github.com/gin-gonic/gin"
 	"github.com/optimism-java/dispute-explorer/internal/api"
 	"github.com/optimism-java/dispute-explorer/internal/handler"
@@ -20,7 +19,6 @@ func main() {
 	handler.Run(sCtx)
 	log.Info("listener running...\n")
 	router := gin.Default()
-
 	disputeGameHandler := api.NewDisputeGameHandler(sCtx.DB)
 
 	router.GET("/disputegames", disputeGameHandler.ListDisputeGames)

@@ -6,9 +6,6 @@ const (
 	DisputeGameStatusInProgress    = 0
 	DisputeGameStatusChallengerWin = 1
 	DisputeGameStatusDefenderWin   = 2
-
-	DisputeGameInit     = 0
-	DisputeGameComplete = 1
 )
 
 type DisputeGame struct {
