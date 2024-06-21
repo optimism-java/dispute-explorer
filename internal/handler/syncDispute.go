@@ -61,6 +61,9 @@ func SyncDispute(ctx *svc.ServiceContext) {
 			default:
 				log.Infof("this event does not be monitored %s, hash %s", evt.EventName, evt.EventHash)
 			}
+			if err != nil {
+				panic(err)
+			}
 		}
 	}
 }
