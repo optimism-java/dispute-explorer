@@ -12,6 +12,7 @@ import (
 )
 
 func SyncCredit(ctx *svc.ServiceContext) {
+	time.Sleep(30 * time.Second)
 	for {
 		var disputeGames []schema.DisputeGame
 		err := ctx.DB.Where("status!=? and computed=?", schema.DisputeGameStatusInProgress, false).Order("block_number").Limit(20).Find(&disputeGames).Error
