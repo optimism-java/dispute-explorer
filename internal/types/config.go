@@ -17,7 +17,7 @@ type Config struct {
 	MySQLMaxOpenConns        int    `env:"MYSQL_MAX_OPEN_CONNS" envDefault:"20"`
 	MySQLConnMaxLifetime     int    `env:"MYSQL_CONN_MAX_LIFETIME" envDefault:"3600"`
 	Blockchain               string `env:"BLOCKCHAIN" envDefault:"sepolia"`
-	L1RPCUrl                 string `env:"L1_RPC_URL" envDefault:"https://quaint-white-season.ethereum-sepolia.quiknode.pro/b5c30cbb548d8743f08dd175fe50e3e923259d30"`
+	L1RPCUrl                 string `env:"L1_RPC_URL" envDefault:"https://eth-sepolia.g.alchemy.com/v2/PNunSRFo0FWRJMu5yrwBd6jF7G78YHrv"`
 	RPCRateLimit             int    `env:"RPC_RATE_LIMIT" envDefault:"15"`
 	RPCRateBurst             int    `env:"RPC_RATE_BURST" envDefault:"5"`
 	FromBlockNumber          int64  `env:"FROM_BLOCK_NUMBER" envDefault:"6034337"`

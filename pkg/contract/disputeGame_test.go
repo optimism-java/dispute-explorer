@@ -55,6 +55,11 @@ func TestCallStatus(t *testing.T) {
 	fmt.Println(hex.EncodeToString(result))
 }
 
-func TestCallClaimData(t *testing.T) {
-
+func TestAllCredit(t *testing.T) {
+	l1rpc, err := ethclient.Dial("https://eth-sepolia.g.alchemy.com/v2/PNunSRFo0FWRJMu5yrwBd6jF7G78YHrv")
+	require.NoError(t, err)
+	disputeGame := "0xc9cb084c3ad4e36b719b60649f99ea9f13bb45b7"
+	newDisputeGame, err := NewDisputeGame(common.HexToAddress(disputeGame), l1rpc)
+	credit, err := newDisputeGame.Credit(&bind.CallOpts{}, common.HexToAddress("0x49277EE36A024120Ee218127354c4a3591dc90A9"))
+	println(credit.Int64())
 }

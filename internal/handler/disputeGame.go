@@ -7,6 +7,8 @@ import (
 	"math/big"
 	"strings"
 
+	"github.com/pkg/errors"
+
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/optimism-java/dispute-explorer/pkg/log"
@@ -21,8 +23,9 @@ import (
 )
 
 type RetryDisputeGameClient struct {
-	Client *contract.RateAndRetryDisputeGameClient
-	DB     *gorm.DB
+	Client             *contract.RateAndRetryDisputeGameClient
+	DB                 *gorm.DB
+	DisputeGameAddress common.Address
 }
 
 func NewRetryDisputeGameClient(db *gorm.DB, address common.Address, rpc *ethclient.Client, limit rate.Limit,
@@ -33,7 +36,7 @@ func NewRetryDisputeGameClient(db *gorm.DB, address common.Address, rpc *ethclie
 		return nil, err
 	}
 	retryLimitGame := contract.NewRateAndRetryDisputeGameClient(newDisputeGame, limit, burst)
-	return &RetryDisputeGameClient{Client: retryLimitGame, DB: db}, nil
+	return &RetryDisputeGameClient{Client: retryLimitGame, DB: db, DisputeGameAddress: address}, nil
 }
 
 func (r *RetryDisputeGameClient) ProcessDisputeGameCreated(ctx context.Context, evt schema.SyncEvent) error {
@@ -188,4 +191,75 @@ func (r *RetryDisputeGameClient) addDisputeGame(ctx context.Context, evt *schema
 		panic(err)
 	}
 	return nil
+}
+
+func (r *RetryDisputeGameClient) ProcessDisputeGameCredit(ctx context.Context) error {
+	addresses, err := r.GetAllAddress(&r.DisputeGameAddress)
+	if err != nil {
+		return fmt.Errorf("[ProcessDisputeGameCredit] GetAllAddress err: %s", err)
+	}
+	credits := make([]*schema.GameCredit, 0)
+	for key := range addresses {
+		res, err := r.Client.RetryCredit(ctx, &bind.CallOpts{}, common.HexToAddress(key))
+		if err != nil {
+			return fmt.Errorf("[handler.SyncCredit] RetryCredit err: %s", err)
+		}
+		credit := &schema.GameCredit{
+			GameContract: r.DisputeGameAddress.String(),
+			Address:      key,
+			Credit:       res.String(),
+		}
+		credits = append(credits, credit)
+	}
+	disputeGame := &schema.DisputeGame{}
+	err = r.DB.Where("game_contract=?", strings.ToLower(r.DisputeGameAddress.String())).First(&disputeGame).Error
+	if err != nil {
+		return fmt.Errorf("[ProcessDisputeGameCredit] find dispute game err:%s", errors.WithStack(err))
+	}
+	err = r.DB.Transaction(func(tx *gorm.DB) error {
+		err = tx.Save(credits).Error
+		if err != nil {
+			return fmt.Errorf("[ProcessDisputeGameCredit] save game credit err: %s\n ", err)
+		}
+		disputeGame.Computed = true
+		err = tx.Save(disputeGame).Error
+		if err != nil {
+			return fmt.Errorf("[ProcessDisputeGameCredit] update dispute game computed err: %s\n ", err)
+		}
+		return nil
+	})
+	if err != nil {
+		panic(err)
+	}
+	return nil
+}
+
+func (r *RetryDisputeGameClient) GetCredit(ctx context.Context, address common.Address) (*big.Int, error) {
+	credit, err := r.Client.RetryCredit(ctx, &bind.CallOpts{}, address)
+	if err != nil {
+		return nil, fmt.Errorf("[GetCredit] GET address %s credit err: %s", address.String(), err)
+	}
+	return credit, nil
+}
+
+func (r *RetryDisputeGameClient) GetAllAddress(disputeGame *common.Address) (map[string]bool, error) {
+	claimDatas := make([]schema.GameClaimData, 0)
+	err := r.DB.Where("game_contract=?", strings.ToLower(disputeGame.String())).Order("data_index").Find(&claimDatas).Error
+	if err != nil {
+		return nil, fmt.Errorf("[GetAllAddress] %s find claim datas err: %s", disputeGame.String(), err)
+	}
+	addresses := map[string]bool{}
+	for _, claimData := range claimDatas {
+		if claimData.CounteredBy != common.HexToAddress("0").String() {
+			if !addresses[claimData.CounteredBy] {
+				addresses[claimData.CounteredBy] = true
+			}
+		}
+		if claimData.Claimant != common.HexToAddress("0").String() {
+			if !addresses[claimData.Claimant] {
+				addresses[claimData.Claimant] = true
+			}
+		}
+	}
+	return addresses, nil
 }

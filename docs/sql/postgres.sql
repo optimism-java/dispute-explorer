@@ -70,7 +70,8 @@ CREATE TABLE IF NOT EXISTS dispute_game
     game_contract     varchar(42) NOT NULL,
     game_type         int         NOT NULL,
     l2_block_number   bigint      NOT NULL,
-    status            int         NOT NULL
+    status            int         NOT NULL,
+    computed          boolean     default false
 );
 CREATE INDEX if not exists dispute_game_index ON dispute_game (contract_address, game_contract);
 
@@ -94,3 +95,17 @@ CREATE TABLE IF NOT EXISTS game_claim_data
     clock             bigint       NOT NULL
 );
 CREATE INDEX if not exists dispute_game_data_index ON game_claim_data (game_contract, data_index);
+
+-- Table structure for game_claim_data
+-- ----------------------------
+DROP TABLE if exists game_credit;
+CREATE TABLE IF NOT EXISTS game_credit
+(
+    id                SERIAL PRIMARY KEY,
+    created_at        TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at        TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    game_contract     varchar(42)  NOT NULL,
+    address           varchar(64)  NOT NULL,
+    credit            numeric       NOT NULL
+);
+

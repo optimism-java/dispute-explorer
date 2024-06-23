@@ -124,3 +124,23 @@ func (s *RateAndRetryDisputeGameClient) claimData(ctx context.Context, opts *bin
 	opts.Context = cCtx
 	return s.disputeGame.ClaimData(opts, arg0)
 }
+
+func (s *RateAndRetryDisputeGameClient) RetryCredit(ctx context.Context, opts *bind.CallOpts, address common.Address) (*big.Int, error) {
+	return retry.Do(ctx, maxAttempts, s.strategy, func() (*big.Int, error) {
+		res, err := s.credit(ctx, opts, address)
+		if err != nil {
+			log.Errorf("Failed to RetryStatus info %s", err)
+		}
+		return res, err
+	})
+}
+
+func (s *RateAndRetryDisputeGameClient) credit(ctx context.Context, opts *bind.CallOpts, address common.Address) (*big.Int, error) {
+	if err := s.rl.Wait(ctx); err != nil {
+		return nil, err
+	}
+	cCtx, cancel := context.WithTimeout(ctx, 10*time.Second)
+	defer cancel()
+	opts.Context = cCtx
+	return s.disputeGame.Credit(opts, address)
+}

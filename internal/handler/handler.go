@@ -6,11 +6,13 @@ import (
 
 func Run(ctx *svc.ServiceContext) {
 	// query last block number
-	go LatestBlackNumber(ctx)
-	// sync blocks
-	go SyncBlock(ctx)
-	// sync events
-	go SyncEvent(ctx)
-	// sync dispute game
-	go SyncDispute(ctx)
+	// go LatestBlackNumber(ctx)
+	//// sync blocks
+	// go SyncBlock(ctx)
+	//// sync events
+	// go SyncEvent(ctx)
+	//// sync dispute game
+	//go SyncDispute(ctx)
+
+	go SyncCredit(ctx)
 }

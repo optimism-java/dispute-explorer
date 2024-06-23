@@ -68,4 +68,20 @@ CREATE TABLE IF NOT EXISTS game_claim_data
     claim             varchar(64)  NOT NULL,
     position          bigint       NOT NULL,
     clock             bigint       NOT NULL
-)
+);
+
+--------------------------------------------------------
+alter table dispute_game add column computed bool default false;
+
+-- Table structure for game_claim_data
+-- ----------------------------
+DROP TABLE if exists game_credit;
+CREATE TABLE IF NOT EXISTS game_credit
+(
+    id                SERIAL PRIMARY KEY,
+    created_at        TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at        TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    game_contract     varchar(42)  NOT NULL,
+    address           varchar(64)  NOT NULL,
+    credit            numeric       NOT NULL
+);

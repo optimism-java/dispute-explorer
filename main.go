@@ -24,6 +24,8 @@ func main() {
 
 	router.GET("/disputegames", disputeGameHandler.ListDisputeGames)
 	router.GET("/disputegames/:address/claimdatas", disputeGameHandler.GetClaimData)
+	router.GET("/disputegames/credit/rank", disputeGameHandler.GetCreditRank)
+	router.GET("/disputegames/:address/credit", disputeGameHandler.GetCreditDetails)
 
 	err := router.Run()
 	if err != nil {
