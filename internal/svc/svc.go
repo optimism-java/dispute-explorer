@@ -5,7 +5,7 @@ import (
 	"log"
 	"time"
 
-	"gorm.io/driver/postgres"
+	"gorm.io/driver/mysql"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
@@ -27,7 +27,7 @@ type ServiceContext struct {
 }
 
 func NewServiceContext(ctx context.Context, cfg *types.Config) *ServiceContext {
-	storage, err := gorm.Open(postgres.Open(cfg.PostgresqlDataSource), &gorm.Config{
+	storage, err := gorm.Open(mysql.Open(cfg.MySQLDataSource), &gorm.Config{
 		Logger: logger.Default.LogMode(logger.Error),
 	})
 	if err != nil {

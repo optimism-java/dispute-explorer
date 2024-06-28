@@ -22,5 +22,8 @@ go.work
 go.work.sum
 .idea
 .DS_Store
-deploy/postgres1
+deploy/pg-data
+mysql1
+meili_data
+postgres
 

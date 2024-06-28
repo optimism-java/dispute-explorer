@@ -96,7 +96,7 @@ CREATE TABLE IF NOT EXISTS game_claim_data
 );
 CREATE INDEX if not exists dispute_game_data_index ON game_claim_data (game_contract, data_index);
 
--- Table structure for game_claim_data
+-- Table structure for game_credit
 -- ----------------------------
 DROP TABLE if exists game_credit;
 CREATE TABLE IF NOT EXISTS game_credit

@@ -1,6 +1,8 @@
 package blockchain
 
 import (
+	"strings"
+
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	config "github.com/optimism-java/dispute-explorer/internal/types"
@@ -26,7 +28,10 @@ func init() {
 	Register(&event.DisputeGameMove{})
 	Register(&event.DisputeGameResolved{})
 	cfg := config.GetConfig()
-	AddContract(cfg.DisputeGameProxyContract)
+	disputeGameProxys := strings.Split(cfg.DisputeGameProxyContract, ",")
+	for _, one := range disputeGameProxys {
+		AddContract(one)
+	}
 }
 
 func Register(event Event) {
