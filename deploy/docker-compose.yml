@@ -4,7 +4,7 @@ services:
 
   postgres:
     container_name: postgres-game
-    image: postgres:15.7
+    image: postgres:latest
     environment:
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_USER=postgres
@@ -13,8 +13,7 @@ services:
     ports:
       - "5435:5432"
     volumes:
-      - ./postgres1/datadir:/var/lib/postgresql/data
-      - ./postgres.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./pg-data:/var/lib/postgresql/data
 
   node1:
     container_name: dispute-explorer-backend
@@ -35,5 +34,29 @@ services:
       DISPUTE_GAME_PROXY_CONTRACT: "0x05F9613aDB30026FFd634f38e5C4dFd30a197Fa1"
     network_mode: host
 
+  meiliSearch:
+    container_name: meilisearch
+    image: getmeili/meilisearch:v1.8
+    environment:
+      - MEILI_MASTER_KEY=123456
+    ports:
+      - "7700:7700"
+    volumes:
+      - ./meili_data:/meili_data
 
+  meiliSync:
+    platform: linux/x86_64
+    image: long2ice/meilisync:sha-fc1877d
+    volumes:
+      - ./config.yml:/meilisync/config.yml
+    network_mode: host
 
+  mysql1:
+    container_name: mysql1
+    image: mysql:8.0.28
+    environment:
+      MYSQL_ROOT_PASSWORD: "root"
+    ports:
+      - "3366:3306"
+    volumes:
+      - ./mysql1/datadir:/var/lib/mysql
