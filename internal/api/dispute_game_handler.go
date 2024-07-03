@@ -79,3 +79,15 @@ func (h DisputeGameHandler) GetCreditDetails(c *gin.Context) {
 		"records":     games,
 	})
 }
+
+func (h DisputeGameHandler) GetOverview(c *gin.Context) {
+	var gameCount int64
+	var totalCredit int64
+	h.DB.Model(&schema.DisputeGame{}).Count(&gameCount)
+	h.DB.Model(&schema.GameCredit{}).Select("IFNULL(sum(credit), 0) as totalCredit").Find(&totalCredit)
+	c.JSON(http.StatusOK, gin.H{
+		"disputeGameProxy": "0x05F9613aDB30026FFd634f38e5C4dFd30a197Fa1",
+		"totalGames":       gameCount,
+		"totalCredit":      totalCredit,
+	})
+}
