@@ -4,10 +4,12 @@ import (
 	"context"
 	"encoding/hex"
 	"fmt"
+	"github.com/ethereum-optimism/optimism/op-challenger/game/fault/types"
 	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/stretchr/testify/require"
 	"math/big"
@@ -62,4 +64,36 @@ func TestAllCredit(t *testing.T) {
 	newDisputeGame, err := NewDisputeGame(common.HexToAddress(disputeGame), l1rpc)
 	credit, err := newDisputeGame.Credit(&bind.CallOpts{}, common.HexToAddress("0x49277EE36A024120Ee218127354c4a3591dc90A9"))
 	println(credit.Int64())
+}
+
+func TestBlockRange(t *testing.T) {
+	l1rpc, err := ethclient.Dial("https://eth-sepolia.g.alchemy.com/v2/PNunSRFo0FWRJMu5yrwBd6jF7G78YHrv")
+	require.NoError(t, err)
+	disputeGame := "0xc9cb084c3ad4e36b719b60649f99ea9f13bb45b7"
+	newDisputeGame, err := NewDisputeGame(common.HexToAddress(disputeGame), l1rpc)
+	////startingBlockNumber  prestateBlock
+	////l2BlockNumber        poststateBlock
+	//
+	prestateBlock, err := newDisputeGame.StartingBlockNumber(&bind.CallOpts{})
+	require.NoError(t, err)
+	poststateBlock, err := newDisputeGame.L2BlockNumber(&bind.CallOpts{})
+	require.NoError(t, err)
+	splitDepth, err := newDisputeGame.SplitDepth(&bind.CallOpts{})
+	require.NoError(t, err)
+	splitDepths := types.Depth(splitDepth.Uint64())
+
+	pos := types.NewPositionFromGIndex(big.NewInt(2))
+	traceIndex := pos.TraceIndex(splitDepths)
+	fmt.Printf("traceIndex:%s\n", traceIndex)
+	if !traceIndex.IsUint64() {
+		fmt.Errorf("err:%s", traceIndex)
+	}
+	outputBlock := traceIndex.Uint64() + prestateBlock.Uint64() + 1
+	if outputBlock > poststateBlock.Uint64() {
+		outputBlock = poststateBlock.Uint64()
+	}
+	fmt.Printf("outputblock:%d\n", outputBlock)
+
+	fmt.Printf("blockhash:%s", hexutil.Uint64(outputBlock))
+
 }

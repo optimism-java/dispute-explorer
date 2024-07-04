@@ -82,7 +82,7 @@ func (h DisputeGameHandler) GetCreditDetails(c *gin.Context) {
 
 func (h DisputeGameHandler) GetOverview(c *gin.Context) {
 	var gameCount int64
-	var totalCredit int64
+	var totalCredit string
 	h.DB.Model(&schema.DisputeGame{}).Count(&gameCount)
 	h.DB.Model(&schema.GameCredit{}).Select("IFNULL(sum(credit), 0) as totalCredit").Find(&totalCredit)
 	c.JSON(http.StatusOK, gin.H{
