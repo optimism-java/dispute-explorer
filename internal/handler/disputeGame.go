@@ -7,6 +7,8 @@ import (
 	"math/big"
 	"strings"
 
+	"github.com/ethereum-optimism/optimism/op-challenger/game/fault/types"
+
 	"github.com/pkg/errors"
 
 	"github.com/ethereum/go-ethereum/common"
@@ -62,9 +64,28 @@ func (r *RetryDisputeGameClient) ProcessDisputeGameMove(ctx context.Context, evt
 	index := disputeGameMove.ParentIndex.Add(disputeGameMove.ParentIndex, big.NewInt(1))
 	data, err := r.Client.RetryClaimData(ctx, &bind.CallOpts{}, index)
 	if err != nil {
-		return fmt.Errorf("[processDisputeGameMove] contract: %s, index: %d move event get claim data err: %s", evt.ContractAddress, index, err)
+		return fmt.Errorf("[processDisputeGameMove] contract: %s, index: %d move event get claim data err: %s", evt.ContractAddress, index, errors.WithStack(err))
 	}
 
+	pos := types.NewPositionFromGIndex(data.Position)
+	splitDepth, err := r.Client.RetrySplitDepth(ctx, &bind.CallOpts{})
+	if err != nil {
+		return fmt.Errorf("[processDisputeGameMove] contract: %s, get splitDepth error: %s", evt.ContractAddress, errors.WithStack(err))
+	}
+	splitDepths := types.Depth(splitDepth.Uint64())
+	poststateBlock, err := r.Client.RetryL2BlockNumber(ctx, &bind.CallOpts{})
+	if err != nil {
+		return fmt.Errorf("[processDisputeGameMove] GET game poststateBlock err: %s", err)
+	}
+
+	prestateBlock, err := r.Client.RetryStartingBlockNumber(ctx, &bind.CallOpts{})
+	if err != nil {
+		return fmt.Errorf("[processDisputeGameMove] GET prestateBlock err: %s", err)
+	}
+	outputblock, err := claimedBlockNumber(pos, splitDepths, prestateBlock.Uint64(), poststateBlock.Uint64())
+	if err != nil {
+		return fmt.Errorf("[processDisputeGameMove] GET outputblock err: %s", err)
+	}
 	claimData := &schema.GameClaimData{
 		GameContract: evt.ContractAddress,
 		DataIndex:    index.Int64(),
@@ -75,6 +96,7 @@ func (r *RetryDisputeGameClient) ProcessDisputeGameMove(ctx context.Context, evt
 		Claim:        hex.EncodeToString(data.Claim[:]),
 		Position:     data.Position.Uint64(),
 		Clock:        data.Clock.Int64(),
+		OutputBlock:  outputblock,
 	}
 	err = r.DB.Transaction(func(tx *gorm.DB) error {
 		err = tx.Save(claimData).Error
@@ -152,6 +174,7 @@ func (r *RetryDisputeGameClient) addDisputeGame(ctx context.Context, evt *schema
 		Claim:        hex.EncodeToString(claimData.Claim[:]),
 		Position:     claimData.Position.Uint64(),
 		Clock:        claimData.Clock.Int64(),
+		OutputBlock:  l2Block.Uint64(),
 	}
 
 	game := &schema.DisputeGame{
@@ -262,4 +285,16 @@ func (r *RetryDisputeGameClient) GetAllAddress(disputeGame *common.Address) (map
 		}
 	}
 	return addresses, nil
+}
+
+func claimedBlockNumber(pos types.Position, gameDepth types.Depth, prestateBlock, poststateBlock uint64) (uint64, error) {
+	traceIndex := pos.TraceIndex(gameDepth)
+	if !traceIndex.IsUint64() {
+		return 0, fmt.Errorf("trace index is greater than max uint64: %v", traceIndex)
+	}
+	outputBlock := traceIndex.Uint64() + prestateBlock + 1
+	if outputBlock > poststateBlock {
+		outputBlock = poststateBlock
+	}
+	return outputBlock, nil
 }

@@ -113,6 +113,7 @@ CREATE TABLE IF NOT EXISTS game_claim_data
     `claim`             varchar(64)  NOT NULL,
     `position`          bigint       NOT NULL,
     `clock`             bigint       NOT NULL,
+    `output_block`      bigint       NOT NULL,
     PRIMARY KEY (`id`),
     KEY `credit_index` (`game_contract`, `data_index`)
 );

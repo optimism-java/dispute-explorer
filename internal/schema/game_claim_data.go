@@ -11,6 +11,7 @@ type GameClaimData struct {
 	Claim        string `json:"claim"`
 	Position     uint64 `json:"position"`
 	Clock        int64  `json:"clock"`
+	OutputBlock  uint64 `json:"output_block"`
 }
 
 func (GameClaimData) TableName() string {

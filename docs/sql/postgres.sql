@@ -92,7 +92,8 @@ CREATE TABLE IF NOT EXISTS game_claim_data
     bond              bigint       NOT NULL,
     claim             varchar(64)  NOT NULL,
     position          bigint       NOT NULL,
-    clock             bigint       NOT NULL
+    clock             bigint       NOT NULL,
+    output_block      bigint       NOT NUll,
 );
 CREATE INDEX if not exists dispute_game_data_index ON game_claim_data (game_contract, data_index);
 
