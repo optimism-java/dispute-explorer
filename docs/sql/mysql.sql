@@ -130,6 +130,6 @@ CREATE TABLE IF NOT EXISTS game_credit
     `updated_at`        datetime    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     `game_contract`     varchar(42) NOT NULL,
     `address`           varchar(64) NOT NULL,
-    `credit`            numeric     NOT NULL,
+    `credit`            bigint      NOT NULL,
     PRIMARY KEY (`id`)
 )
