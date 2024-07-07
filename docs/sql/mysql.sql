@@ -101,11 +101,11 @@ CREATE TABLE IF NOT EXISTS dispute_game
 DROP TABLE IF EXISTS game_claim_data;
 CREATE TABLE IF NOT EXISTS game_claim_data
 (
-    `id`                bigint      NOT NULL AUTO_INCREMENT,
-    `created_at`        datetime    NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    `updated_at`        datetime    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    `game_contract`     varchar(42) NOT NULL,
-    `data_index`        int         NOT NULL,
+    `id`                bigint       NOT NULL AUTO_INCREMENT,
+    `created_at`        datetime     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `updated_at`        datetime     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    `game_contract`     varchar(42)  NOT NULL,
+    `data_index`        int          NOT NULL,
     `parent_index`      bigint       NOT NULL,
     `countered_by`      varchar(42)  NOT NULL,
     `claimant`          varchar(64)  NOT NULL,
@@ -114,6 +114,7 @@ CREATE TABLE IF NOT EXISTS game_claim_data
     `position`          bigint       NOT NULL,
     `clock`             bigint       NOT NULL,
     `output_block`      bigint       NOT NULL,
+    `event_id`          bigint       NOT NULL,
     PRIMARY KEY (`id`),
     KEY `credit_index` (`game_contract`, `data_index`)
 );

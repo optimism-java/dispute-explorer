@@ -86,6 +86,11 @@ type Overview struct {
 	TotalCredit      string `json:"totalCredit"`
 }
 
+type AmountPerDay struct {
+	Amount string `json:"amount"`
+	Date   string `json:"date"`
+}
+
 func (h DisputeGameHandler) GetOverview(c *gin.Context) {
 	var gameCount int64
 	var totalCredit string
@@ -96,7 +101,23 @@ func (h DisputeGameHandler) GetOverview(c *gin.Context) {
 		TotalGames:       gameCount,
 		TotalCredit:      totalCredit,
 	}
+
 	c.JSON(http.StatusOK, gin.H{
 		"data": overview,
+	})
+}
+
+func (h DisputeGameHandler) GetAmountPerDays(c *gin.Context) {
+	days := cast.ToInt(c.Query("days"))
+	res := make([]AmountPerDay, 0)
+	if days == 0 || days > 100 {
+		days = 15
+	}
+	h.DB.Raw(" select sum(a.bond) amount, DATE_FORMAT(FROM_UNIXTIME(se.block_time),'%Y-%m-%d') date "+
+		" from game_claim_data a left join sync_events se on a.event_id = se.id "+
+		" where DATE_FORMAT(FROM_UNIXTIME(se.block_time),'%Y-%m-%d') >= DATE_FORMAT((NOW() - INTERVAL ? DAY),'%Y-%m-%d') "+
+		" group by date", days).Scan(&res)
+	c.JSON(http.StatusOK, gin.H{
+		"data": res,
 	})
 }

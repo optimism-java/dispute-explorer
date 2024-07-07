@@ -97,6 +97,7 @@ func (r *RetryDisputeGameClient) ProcessDisputeGameMove(ctx context.Context, evt
 		Position:     data.Position.Uint64(),
 		Clock:        data.Clock.Int64(),
 		OutputBlock:  outputblock,
+		EventID:      evt.ID,
 	}
 	err = r.DB.Transaction(func(tx *gorm.DB) error {
 		err = tx.Save(claimData).Error
@@ -175,6 +176,7 @@ func (r *RetryDisputeGameClient) addDisputeGame(ctx context.Context, evt *schema
 		Position:     claimData.Position.Uint64(),
 		Clock:        claimData.Clock.Int64(),
 		OutputBlock:  l2Block.Uint64(),
+		EventID:      evt.ID,
 	}
 
 	game := &schema.DisputeGame{

@@ -94,6 +94,7 @@ CREATE TABLE IF NOT EXISTS game_claim_data
     position          bigint       NOT NULL,
     clock             bigint       NOT NULL,
     output_block      bigint       NOT NUll,
+    event_id          bigint       NOT NULL
 );
 CREATE INDEX if not exists dispute_game_data_index ON game_claim_data (game_contract, data_index);
 
