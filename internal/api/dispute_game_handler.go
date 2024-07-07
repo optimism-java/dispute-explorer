@@ -80,14 +80,23 @@ func (h DisputeGameHandler) GetCreditDetails(c *gin.Context) {
 	})
 }
 
+type Overview struct {
+	DisputeGameProxy string `json:"disputeGameProxy"`
+	TotalGames       int64  `json:"totalGames"`
+	TotalCredit      string `json:"totalCredit"`
+}
+
 func (h DisputeGameHandler) GetOverview(c *gin.Context) {
 	var gameCount int64
 	var totalCredit string
 	h.DB.Model(&schema.DisputeGame{}).Count(&gameCount)
 	h.DB.Model(&schema.GameCredit{}).Select("IFNULL(sum(credit), 0) as totalCredit").Find(&totalCredit)
+	overview := &Overview{
+		DisputeGameProxy: "0x05F9613aDB30026FFd634f38e5C4dFd30a197Fa1",
+		TotalGames:       gameCount,
+		TotalCredit:      totalCredit,
+	}
 	c.JSON(http.StatusOK, gin.H{
-		"disputeGameProxy": "0x05F9613aDB30026FFd634f38e5C4dFd30a197Fa1",
-		"totalGames":       gameCount,
-		"totalCredit":      totalCredit,
+		"data": overview,
 	})
 }
