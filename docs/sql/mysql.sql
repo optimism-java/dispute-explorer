@@ -132,4 +132,19 @@ CREATE TABLE IF NOT EXISTS game_credit
     `address`           varchar(64) NOT NULL,
     `credit`            bigint      NOT NULL,
     PRIMARY KEY (`id`)
+);
+
+-- ----------------------------
+-- Table structure for game_credit
+-- ----------------------------
+DROP TABLE IF EXISTS game_lost_bond;
+CREATE TABLE IF NOT EXISTS game_lost_bond
+(
+    `id`                bigint      NOT NULL AUTO_INCREMENT,
+    `created_at`        datetime    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `updated_at`        datetime    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    `game_contract`     varchar(42) NOT NULL,
+    `address`           varchar(64) NOT NULL,
+    `bond`              bigint      NOT NULL,
+    PRIMARY KEY (`id`)
 )

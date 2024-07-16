@@ -9,6 +9,7 @@ require (
 	github.com/ethereum-optimism/optimism v1.7.7
 	github.com/ethereum/go-ethereum v1.13.15
 	github.com/gin-gonic/gin v1.10.0
+	github.com/go-gormigrate/gormigrate/v2 v2.1.2
 	github.com/pkg/errors v0.9.1
 	github.com/spf13/cast v1.6.0
 	github.com/stretchr/testify v1.9.0

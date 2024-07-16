@@ -8,6 +8,7 @@ import (
 	"github.com/optimism-java/dispute-explorer/internal/handler"
 	"github.com/optimism-java/dispute-explorer/internal/svc"
 	"github.com/optimism-java/dispute-explorer/internal/types"
+	"github.com/optimism-java/dispute-explorer/migration/migrate"
 	"github.com/optimism-java/dispute-explorer/pkg/log"
 )
 
@@ -17,6 +18,7 @@ func main() {
 	log.Init(cfg.LogLevel, cfg.LogFormat)
 	log.Infof("config: %v\n", cfg)
 	sCtx := svc.NewServiceContext(ctx, cfg)
+	migrate.Migrate(sCtx.DB)
 	handler.Run(sCtx)
 	log.Info("listener running...\n")
 	router := gin.Default()
