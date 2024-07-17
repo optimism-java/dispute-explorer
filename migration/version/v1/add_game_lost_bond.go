@@ -18,6 +18,6 @@ var AddGameLostBondTable = gormigrate.Migration{
 		return tx.AutoMigrate(&GameLostBond{})
 	},
 	Rollback: func(db *gorm.DB) error {
-		return db.Migrator().DropTable("game_lost_bond")
+		return db.Migrator().DropTable("game_lost_bonds")
 	},
 }

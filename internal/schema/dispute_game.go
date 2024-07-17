@@ -26,6 +26,7 @@ type DisputeGame struct {
 	L2BlockNumber   int64  `json:"l_2_block_number"`
 	Status          uint8  `json:"status"`
 	Computed        bool   `json:"computed"`
+	CalculateLost   bool   `json:"calculate_lost"`
 }
 
 func (DisputeGame) TableName() string {
