@@ -39,7 +39,7 @@ func CalculateLostBond(ctx *svc.ServiceContext) {
 				am := cast.ToInt64(amount)
 				for _, claimData := range claimDatas {
 					if address == claimData.Claimant {
-						am = am - cast.ToInt64(claimData.Bond)
+						am -= cast.ToInt64(claimData.Bond)
 					}
 				}
 				if am < 0 {
