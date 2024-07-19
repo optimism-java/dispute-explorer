@@ -81,9 +81,12 @@ func (h DisputeGameHandler) GetCreditDetails(c *gin.Context) {
 }
 
 type Overview struct {
-	DisputeGameProxy string `json:"disputeGameProxy"`
-	TotalGames       int64  `json:"totalGames"`
-	TotalCredit      string `json:"totalCredit"`
+	DisputeGameProxy         string `json:"disputeGameProxy"`
+	TotalGames               int64  `json:"totalGames"`
+	TotalCredit              string `json:"totalCredit"`
+	InProgressGamesCount     int64  `json:"inProgressGamesCount"`
+	ChallengerWinGamesCount  int64  `json:"challengerWinGamesCount"`
+	DefenderWinWinGamesCount int64  `json:"defenderWinWinGamesCount"`
 }
 
 type AmountPerDay struct {
@@ -93,13 +96,22 @@ type AmountPerDay struct {
 
 func (h DisputeGameHandler) GetOverview(c *gin.Context) {
 	var gameCount int64
+	var inProgressGamesCount int64
+	var challengerWinGamesCount int64
+	var defenderWinWinGamesCount int64
 	var totalCredit string
 	h.DB.Model(&schema.DisputeGame{}).Count(&gameCount)
+	h.DB.Model(&schema.DisputeGame{}).Where("status=?", 0).Count(&inProgressGamesCount)
+	h.DB.Model(&schema.DisputeGame{}).Where("status=?", 1).Count(&challengerWinGamesCount)
+	h.DB.Model(&schema.DisputeGame{}).Where("status=?", 2).Count(&defenderWinWinGamesCount)
 	h.DB.Model(&schema.GameCredit{}).Select("IFNULL(sum(credit), 0) as totalCredit").Find(&totalCredit)
 	overview := &Overview{
-		DisputeGameProxy: "0x05F9613aDB30026FFd634f38e5C4dFd30a197Fa1",
-		TotalGames:       gameCount,
-		TotalCredit:      totalCredit,
+		DisputeGameProxy:         "0x05F9613aDB30026FFd634f38e5C4dFd30a197Fa1",
+		TotalGames:               gameCount,
+		TotalCredit:              totalCredit,
+		InProgressGamesCount:     inProgressGamesCount,
+		ChallengerWinGamesCount:  challengerWinGamesCount,
+		DefenderWinWinGamesCount: defenderWinWinGamesCount,
 	}
 
 	c.JSON(http.StatusOK, gin.H{
@@ -117,6 +129,36 @@ func (h DisputeGameHandler) GetAmountPerDays(c *gin.Context) {
 		" from game_claim_data a left join sync_events se on a.event_id = se.id "+
 		" where DATE_FORMAT(FROM_UNIXTIME(se.block_time),'%Y-%m-%d') >= DATE_FORMAT((NOW() - INTERVAL ? DAY),'%Y-%m-%d') "+
 		" group by date", days).Scan(&res)
+	c.JSON(http.StatusOK, gin.H{
+		"data": res,
+	})
+}
+
+func (h DisputeGameHandler) GetBondInProgressPerDays(c *gin.Context) {
+	res := make([]AmountPerDay, 0)
+	h.DB.Raw(" select sum(a.bond) amount, DATE_FORMAT(FROM_UNIXTIME(se.block_time),'%Y-%m-%d') date " +
+		" from game_claim_data a left join sync_events se on a.event_id = se.id" +
+		" left join dispute_game dg on a.game_contract = dg.game_contract where dg.status=0 group by date order by date desc").Scan(&res)
+	c.JSON(http.StatusOK, gin.H{
+		"data": res,
+	})
+}
+
+type CountGames struct {
+	Amount string `json:"amount"`
+	Date   string `json:"date"`
+	Status string `json:"status"`
+}
+
+func (h DisputeGameHandler) GetCountDisputeGameGroupByStatus(c *gin.Context) {
+	days := cast.ToInt(c.Query("days"))
+	res := make([]CountGames, 0)
+	if days == 0 || days > 100 {
+		days = 15
+	}
+	h.DB.Raw("select count(1) count, DATE_FORMAT(FROM_UNIXTIME(dg.block_time),'%Y-%m-%d') date, status "+
+		" from dispute_game dg where DATE_FORMAT(FROM_UNIXTIME(dg.block_time),'%Y-%m-%d') >= "+
+		" DATE_FORMAT((NOW() - INTERVAL ? DAY),'%Y-%m-%d') group by date, status order by date desc", days).Scan(&res)
 	c.JSON(http.StatusOK, gin.H{
 		"data": res,
 	})
