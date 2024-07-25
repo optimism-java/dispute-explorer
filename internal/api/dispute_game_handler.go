@@ -21,6 +21,15 @@ func NewDisputeGameHandler(db *gorm.DB) *DisputeGameHandler {
 	}
 }
 
+// @Summary	Get dispute games
+// @schemes
+// @Description	Get all dispute game by page
+// @Accept			json
+// @Produce		json
+// @Param			page	query	int	false	"page num"
+// @Param			size	query	int	false	"page size"
+// @Success		200
+// @Router			/disputegames  [get]
 func (h DisputeGameHandler) ListDisputeGames(c *gin.Context) {
 	games := make([]schema.DisputeGame, 0)
 	p := util.NewPagination(c)
@@ -37,6 +46,14 @@ func (h DisputeGameHandler) ListDisputeGames(c *gin.Context) {
 	})
 }
 
+// @Summary	Get claim data
+// @schemes
+// @Description	Get all claim data by address
+// @Accept			json
+// @Produce		json
+// @Param			address	path	int	false	"dispute game address"
+// @Success		200
+// @Router			/disputegames/:address/claimdatas  [get]
 func (h DisputeGameHandler) GetClaimData(c *gin.Context) {
 	address := c.Param("address")
 	claimData := make([]schema.GameClaimData, 0)
@@ -51,6 +68,14 @@ type CreditRank struct {
 	Address string `json:"address"`
 }
 
+// @Summary	Get credit rank
+// @schemes
+// @Description	Get credit rank
+// @Accept			json
+// @Produce		json
+// @Param			limit	query	int	false	"rank length limit number"
+// @Success		200
+// @Router			/disputegames/credit/rank  [get]
 func (h DisputeGameHandler) GetCreditRank(c *gin.Context) {
 	limit := cast.ToInt(c.Query("limit"))
 	if limit == 0 || limit > 100 {
@@ -63,6 +88,14 @@ func (h DisputeGameHandler) GetCreditRank(c *gin.Context) {
 	})
 }
 
+// @Summary	Get credit details
+// @schemes
+// @Description	Get credit details
+// @Accept			json
+// @Produce		json
+// @Param			address	path	int	false	"account address"
+// @Success		200
+// @Router			/disputegames/:address/credit [get]
 func (h DisputeGameHandler) GetCreditDetails(c *gin.Context) {
 	address := c.Param("address")
 	games := make([]schema.GameCredit, 0)
@@ -94,6 +127,13 @@ type AmountPerDay struct {
 	Date   string `json:"date"`
 }
 
+// @Summary	overview
+// @schemes
+// @Description	Get overview
+// @Accept			json
+// @Produce		json
+// @Success		200	{object}	Overview
+// @Router			/disputegames/overview [get]
 func (h DisputeGameHandler) GetOverview(c *gin.Context) {
 	var gameCount int64
 	var inProgressGamesCount int64
@@ -119,6 +159,14 @@ func (h DisputeGameHandler) GetOverview(c *gin.Context) {
 	})
 }
 
+// @Summary	GetAmountPerDays
+// @schemes
+// @Description	Get amount per day
+// @Accept			json
+// @Produce		json
+// @Param			days	query		int	false	"today before ? days"
+// @Success		200		{object}	[]AmountPerDay
+// @Router			/disputegames/overview/amountperdays [get]
 func (h DisputeGameHandler) GetAmountPerDays(c *gin.Context) {
 	days := cast.ToInt(c.Query("days"))
 	res := make([]AmountPerDay, 0)
@@ -134,6 +182,13 @@ func (h DisputeGameHandler) GetAmountPerDays(c *gin.Context) {
 	})
 }
 
+// @Summary	GetBondInProgressPerDays
+// @schemes
+// @Description	Get bond in progress per days
+// @Accept			json
+// @Produce		json
+// @Success		200	{object}	[]AmountPerDay
+// @Router			/disputegames/statistics/bond/inprogress [get]
 func (h DisputeGameHandler) GetBondInProgressPerDays(c *gin.Context) {
 	res := make([]AmountPerDay, 0)
 	h.DB.Raw(" select sum(a.bond) amount, DATE_FORMAT(FROM_UNIXTIME(se.block_time),'%Y-%m-%d') date " +
@@ -150,6 +205,14 @@ type CountGames struct {
 	Status string `json:"status"`
 }
 
+// @Summary	GetCountDisputeGameGroupByStatus
+// @schemes
+// @Description	Get dispute games count group by status and per day
+// @Accept			json
+// @Produce		json
+// @Param			days	query		int	false	"today before ? days"
+// @Success		200		{object}	[]AmountPerDay
+// @Router			/disputegames/count [get]
 func (h DisputeGameHandler) GetCountDisputeGameGroupByStatus(c *gin.Context) {
 	days := cast.ToInt(c.Query("days"))
 	res := make([]CountGames, 0)

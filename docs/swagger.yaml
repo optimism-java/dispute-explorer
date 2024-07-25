@@ -1,0 +1,163 @@
+definitions:
+  api.AmountPerDay:
+    properties:
+      amount:
+        type: string
+      date:
+        type: string
+    type: object
+  api.Overview:
+    properties:
+      challengerWinGamesCount:
+        type: integer
+      defenderWinWinGamesCount:
+        type: integer
+      disputeGameProxy:
+        type: string
+      inProgressGamesCount:
+        type: integer
+      totalCredit:
+        type: string
+      totalGames:
+        type: integer
+    type: object
+info:
+  contact: {}
+paths:
+  /disputegames:
+    get:
+      consumes:
+      - application/json
+      description: Get all dispute game by page
+      parameters:
+      - description: page num
+        in: query
+        name: page
+        type: integer
+      - description: page size
+        in: query
+        name: size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Get dispute games
+  /disputegames/:address/claimdatas:
+    get:
+      consumes:
+      - application/json
+      description: Get all claim data by address
+      parameters:
+      - description: dispute game address
+        in: path
+        name: address
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Get claim data
+  /disputegames/:address/credit:
+    get:
+      consumes:
+      - application/json
+      description: Get credit details
+      parameters:
+      - description: account address
+        in: path
+        name: address
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Get credit details
+  /disputegames/count:
+    get:
+      consumes:
+      - application/json
+      description: Get dispute games count group by status and per day
+      parameters:
+      - description: today before ? days
+        in: query
+        name: days
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/api.AmountPerDay'
+            type: array
+      summary: GetCountDisputeGameGroupByStatus
+  /disputegames/credit/rank:
+    get:
+      consumes:
+      - application/json
+      description: Get credit rank
+      parameters:
+      - description: rank length limit number
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Get credit rank
+  /disputegames/overview:
+    get:
+      consumes:
+      - application/json
+      description: Get overview
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api.Overview'
+      summary: overview
+  /disputegames/overview/amountperdays:
+    get:
+      consumes:
+      - application/json
+      description: Get amount per day
+      parameters:
+      - description: today before ? days
+        in: query
+        name: days
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/api.AmountPerDay'
+            type: array
+      summary: GetAmountPerDays
+  /disputegames/statistics/bond/inprogress:
+    get:
+      consumes:
+      - application/json
+      description: Get bond in progress per days
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/api.AmountPerDay'
+            type: array
+      summary: GetBondInProgressPerDays
+swagger: "2.0"

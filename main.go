@@ -4,12 +4,15 @@ import (
 	"context"
 
 	"github.com/gin-gonic/gin"
+	"github.com/optimism-java/dispute-explorer/docs"
 	"github.com/optimism-java/dispute-explorer/internal/api"
 	"github.com/optimism-java/dispute-explorer/internal/handler"
 	"github.com/optimism-java/dispute-explorer/internal/svc"
 	"github.com/optimism-java/dispute-explorer/internal/types"
 	"github.com/optimism-java/dispute-explorer/migration/migrate"
 	"github.com/optimism-java/dispute-explorer/pkg/log"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 func main() {
@@ -23,6 +26,9 @@ func main() {
 	log.Info("listener running...\n")
 	router := gin.Default()
 	disputeGameHandler := api.NewDisputeGameHandler(sCtx.DB)
+	docs.SwaggerInfo.Title = "Swagger Example API"
+	docs.SwaggerInfo.Description = "This is a dispute-explorer server."
+	docs.SwaggerInfo.BasePath = "/"
 
 	router.GET("/disputegames", disputeGameHandler.ListDisputeGames)
 	router.GET("/disputegames/:address/claimdatas", disputeGameHandler.GetClaimData)
@@ -32,6 +38,8 @@ func main() {
 	router.GET("/disputegames/overview/amountperdays", disputeGameHandler.GetAmountPerDays)
 	router.GET("/disputegames/statistics/bond/inprogress", disputeGameHandler.GetBondInProgressPerDays)
 	router.GET("/disputegames/count", disputeGameHandler.GetCountDisputeGameGroupByStatus)
+
+	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	err := router.Run()
 	if err != nil {

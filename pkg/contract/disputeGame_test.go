@@ -82,7 +82,7 @@ func TestBlockRange(t *testing.T) {
 	require.NoError(t, err)
 	splitDepths := types.Depth(splitDepth.Uint64())
 
-	pos := types.NewPositionFromGIndex(big.NewInt(2))
+	pos := types.NewPositionFromGIndex(big.NewInt(1))
 	traceIndex := pos.TraceIndex(splitDepths)
 	fmt.Printf("traceIndex:%s\n", traceIndex)
 	if !traceIndex.IsUint64() {
@@ -93,7 +93,13 @@ func TestBlockRange(t *testing.T) {
 		outputBlock = poststateBlock.Uint64()
 	}
 	fmt.Printf("outputblock:%d\n", outputBlock)
-
 	fmt.Printf("blockhash:%s", hexutil.Uint64(outputBlock))
-
+	//outputRoot 0xc58adb6387728df32318772a7beefa386072b4347e39f64a753bfd82c8acdb07
+	//func (o *OutputTraceProvider) outputAtBlock(ctx context.Context, block uint64) (common.Hash, error) {
+	//	output, err := o.rollupProvider.OutputAtBlock(ctx, block)
+	//	if err != nil {
+	//		return common.Hash{}, fmt.Errorf("failed to fetch output at block %v: %w", block, err)
+	//	}
+	//	return common.Hash(output.OutputRoot), nil
+	//}
 }
