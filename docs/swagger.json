@@ -109,7 +109,7 @@
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/api.AmountPerDay"
+                                "$ref": "#/definitions/api.CountGames"
                             }
                         }
                     }
@@ -224,6 +224,20 @@
                     "type": "string"
                 },
                 "date": {
+                    "type": "string"
+                }
+            }
+        },
+        "api.CountGames": {
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "type": "string"
+                },
+                "date": {
+                    "type": "string"
+                },
+                "status": {
                     "type": "string"
                 }
             }

@@ -211,7 +211,7 @@ type CountGames struct {
 // @Accept			json
 // @Produce		json
 // @Param			days	query		int	false	"today before ? days"
-// @Success		200		{object}	[]AmountPerDay
+// @Success		200		{object}	[]CountGames
 // @Router			/disputegames/count [get]
 func (h DisputeGameHandler) GetCountDisputeGameGroupByStatus(c *gin.Context) {
 	days := cast.ToInt(c.Query("days"))

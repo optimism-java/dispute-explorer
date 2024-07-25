@@ -120,7 +120,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/api.AmountPerDay"
+                                "$ref": "#/definitions/api.CountGames"
                             }
                         }
                     }
@@ -235,6 +235,20 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "date": {
+                    "type": "string"
+                }
+            }
+        },
+        "api.CountGames": {
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "type": "string"
+                },
+                "date": {
+                    "type": "string"
+                },
+                "status": {
                     "type": "string"
                 }
             }
