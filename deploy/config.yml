@@ -57,6 +57,24 @@ sync:
       game_contract:
       address:
       credit:
+  - table: sync_events
+    index: gameevents
+    full: true
+    fields:
+      id:
+      sync_block_id:
+      blockchain:
+      block_time:
+      block_number:
+      block_hash:
+      block_log_indexed:
+      tx_index:
+      tx_hash:
+      event_name:
+      event_hash:
+      contract_address:
+      data:
+      status:
 
 
 

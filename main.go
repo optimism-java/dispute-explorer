@@ -38,6 +38,7 @@ func main() {
 	router.GET("/disputegames/overview/amountperday", disputeGameHandler.GetAmountPerDays)
 	router.GET("/disputegames/statistics/bond/inprogress", disputeGameHandler.GetBondInProgressPerDays)
 	router.GET("/disputegames/daylycount", disputeGameHandler.GetCountDisputeGameGroupByStatus)
+	router.GET("/disputegames/events", disputeGameHandler.ListGameEvents)
 
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 

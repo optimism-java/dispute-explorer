@@ -226,3 +226,19 @@ func (h DisputeGameHandler) GetCountDisputeGameGroupByStatus(c *gin.Context) {
 		"data": res,
 	})
 }
+
+func (h DisputeGameHandler) ListGameEvents(c *gin.Context) {
+	events := make([]schema.SyncEvent, 0)
+	p := util.NewPagination(c)
+	results := h.DB.Order("block_number desc").Find(&events)
+	totalRows := results.RowsAffected
+	results.Scopes(p.GormPaginate()).Find(&events)
+	totalPage := totalRows/p.Size + 1
+	c.JSON(http.StatusOK, gin.H{
+		"currentPage": p.Page,
+		"pageSize":    p.Size,
+		"totalCounts": totalRows,
+		"totalPage":   totalPage,
+		"records":     events,
+	})
+}
