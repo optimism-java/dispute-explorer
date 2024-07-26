@@ -12,10 +12,10 @@ source:
   database: dispute_explorer
 meilisearch:
   api_url: http://localhost:7700
-  api_key: 40185ac3f6804d9e0e08e158380b3f548b7c5b8a88bdb7b6608c82c0838a26d4
+  api_key: 6914dc950098e39609cafc9abbced1cd02d7509b54b7ad1cd18ced8cad01f9be
 sync:
   - table: dispute_game
-    index: disputegametest
+    index: disputegame
     plugins:
       - meilisync.plugin.Plugin
     full: true
@@ -35,7 +35,7 @@ sync:
       l2_block_number:
       status:
   - table: game_claim_data
-    index: gameclaimtest
+    index: gameclaim
     full: true
     fields:
       id:
@@ -50,7 +50,7 @@ sync:
       clock:
       output_block:
   - table: game_credit
-    index: gamecredittest
+    index: gamecredit
     full: true
     fields:
       id:
@@ -58,23 +58,9 @@ sync:
       address:
       credit:
   - table: sync_events
-    index: gameevents
+    index: syncevents
     full: true
-    fields:
-      id:
-      sync_block_id:
-      blockchain:
-      block_time:
-      block_number:
-      block_hash:
-      block_log_indexed:
-      tx_index:
-      tx_hash:
-      event_name:
-      event_hash:
-      contract_address:
-      data:
-      status:
+
 
 
 
