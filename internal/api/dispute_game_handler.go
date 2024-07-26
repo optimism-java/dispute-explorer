@@ -227,6 +227,14 @@ func (h DisputeGameHandler) GetCountDisputeGameGroupByStatus(c *gin.Context) {
 	})
 }
 
+// @Summary	ListGameEvents
+// @schemes
+// @Description	Get game events
+// @Accept			json
+// @Produce		json
+// @Param			days	query		int	false	"today before ? days"
+// @Success		200
+// @Router			/disputegames/events [get]
 func (h DisputeGameHandler) ListGameEvents(c *gin.Context) {
 	events := make([]schema.SyncEvent, 0)
 	p := util.NewPagination(c)
