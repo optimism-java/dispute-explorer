@@ -33,7 +33,7 @@ type SyncEvent struct {
 	EventName       string `json:"event_name" gorm:"type:varchar(32);notnull"`
 	EventHash       string `json:"event_hash" gorm:"type:varchar(66);notnull"`
 	ContractAddress string `json:"contract_address" gorm:"type:varchar(42);notnull"`
-	Data            string `json:"data" gorm:"type:json;notnull"`
+	Data            string `json:"data" gorm:"type:varchar(256);notnull"`
 	Status          string `json:"status" gorm:"type:varchar(32);notnull;index:status_index"`
 	RetryCount      int64  `json:"retry_count" gorm:"type:bigint;notnull"`
 }
