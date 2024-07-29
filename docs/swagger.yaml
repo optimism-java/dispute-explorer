@@ -121,6 +121,22 @@ paths:
         "200":
           description: OK
       summary: Get credit rank
+  /disputegames/events:
+    get:
+      consumes:
+      - application/json
+      description: Get game events
+      parameters:
+      - description: today before ? days
+        in: query
+        name: days
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: ListGameEvents
   /disputegames/overview:
     get:
       consumes:

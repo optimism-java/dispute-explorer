@@ -152,6 +152,31 @@ const docTemplate = `{
                 }
             }
         },
+        "/disputegames/events": {
+            "get": {
+                "description": "Get game events",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "ListGameEvents",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "today before ? days",
+                        "name": "days",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
         "/disputegames/overview": {
             "get": {
                 "description": "Get overview",
