@@ -2,28 +2,27 @@ version: "3"
 
 services:
 
-  postgres:
-    container_name: postgres-game
-    image: postgres:latest
+  mysql:
+    container_name: mysql
+    image: mysql:8.0.28
     environment:
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_USER=postgres
-      - POSTGRES_DB=postgres
-      - PGDATA=/var/lib/postgresql/data/pgdata
+      MYSQL_ROOT_PASSWORD: "root"
     ports:
-      - "5435:5432"
+      - "3367:3306"
     volumes:
-      - ./pg-data:/var/lib/postgresql/data
+      - ./mysql/datadir:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
 
   node1:
     container_name: dispute-explorer-backend
-    image: ghcr.io/optimism-java/dispute-explorer:sha-0e9542b
+    image: ghcr.io/optimism-java/dispute-explorer:sha-8918beb
+    restart: on-failure
     depends_on:
-      - postgres
+      - mysql
     environment:
       LOG_LEVEL: "info"
       LOG_FORMAT: "console"
-      MYSQL_DATA_SOURCE: "root:root(127.0.0.1:3366)/dispute_explorer?charset=utf8mb4&parseTime=True&loc=Local&multiStatements=true"
+      MYSQL_DATA_SOURCE: "root:root@tcp(127.0.0.1:3367)/dispute_explorer?charset=utf8mb4&parseTime=True&loc=Local&multiStatements=true"
       MYSQL_MAX_IDLE_CONNS: "10"
       MYSQL_MAX_OPEN_CONNS: "20"
       MYSQL_CONN_MAX_LIFETIME: "3600"
@@ -37,6 +36,9 @@ services:
   meiliSearch:
     container_name: meilisearch
     image: getmeili/meilisearch:v1.8
+    depends_on:
+      - mysql
+      - node1
     environment:
       - MEILI_MASTER_KEY=123456
     ports:
@@ -47,16 +49,12 @@ services:
   meiliSync:
     platform: linux/x86_64
     image: long2ice/meilisync:sha-fc1877d
+    depends_on:
+      - mysql
+      - node1
+      - meiliSearch
     volumes:
       - ./config.yml:/meilisync/config.yml
     network_mode: host
 
-  mysql1:
-    container_name: mysql1
-    image: mysql:8.0.28
-    environment:
-      MYSQL_ROOT_PASSWORD: "root"
-    ports:
-      - "3366:3306"
-    volumes:
-      - ./mysql1/datadir:/var/lib/mysql
+

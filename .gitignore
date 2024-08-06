@@ -26,4 +26,5 @@ deploy/pg-data
 mysql1
 meili_data
 postgres
+mysql
 
