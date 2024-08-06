@@ -42,7 +42,7 @@ func main() {
 
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
-	err := router.Run()
+	err := router.Run(":" + cfg.APIPort)
 	if err != nil {
 		log.Errorf("start error %s", err)
 		return
