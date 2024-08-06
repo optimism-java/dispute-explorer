@@ -19,18 +19,20 @@ services:
     restart: on-failure
     depends_on:
       - mysql
-    environment:
-      LOG_LEVEL: "info"
-      LOG_FORMAT: "console"
-      MYSQL_DATA_SOURCE: "root:root@tcp(127.0.0.1:3367)/dispute_explorer?charset=utf8mb4&parseTime=True&loc=Local&multiStatements=true"
-      MYSQL_MAX_IDLE_CONNS: "10"
-      MYSQL_MAX_OPEN_CONNS: "20"
-      MYSQL_CONN_MAX_LIFETIME: "3600"
-      BLOCKCHAIN: "sepolia"
-      L1_RPC_URL: "https://quaint-white-season.ethereum-sepolia.quiknode.pro/b5c30cbb548d8743f08dd175fe50e3e923259d30"
-      FROM_BLOCK_NUMBER: "6034337"
-      FROM_BLOCK_HASH: "0xafc3e42c5899591501d29649ffef0bfdec68f8d77e6d44ee00ef88cfb1a2f163"
-      DISPUTE_GAME_PROXY_CONTRACT: "0x05F9613aDB30026FFd634f38e5C4dFd30a197Fa1"
+    env_file:
+      - ../.env
+#    environment:
+#      LOG_LEVEL: "info"
+#      LOG_FORMAT: "console"
+#      MYSQL_DATA_SOURCE: "root:root@tcp(127.0.0.1:3367)/dispute_explorer?charset=utf8mb4&parseTime=True&loc=Local&multiStatements=true"
+#      MYSQL_MAX_IDLE_CONNS: "10"
+#      MYSQL_MAX_OPEN_CONNS: "20"
+#      MYSQL_CONN_MAX_LIFETIME: "3600"
+#      BLOCKCHAIN: "sepolia"
+#      L1_RPC_URL: "https://quaint-white-season.ethereum-sepolia.quiknode.pro/b5c30cbb548d8743f08dd175fe50e3e923259d30"
+#      FROM_BLOCK_NUMBER: "6034337"
+#      FROM_BLOCK_HASH: "0xafc3e42c5899591501d29649ffef0bfdec68f8d77e6d44ee00ef88cfb1a2f163"
+#      DISPUTE_GAME_PROXY_CONTRACT: "0x05F9613aDB30026FFd634f38e5C4dFd30a197Fa1"
     network_mode: host
 
   meiliSearch:
