@@ -5,6 +5,8 @@ import (
 	"encoding/hex"
 	"fmt"
 	"github.com/ethereum-optimism/optimism/op-challenger/game/fault/types"
+	"github.com/ethereum-optimism/optimism/op-service/client"
+	"github.com/ethereum-optimism/optimism/op-service/sources"
 	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
@@ -18,7 +20,7 @@ import (
 )
 
 func TestContract(t *testing.T) {
-	l1rpc, err := ethclient.Dial("https://quaint-white-season.ethereum-sepolia.quiknode.pro/b5c30cbb548d8743f08dd175fe50e3e923259d30")
+	l1rpc, err := ethclient.Dial("https://eth-sepolia.g.alchemy.com/v2/lV2e-64nNnEMUA7UG0IT0uwjzlxEI512")
 	require.NoError(t, err)
 	disputeGame, err := NewDisputeGame(common.HexToAddress("0x8304B519e45133A11E07b356443dC39bEf881D83"), l1rpc)
 	require.NoError(t, err)
@@ -69,7 +71,7 @@ func TestAllCredit(t *testing.T) {
 func TestBlockRange(t *testing.T) {
 	l1rpc, err := ethclient.Dial("https://eth-sepolia.g.alchemy.com/v2/PNunSRFo0FWRJMu5yrwBd6jF7G78YHrv")
 	require.NoError(t, err)
-	disputeGame := "0xc9cb084c3ad4e36b719b60649f99ea9f13bb45b7"
+	disputeGame := "0xfe90247bb9d191a6F3840815f34F61E9d8Df89ee"
 	newDisputeGame, err := NewDisputeGame(common.HexToAddress(disputeGame), l1rpc)
 	////startingBlockNumber  prestateBlock
 	////l2BlockNumber        poststateBlock
@@ -102,4 +104,12 @@ func TestBlockRange(t *testing.T) {
 	//	}
 	//	return common.Hash(output.OutputRoot), nil
 	//}
+
+	l2rpc, err := ethclient.Dial("https://opt-sepolia.g.alchemy.com/v2/FPgbOkDCgG8t0ppZ6TwZXLucr1wl_us4")
+	require.NoError(t, err)
+	defer l2rpc.Close()
+	l2RPC := client.NewBaseRPCClient(l2rpc.Client())
+	rollupClient := sources.NewRollupClient(l2RPC)
+	output, err := rollupClient.OutputAtBlock(context.Background(), outputBlock)
+	fmt.Printf("outputRoot:%s\n", common.Hash(output.OutputRoot))
 }

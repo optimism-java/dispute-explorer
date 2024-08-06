@@ -82,7 +82,8 @@ func (h DisputeGameHandler) GetCreditRank(c *gin.Context) {
 		limit = 10
 	}
 	var res []CreditRank
-	h.DB.Table("game_credit").Select("sum(credit) amount, address").Group("address").Order("amount desc").Limit(limit).Scan(&res)
+	h.DB.Table("game_credit").Select("sum(credit) amount, address").Group("address").
+		Having("amount!=0").Order("amount desc").Limit(limit).Scan(&res)
 	c.JSON(http.StatusOK, gin.H{
 		"data": res,
 	})
