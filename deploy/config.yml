@@ -6,13 +6,13 @@ progress:
 source:
   type: mysql
   host: localhost
-  port: 3366
+  port: 3367
   user: root
   password: root
   database: dispute_explorer
 meilisearch:
-  api_url: http://localhost:7700
-  api_key: 6914dc950098e39609cafc9abbced1cd02d7509b54b7ad1cd18ced8cad01f9be
+  api_url: http://localhost:7701
+  api_key: 2b85b8c251421e43808ee9e20e34e6b001268cee726845d3ba9b40a83fa728e9
 sync:
   - table: dispute_game
     index: disputegame
