@@ -1,4 +1,5 @@
 # dispute-explorer
+
 This is a dispute explorer for showing dispute games information who use op stack
 
 You can use Docker to run this.
@@ -14,23 +15,33 @@ Download and install Docker.
 ```
 mv .env.template .evn
 ```
+
+
 ```
 #log_format you can use console or json
 LOG_FORMAT=console   
+
 # config your mysql data source
 MYSQL_DATA_SOURCE=<data-source>
+
 # config chain name to tag your block chain name
 BLOCKCHAIN=<block-chain-name>
+
 # l1 rpc url example: eth json rpc url
 L1_RPC_URL=<l1-rpc>
+
 RPC_RATE_LIMIT=15
 RPC_RATE_BURST=5
+
 # the block number which before the first game has been created to make sure can not missing any game
 FROM_BLOCK_NUMBER=6034337
+
 # FROM_BLOCK_NUMBER block hash
 FROM_BLOCK_HASH=0xafc3e42c5899591501d29649ffef0bfdec68f8d77e6d44ee00ef88cfb1a2f163
+
 # the contract address of dispute game factory proxy
 DISPUTE_GAME_PROXY_CONTRACT=0x05F9613aDB30026FFd634f38e5C4dFd30a197Fa1
+
 API_PORT=8080
 ```
 
@@ -98,6 +109,7 @@ You should get a result, similar to :
 ```
 
 And, use `Default Admin API Key`, `key` to update config.yml
+
 ```
 meilisearch:
   api_url: http://localhost:7701  
