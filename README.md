@@ -16,7 +16,6 @@ Download and install Docker.
 mv .env.template .evn
 ```
 
-
 ```
 #log_format you can use console or json
 LOG_FORMAT=console   
