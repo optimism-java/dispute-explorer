@@ -15,7 +15,7 @@ meilisearch:
   api_key: 2b85b8c251421e43808ee9e20e34e6b001268cee726845d3ba9b40a83fa728e9
 sync:
   - table: dispute_game
-    index: disputegame
+    index: disputegames
     plugins:
       - meilisync.plugin.Plugin
     full: true
@@ -35,7 +35,7 @@ sync:
       l2_block_number:
       status:
   - table: game_claim_data
-    index: gameclaim
+    index: gameclaims
     full: true
     fields:
       id:
@@ -50,7 +50,7 @@ sync:
       clock:
       output_block:
   - table: game_credit
-    index: gamecredit
+    index: gamecredits
     full: true
     fields:
       id:
