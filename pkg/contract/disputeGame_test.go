@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"github.com/ethereum-optimism/optimism/op-challenger/game/fault/types"
 	"github.com/ethereum-optimism/optimism/op-service/client"
+	"github.com/ethereum-optimism/optimism/op-service/eth"
+	"github.com/ethereum-optimism/optimism/op-service/predeploys"
 	"github.com/ethereum-optimism/optimism/op-service/sources"
 	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/accounts/abi"
@@ -96,20 +98,45 @@ func TestBlockRange(t *testing.T) {
 	}
 	fmt.Printf("outputblock:%d\n", outputBlock)
 	fmt.Printf("blockhash:%s", hexutil.Uint64(outputBlock))
-	//outputRoot 0xc58adb6387728df32318772a7beefa386072b4347e39f64a753bfd82c8acdb07
-	//func (o *OutputTraceProvider) outputAtBlock(ctx context.Context, block uint64) (common.Hash, error) {
-	//	output, err := o.rollupProvider.OutputAtBlock(ctx, block)
-	//	if err != nil {
-	//		return common.Hash{}, fmt.Errorf("failed to fetch output at block %v: %w", block, err)
-	//	}
-	//	return common.Hash(output.OutputRoot), nil
-	//}
 
 	l2rpc, err := ethclient.Dial("https://opt-sepolia.g.alchemy.com/v2/FPgbOkDCgG8t0ppZ6TwZXLucr1wl_us4")
 	require.NoError(t, err)
 	defer l2rpc.Close()
 	l2RPC := client.NewBaseRPCClient(l2rpc.Client())
+
 	rollupClient := sources.NewRollupClient(l2RPC)
 	output, err := rollupClient.OutputAtBlock(context.Background(), outputBlock)
 	fmt.Printf("outputRoot:%s\n", common.Hash(output.OutputRoot))
+}
+
+//blockHash 0x0e494f1663e2e1b876f706668f1abebd762341aaefd9e7463cb3a109383a6f5b
+//stateRoot 0xe67c67ddb0ac98bc8c395d782fc32bdcdc4590b93da6abef8da88ef9f62050c2
+//storageHash 0x888e7e703509255745ed639a98c7dd1c8c84c98fae3a884c642b0343fbb69b3c
+
+func TestHash(t *testing.T) {
+	l2rpc, err := ethclient.Dial("https://opt-sepolia.g.alchemy.com/v2/FPgbOkDCgG8t0ppZ6TwZXLucr1wl_us4")
+	require.NoError(t, err)
+	defer l2rpc.Close()
+
+	block, err := l2rpc.BlockByNumber(context.Background(), big.NewInt(12827274))
+	require.NoError(t, err)
+	l2RPC := client.NewBaseRPCClient(l2rpc.Client())
+
+	var getProofResponse *eth.AccountResult
+	err = l2RPC.CallContext(context.Background(), &getProofResponse, "eth_getProof", predeploys.L2ToL1MessagePasserAddr, []common.Hash{}, block.Hash().String())
+	require.NoError(t, err)
+
+	output := &eth.OutputV0{
+		StateRoot:                eth.Bytes32(block.Root()),
+		MessagePasserStorageRoot: eth.Bytes32(getProofResponse.StorageHash),
+		BlockHash:                block.Hash(),
+	}
+
+	//output := &eth.OutputV0{
+	//	StateRoot:                eth.Bytes32(common.HexToHash("0xe67c67ddb0ac98bc8c395d782fc32bdcdc4590b93da6abef8da88ef9f62050c2")),
+	//	MessagePasserStorageRoot: eth.Bytes32(common.HexToHash("0x888e7e703509255745ed639a98c7dd1c8c84c98fae3a884c642b0343fbb69b3c")),
+	//	BlockHash:                common.HexToHash("0x0e494f1663e2e1b876f706668f1abebd762341aaefd9e7463cb3a109383a6f5b"),
+	//}
+	outputRoot := eth.OutputRoot(output)
+	fmt.Println(outputRoot)
 }

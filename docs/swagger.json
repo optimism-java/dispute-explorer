@@ -85,6 +85,47 @@
                 }
             }
         },
+        "/disputegames/calculate/claim": {
+            "post": {
+                "description": "calculate dispute game honest claim by postion",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/disputegames/claimroot/:blockNumber": {
+            "get": {
+                "description": "calculate l2 block claim roo",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "calculate l2 block claim root",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "dispute game l2 block number",
+                        "name": "blockNumber",
+                        "in": "path"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
         "/disputegames/count": {
             "get": {
                 "description": "Get dispute games count group by status and per day",

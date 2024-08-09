@@ -11,12 +11,13 @@ type Config struct {
 	LogLevel string `env:"LOG_LEVEL" envDefault:"info"`
 	// "console","json"
 	LogFormat                string `env:"LOG_FORMAT" envDefault:"console"`
-	MySQLDataSource          string `env:"MYSQL_DATA_SOURCE" envDefault:"root:root@tcp(127.0.0.1:3366)/dispute_explorer?charset=utf8mb4&parseTime=True&loc=Local&multiStatements=true"`
+	MySQLDataSource          string `env:"MYSQL_DATA_SOURCE" envDefault:"root:root@tcp(127.0.0.1:3367)/dispute_explorer?charset=utf8mb4&parseTime=True&loc=Local&multiStatements=true"`
 	MySQLMaxIdleConns        int    `env:"MYSQL_MAX_IDLE_CONNS" envDefault:"10"`
 	MySQLMaxOpenConns        int    `env:"MYSQL_MAX_OPEN_CONNS" envDefault:"20"`
 	MySQLConnMaxLifetime     int    `env:"MYSQL_CONN_MAX_LIFETIME" envDefault:"3600"`
 	Blockchain               string `env:"BLOCKCHAIN" envDefault:"sepolia"`
 	L1RPCUrl                 string `env:"L1_RPC_URL" envDefault:"https://eth-sepolia.g.alchemy.com/v2/PNunSRFo0FWRJMu5yrwBd6jF7G78YHrv"`
+	L2RPCUrl                 string `env:"L2_RPC_URL" envDefault:"https://opt-sepolia.g.alchemy.com/v2/FPgbOkDCgG8t0ppZ6TwZXLucr1wl_us4"`
 	RPCRateLimit             int    `env:"RPC_RATE_LIMIT" envDefault:"15"`
 	RPCRateBurst             int    `env:"RPC_RATE_BURST" envDefault:"5"`
 	FromBlockNumber          int64  `env:"FROM_BLOCK_NUMBER" envDefault:"6034337"`

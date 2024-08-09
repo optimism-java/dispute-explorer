@@ -85,6 +85,32 @@ paths:
         "200":
           description: OK
       summary: Get credit details
+  /disputegames/calculate/claim:
+    post:
+      consumes:
+      - application/json
+      description: calculate dispute game honest claim by postion
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+  /disputegames/claimroot/:blockNumber:
+    get:
+      consumes:
+      - application/json
+      description: calculate l2 block claim roo
+      parameters:
+      - description: dispute game l2 block number
+        in: path
+        name: blockNumber
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: calculate l2 block claim root
   /disputegames/count:
     get:
       consumes:

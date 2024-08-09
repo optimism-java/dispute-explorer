@@ -19,6 +19,7 @@ var svc *ServiceContext
 type ServiceContext struct {
 	Config            *types.Config
 	L1RPC             *ethclient.Client
+	L2RPC             *ethclient.Client
 	DB                *gorm.DB
 	LatestBlockNumber int64
 	SyncedBlockNumber int64
@@ -49,9 +50,15 @@ func NewServiceContext(ctx context.Context, cfg *types.Config) *ServiceContext {
 		log.Panicf("[svc] get eth client panic: %s\n", err)
 	}
 
+	rpc2, err := ethclient.Dial(cfg.L2RPCUrl)
+	if err != nil {
+		log.Panicf("[svc] get eth client panic: %s\n", err)
+	}
+
 	svc = &ServiceContext{
 		Config:  cfg,
 		L1RPC:   rpc,
+		L2RPC:   rpc2,
 		DB:      storage,
 		Context: ctx,
 	}

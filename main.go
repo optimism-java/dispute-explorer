@@ -25,7 +25,7 @@ func main() {
 	handler.Run(sCtx)
 	log.Info("listener running...\n")
 	router := gin.Default()
-	disputeGameHandler := api.NewDisputeGameHandler(sCtx.DB)
+	disputeGameHandler := api.NewDisputeGameHandler(sCtx.DB, sCtx.L1RPC, sCtx.L2RPC)
 	docs.SwaggerInfo.Title = "Dispute Game Swagger API"
 	docs.SwaggerInfo.Description = "This is a dispute-explorer server."
 	docs.SwaggerInfo.BasePath = "/"
@@ -39,6 +39,8 @@ func main() {
 	router.GET("/disputegames/statistics/bond/inprogress", disputeGameHandler.GetBondInProgressPerDays)
 	router.GET("/disputegames/daylycount", disputeGameHandler.GetCountDisputeGameGroupByStatus)
 	router.GET("/disputegames/events", disputeGameHandler.ListGameEvents)
+	router.GET("/disputegames/claimroot/:blockNumber", disputeGameHandler.GetClaimRoot)
+	router.POST("/disputegames/calculate/claim", disputeGameHandler.GetGamesClaimByPosition)
 
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 

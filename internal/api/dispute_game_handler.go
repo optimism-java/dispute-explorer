@@ -1,7 +1,19 @@
 package api
 
 import (
+	"context"
+	"fmt"
+	"github.com/ethereum-optimism/optimism/op-challenger/game/fault/types"
+	"github.com/ethereum/go-ethereum/accounts/abi/bind"
+	"github.com/optimism-java/dispute-explorer/pkg/contract"
+	"math/big"
 	"net/http"
+
+	"github.com/ethereum-optimism/optimism/op-service/eth"
+	"github.com/ethereum-optimism/optimism/op-service/predeploys"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/ethclient"
+	"github.com/pkg/errors"
 
 	"github.com/spf13/cast"
 
@@ -12,12 +24,16 @@ import (
 )
 
 type DisputeGameHandler struct {
-	DB *gorm.DB
+	DB    *gorm.DB
+	L1RPC *ethclient.Client
+	L2RPC *ethclient.Client
 }
 
-func NewDisputeGameHandler(db *gorm.DB) *DisputeGameHandler {
+func NewDisputeGameHandler(db *gorm.DB, l1rpc *ethclient.Client, l2rpc *ethclient.Client) *DisputeGameHandler {
 	return &DisputeGameHandler{
-		DB: db,
+		DB:    db,
+		L1RPC: l1rpc,
+		L2RPC: l2rpc,
 	}
 }
 
@@ -250,4 +266,114 @@ func (h DisputeGameHandler) ListGameEvents(c *gin.Context) {
 		"totalPage":   totalPage,
 		"records":     events,
 	})
+}
+
+// @Summary	calculate l2 block claim root
+// @schemes
+// @Description	calculate l2 block claim roo
+// @Accept			json
+// @Produce		json
+// @Param			blockNumber	path	int	false	"dispute game l2 block number"
+// @Success		200
+// @Router			/disputegames/claimroot/:blockNumber  [get]
+func (h DisputeGameHandler) GetClaimRoot(c *gin.Context) {
+	blockNumber := c.Param("blockNumber")
+	res, err := h.getClaimRoot(cast.ToInt64(blockNumber))
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": fmt.Sprintf("error %s", err.Error()),
+		})
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"output": res,
+	})
+}
+
+func (h DisputeGameHandler) getClaimRoot(blockNumber int64) (string, error) {
+	block, err := h.L2RPC.BlockByNumber(context.Background(), big.NewInt(cast.ToInt64(blockNumber)))
+	if err != nil {
+		return "", fmt.Errorf("block number is nil %d", blockNumber)
+	}
+	var getProofResponse *eth.AccountResult
+	err = h.L2RPC.Client().CallContext(context.Background(), &getProofResponse, "eth_getProof",
+		predeploys.L2ToL1MessagePasserAddr, []common.Hash{}, block.Hash().String())
+	if err != nil {
+		return "", fmt.Errorf("call eth_getProof error:%s", errors.WithStack(err))
+	}
+	output := &eth.OutputV0{
+		StateRoot:                eth.Bytes32(block.Root()),
+		MessagePasserStorageRoot: eth.Bytes32(getProofResponse.StorageHash),
+		BlockHash:                block.Hash(),
+	}
+	return fmt.Sprint(eth.OutputRoot(output)), nil
+}
+
+type CalculateClaim struct {
+	DisputeGame string `json:"disputeGame"`
+	Position    int64  `json:"position"`
+}
+
+// @Sumary calculate claim by position
+// @Schemes
+// @Description calculate dispute game honest claim by postion
+// @Accept json
+// @Produce json
+// @Success 200
+// @Router	/disputegames/calculate/claim  [post]
+func (h DisputeGameHandler) GetGamesClaimByPosition(c *gin.Context) {
+	json := &CalculateClaim{}
+	err := c.BindJSON(&json)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": fmt.Sprintf("error %s", err.Error()),
+		})
+	}
+	res, err := h.gamesClaimByPosition(json)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": fmt.Sprintf("error %s", err.Error()),
+		})
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"DisputeGame": json.DisputeGame,
+		"Position":    json.Position,
+		"claims":      res,
+	})
+}
+
+func (h DisputeGameHandler) gamesClaimByPosition(req *CalculateClaim) (string, error) {
+	newDisputeGame, err := contract.NewDisputeGame(common.HexToAddress(req.DisputeGame), h.L1RPC)
+	if err != nil {
+		return "", err
+	}
+	prestateBlock, err := newDisputeGame.StartingBlockNumber(&bind.CallOpts{})
+	if err != nil {
+		return "", err
+	}
+	poststateBlock, err := newDisputeGame.L2BlockNumber(&bind.CallOpts{})
+	if err != nil {
+		return "", err
+	}
+	splitDepth, err := newDisputeGame.SplitDepth(&bind.CallOpts{})
+	if err != nil {
+		return "", err
+	}
+	splitDepths := types.Depth(splitDepth.Uint64())
+
+	pos := types.NewPositionFromGIndex(big.NewInt(req.Position))
+	traceIndex := pos.TraceIndex(splitDepths)
+	if !traceIndex.IsUint64() {
+		return "", fmt.Errorf("err:%s", traceIndex)
+	}
+	outputBlock := traceIndex.Uint64() + prestateBlock.Uint64() + 1
+	if outputBlock > poststateBlock.Uint64() {
+		outputBlock = poststateBlock.Uint64()
+	}
+
+	root, err := h.getClaimRoot(cast.ToInt64(outputBlock))
+	if err != nil {
+		return "", err
+	}
+	return root, nil
 }
