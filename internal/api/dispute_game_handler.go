@@ -3,11 +3,12 @@ package api
 import (
 	"context"
 	"fmt"
+	"math/big"
+	"net/http"
+
 	"github.com/ethereum-optimism/optimism/op-challenger/game/fault/types"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/optimism-java/dispute-explorer/pkg/contract"
-	"math/big"
-	"net/http"
 
 	"github.com/ethereum-optimism/optimism/op-service/eth"
 	"github.com/ethereum-optimism/optimism/op-service/predeploys"
@@ -314,9 +315,9 @@ type CalculateClaim struct {
 	Position    int64  `json:"position"`
 }
 
-// @Sumary calculate claim by position
+// @Summary calculate claim by position
 // @Schemes
-// @Description calculate dispute game honest claim by postion
+// @Description calculate dispute game honest claim by position
 // @Accept json
 // @Produce json
 // @Success 200
