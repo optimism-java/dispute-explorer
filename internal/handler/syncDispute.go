@@ -65,5 +65,6 @@ func SyncDispute(ctx *svc.ServiceContext) {
 				panic(err)
 			}
 		}
+		time.Sleep(3 * time.Second)
 	}
 }
