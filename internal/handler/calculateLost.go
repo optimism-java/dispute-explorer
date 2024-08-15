@@ -54,6 +54,6 @@ func CalculateLostBond(ctx *svc.ServiceContext) {
 			disputeGame.CalculateLost = true
 			ctx.DB.Save(disputeGame)
 		}
-		time.Sleep(5 * time.Second)
+		time.Sleep(3 * time.Second)
 	}
 }
