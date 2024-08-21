@@ -198,7 +198,8 @@ func (_AnchorStateProxy *AnchorStateProxyTransactorRaw) Transact(opts *bind.Tran
 func (_AnchorStateProxy *AnchorStateProxyCaller) Anchors(opts *bind.CallOpts, arg0 uint32) (struct {
 	Root          [32]byte
 	L2BlockNumber *big.Int
-}, error) {
+}, error,
+) {
 	var out []interface{}
 	err := _AnchorStateProxy.contract.Call(opts, &out, "anchors", arg0)
 
@@ -214,7 +215,6 @@ func (_AnchorStateProxy *AnchorStateProxyCaller) Anchors(opts *bind.CallOpts, ar
 	outstruct.L2BlockNumber = *abi.ConvertType(out[1], new(*big.Int)).(**big.Int)
 
 	return *outstruct, err
-
 }
 
 // Anchors is a free data retrieval call binding the contract method 0x7258a807.
@@ -223,7 +223,8 @@ func (_AnchorStateProxy *AnchorStateProxyCaller) Anchors(opts *bind.CallOpts, ar
 func (_AnchorStateProxy *AnchorStateProxySession) Anchors(arg0 uint32) (struct {
 	Root          [32]byte
 	L2BlockNumber *big.Int
-}, error) {
+}, error,
+) {
 	return _AnchorStateProxy.Contract.Anchors(&_AnchorStateProxy.CallOpts, arg0)
 }
 
@@ -233,7 +234,8 @@ func (_AnchorStateProxy *AnchorStateProxySession) Anchors(arg0 uint32) (struct {
 func (_AnchorStateProxy *AnchorStateProxyCallerSession) Anchors(arg0 uint32) (struct {
 	Root          [32]byte
 	L2BlockNumber *big.Int
-}, error) {
+}, error,
+) {
 	return _AnchorStateProxy.Contract.Anchors(&_AnchorStateProxy.CallOpts, arg0)
 }
 
@@ -243,7 +245,6 @@ func (_AnchorStateProxy *AnchorStateProxyCallerSession) Anchors(arg0 uint32) (st
 func (_AnchorStateProxy *AnchorStateProxyCaller) DisputeGameFactory(opts *bind.CallOpts) (common.Address, error) {
 	var out []interface{}
 	err := _AnchorStateProxy.contract.Call(opts, &out, "disputeGameFactory")
-
 	if err != nil {
 		return *new(common.Address), err
 	}
@@ -251,7 +252,6 @@ func (_AnchorStateProxy *AnchorStateProxyCaller) DisputeGameFactory(opts *bind.C
 	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
 
 	return out0, err
-
 }
 
 // DisputeGameFactory is a free data retrieval call binding the contract method 0xf2b4e617.
@@ -274,7 +274,6 @@ func (_AnchorStateProxy *AnchorStateProxyCallerSession) DisputeGameFactory() (co
 func (_AnchorStateProxy *AnchorStateProxyCaller) Version(opts *bind.CallOpts) (string, error) {
 	var out []interface{}
 	err := _AnchorStateProxy.contract.Call(opts, &out, "version")
-
 	if err != nil {
 		return *new(string), err
 	}
@@ -282,7 +281,6 @@ func (_AnchorStateProxy *AnchorStateProxyCaller) Version(opts *bind.CallOpts) (s
 	out0 := *abi.ConvertType(out[0], new(string)).(*string)
 
 	return out0, err
-
 }
 
 // Version is a free data retrieval call binding the contract method 0x54fd4d50.
@@ -418,7 +416,6 @@ type AnchorStateProxyInitialized struct {
 //
 // Solidity: event Initialized(uint8 version)
 func (_AnchorStateProxy *AnchorStateProxyFilterer) FilterInitialized(opts *bind.FilterOpts) (*AnchorStateProxyInitializedIterator, error) {
-
 	logs, sub, err := _AnchorStateProxy.contract.FilterLogs(opts, "Initialized")
 	if err != nil {
 		return nil, err
@@ -430,7 +427,6 @@ func (_AnchorStateProxy *AnchorStateProxyFilterer) FilterInitialized(opts *bind.
 //
 // Solidity: event Initialized(uint8 version)
 func (_AnchorStateProxy *AnchorStateProxyFilterer) WatchInitialized(opts *bind.WatchOpts, sink chan<- *AnchorStateProxyInitialized) (event.Subscription, error) {
-
 	logs, sub, err := _AnchorStateProxy.contract.WatchLogs(opts, "Initialized")
 	if err != nil {
 		return nil, err

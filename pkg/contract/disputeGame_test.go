@@ -4,6 +4,10 @@ import (
 	"context"
 	"encoding/hex"
 	"fmt"
+	"math/big"
+	"strings"
+	"testing"
+
 	"github.com/ethereum-optimism/optimism/op-challenger/game/fault/types"
 	"github.com/ethereum-optimism/optimism/op-service/client"
 	"github.com/ethereum-optimism/optimism/op-service/eth"
@@ -16,9 +20,6 @@ import (
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/stretchr/testify/require"
-	"math/big"
-	"strings"
-	"testing"
 )
 
 func TestContract(t *testing.T) {
@@ -109,10 +110,9 @@ func TestBlockRange(t *testing.T) {
 	fmt.Printf("outputRoot:%s\n", common.Hash(output.OutputRoot))
 }
 
-//blockHash 0x0e494f1663e2e1b876f706668f1abebd762341aaefd9e7463cb3a109383a6f5b
-//stateRoot 0xe67c67ddb0ac98bc8c395d782fc32bdcdc4590b93da6abef8da88ef9f62050c2
-//storageHash 0x888e7e703509255745ed639a98c7dd1c8c84c98fae3a884c642b0343fbb69b3c
-
+// blockHash 0x0e494f1663e2e1b876f706668f1abebd762341aaefd9e7463cb3a109383a6f5b
+// stateRoot 0xe67c67ddb0ac98bc8c395d782fc32bdcdc4590b93da6abef8da88ef9f62050c2
+// storageHash 0x888e7e703509255745ed639a98c7dd1c8c84c98fae3a884c642b0343fbb69b3c
 func TestHash(t *testing.T) {
 	l2rpc, err := ethclient.Dial("https://opt-sepolia.g.alchemy.com/v2/FPgbOkDCgG8t0ppZ6TwZXLucr1wl_us4")
 	require.NoError(t, err)

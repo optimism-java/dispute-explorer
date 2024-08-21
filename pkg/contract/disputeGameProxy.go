@@ -195,7 +195,6 @@ func (_DisputeGameProxy *DisputeGameProxyTransactorRaw) Transact(opts *bind.Tran
 func (_DisputeGameProxy *DisputeGameProxyCaller) FindLatestGames(opts *bind.CallOpts, _gameType uint32, _start *big.Int, _n *big.Int) ([]IDisputeGameFactoryGameSearchResult, error) {
 	var out []interface{}
 	err := _DisputeGameProxy.contract.Call(opts, &out, "findLatestGames", _gameType, _start, _n)
-
 	if err != nil {
 		return *new([]IDisputeGameFactoryGameSearchResult), err
 	}
@@ -203,7 +202,6 @@ func (_DisputeGameProxy *DisputeGameProxyCaller) FindLatestGames(opts *bind.Call
 	out0 := *abi.ConvertType(out[0], new([]IDisputeGameFactoryGameSearchResult)).(*[]IDisputeGameFactoryGameSearchResult)
 
 	return out0, err
-
 }
 
 // FindLatestGames is a free data retrieval call binding the contract method 0x254bd683.
@@ -227,7 +225,8 @@ func (_DisputeGameProxy *DisputeGameProxyCaller) GameAtIndex(opts *bind.CallOpts
 	GameType  uint32
 	Timestamp uint64
 	Proxy     common.Address
-}, error) {
+}, error,
+) {
 	var out []interface{}
 	err := _DisputeGameProxy.contract.Call(opts, &out, "gameAtIndex", _index)
 
@@ -245,7 +244,6 @@ func (_DisputeGameProxy *DisputeGameProxyCaller) GameAtIndex(opts *bind.CallOpts
 	outstruct.Proxy = *abi.ConvertType(out[2], new(common.Address)).(*common.Address)
 
 	return *outstruct, err
-
 }
 
 // GameAtIndex is a free data retrieval call binding the contract method 0xbb8aa1fc.
@@ -255,7 +253,8 @@ func (_DisputeGameProxy *DisputeGameProxySession) GameAtIndex(_index *big.Int) (
 	GameType  uint32
 	Timestamp uint64
 	Proxy     common.Address
-}, error) {
+}, error,
+) {
 	return _DisputeGameProxy.Contract.GameAtIndex(&_DisputeGameProxy.CallOpts, _index)
 }
 
@@ -266,7 +265,8 @@ func (_DisputeGameProxy *DisputeGameProxyCallerSession) GameAtIndex(_index *big.
 	GameType  uint32
 	Timestamp uint64
 	Proxy     common.Address
-}, error) {
+}, error,
+) {
 	return _DisputeGameProxy.Contract.GameAtIndex(&_DisputeGameProxy.CallOpts, _index)
 }
 
@@ -276,7 +276,6 @@ func (_DisputeGameProxy *DisputeGameProxyCallerSession) GameAtIndex(_index *big.
 func (_DisputeGameProxy *DisputeGameProxyCaller) GameCount(opts *bind.CallOpts) (*big.Int, error) {
 	var out []interface{}
 	err := _DisputeGameProxy.contract.Call(opts, &out, "gameCount")
-
 	if err != nil {
 		return *new(*big.Int), err
 	}
@@ -284,7 +283,6 @@ func (_DisputeGameProxy *DisputeGameProxyCaller) GameCount(opts *bind.CallOpts) 
 	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
 
 	return out0, err
-
 }
 
 // GameCount is a free data retrieval call binding the contract method 0x4d1975b4.
@@ -307,7 +305,6 @@ func (_DisputeGameProxy *DisputeGameProxyCallerSession) GameCount() (*big.Int, e
 func (_DisputeGameProxy *DisputeGameProxyCaller) GameImpls(opts *bind.CallOpts, arg0 uint32) (common.Address, error) {
 	var out []interface{}
 	err := _DisputeGameProxy.contract.Call(opts, &out, "gameImpls", arg0)
-
 	if err != nil {
 		return *new(common.Address), err
 	}
@@ -315,7 +312,6 @@ func (_DisputeGameProxy *DisputeGameProxyCaller) GameImpls(opts *bind.CallOpts, 
 	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
 
 	return out0, err
-
 }
 
 // GameImpls is a free data retrieval call binding the contract method 0x1b685b9e.
@@ -338,7 +334,8 @@ func (_DisputeGameProxy *DisputeGameProxyCallerSession) GameImpls(arg0 uint32) (
 func (_DisputeGameProxy *DisputeGameProxyCaller) Games(opts *bind.CallOpts, _gameType uint32, _rootClaim [32]byte, _extraData []byte) (struct {
 	Proxy     common.Address
 	Timestamp uint64
-}, error) {
+}, error,
+) {
 	var out []interface{}
 	err := _DisputeGameProxy.contract.Call(opts, &out, "games", _gameType, _rootClaim, _extraData)
 
@@ -354,7 +351,6 @@ func (_DisputeGameProxy *DisputeGameProxyCaller) Games(opts *bind.CallOpts, _gam
 	outstruct.Timestamp = *abi.ConvertType(out[1], new(uint64)).(*uint64)
 
 	return *outstruct, err
-
 }
 
 // Games is a free data retrieval call binding the contract method 0x5f0150cb.
@@ -363,7 +359,8 @@ func (_DisputeGameProxy *DisputeGameProxyCaller) Games(opts *bind.CallOpts, _gam
 func (_DisputeGameProxy *DisputeGameProxySession) Games(_gameType uint32, _rootClaim [32]byte, _extraData []byte) (struct {
 	Proxy     common.Address
 	Timestamp uint64
-}, error) {
+}, error,
+) {
 	return _DisputeGameProxy.Contract.Games(&_DisputeGameProxy.CallOpts, _gameType, _rootClaim, _extraData)
 }
 
@@ -373,7 +370,8 @@ func (_DisputeGameProxy *DisputeGameProxySession) Games(_gameType uint32, _rootC
 func (_DisputeGameProxy *DisputeGameProxyCallerSession) Games(_gameType uint32, _rootClaim [32]byte, _extraData []byte) (struct {
 	Proxy     common.Address
 	Timestamp uint64
-}, error) {
+}, error,
+) {
 	return _DisputeGameProxy.Contract.Games(&_DisputeGameProxy.CallOpts, _gameType, _rootClaim, _extraData)
 }
 
@@ -383,7 +381,6 @@ func (_DisputeGameProxy *DisputeGameProxyCallerSession) Games(_gameType uint32, 
 func (_DisputeGameProxy *DisputeGameProxyCaller) GetGameUUID(opts *bind.CallOpts, _gameType uint32, _rootClaim [32]byte, _extraData []byte) ([32]byte, error) {
 	var out []interface{}
 	err := _DisputeGameProxy.contract.Call(opts, &out, "getGameUUID", _gameType, _rootClaim, _extraData)
-
 	if err != nil {
 		return *new([32]byte), err
 	}
@@ -391,7 +388,6 @@ func (_DisputeGameProxy *DisputeGameProxyCaller) GetGameUUID(opts *bind.CallOpts
 	out0 := *abi.ConvertType(out[0], new([32]byte)).(*[32]byte)
 
 	return out0, err
-
 }
 
 // GetGameUUID is a free data retrieval call binding the contract method 0x96cd9720.
@@ -414,7 +410,6 @@ func (_DisputeGameProxy *DisputeGameProxyCallerSession) GetGameUUID(_gameType ui
 func (_DisputeGameProxy *DisputeGameProxyCaller) InitBonds(opts *bind.CallOpts, arg0 uint32) (*big.Int, error) {
 	var out []interface{}
 	err := _DisputeGameProxy.contract.Call(opts, &out, "initBonds", arg0)
-
 	if err != nil {
 		return *new(*big.Int), err
 	}
@@ -422,7 +417,6 @@ func (_DisputeGameProxy *DisputeGameProxyCaller) InitBonds(opts *bind.CallOpts, 
 	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
 
 	return out0, err
-
 }
 
 // InitBonds is a free data retrieval call binding the contract method 0x6593dc6e.
@@ -445,7 +439,6 @@ func (_DisputeGameProxy *DisputeGameProxyCallerSession) InitBonds(arg0 uint32) (
 func (_DisputeGameProxy *DisputeGameProxyCaller) Owner(opts *bind.CallOpts) (common.Address, error) {
 	var out []interface{}
 	err := _DisputeGameProxy.contract.Call(opts, &out, "owner")
-
 	if err != nil {
 		return *new(common.Address), err
 	}
@@ -453,7 +446,6 @@ func (_DisputeGameProxy *DisputeGameProxyCaller) Owner(opts *bind.CallOpts) (com
 	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
 
 	return out0, err
-
 }
 
 // Owner is a free data retrieval call binding the contract method 0x8da5cb5b.
@@ -476,7 +468,6 @@ func (_DisputeGameProxy *DisputeGameProxyCallerSession) Owner() (common.Address,
 func (_DisputeGameProxy *DisputeGameProxyCaller) Version(opts *bind.CallOpts) (string, error) {
 	var out []interface{}
 	err := _DisputeGameProxy.contract.Call(opts, &out, "version")
-
 	if err != nil {
 		return *new(string), err
 	}
@@ -484,7 +475,6 @@ func (_DisputeGameProxy *DisputeGameProxyCaller) Version(opts *bind.CallOpts) (s
 	out0 := *abi.ConvertType(out[0], new(string)).(*string)
 
 	return out0, err
-
 }
 
 // Version is a free data retrieval call binding the contract method 0x54fd4d50.
@@ -706,7 +696,6 @@ type DisputeGameProxyDisputeGameCreated struct {
 //
 // Solidity: event DisputeGameCreated(address indexed disputeProxy, uint32 indexed gameType, bytes32 indexed rootClaim)
 func (_DisputeGameProxy *DisputeGameProxyFilterer) FilterDisputeGameCreated(opts *bind.FilterOpts, disputeProxy []common.Address, gameType []uint32, rootClaim [][32]byte) (*DisputeGameProxyDisputeGameCreatedIterator, error) {
-
 	var disputeProxyRule []interface{}
 	for _, disputeProxyItem := range disputeProxy {
 		disputeProxyRule = append(disputeProxyRule, disputeProxyItem)
@@ -731,7 +720,6 @@ func (_DisputeGameProxy *DisputeGameProxyFilterer) FilterDisputeGameCreated(opts
 //
 // Solidity: event DisputeGameCreated(address indexed disputeProxy, uint32 indexed gameType, bytes32 indexed rootClaim)
 func (_DisputeGameProxy *DisputeGameProxyFilterer) WatchDisputeGameCreated(opts *bind.WatchOpts, sink chan<- *DisputeGameProxyDisputeGameCreated, disputeProxy []common.Address, gameType []uint32, rootClaim [][32]byte) (event.Subscription, error) {
-
 	var disputeProxyRule []interface{}
 	for _, disputeProxyItem := range disputeProxy {
 		disputeProxyRule = append(disputeProxyRule, disputeProxyItem)
@@ -867,7 +855,6 @@ type DisputeGameProxyImplementationSet struct {
 //
 // Solidity: event ImplementationSet(address indexed impl, uint32 indexed gameType)
 func (_DisputeGameProxy *DisputeGameProxyFilterer) FilterImplementationSet(opts *bind.FilterOpts, impl []common.Address, gameType []uint32) (*DisputeGameProxyImplementationSetIterator, error) {
-
 	var implRule []interface{}
 	for _, implItem := range impl {
 		implRule = append(implRule, implItem)
@@ -888,7 +875,6 @@ func (_DisputeGameProxy *DisputeGameProxyFilterer) FilterImplementationSet(opts 
 //
 // Solidity: event ImplementationSet(address indexed impl, uint32 indexed gameType)
 func (_DisputeGameProxy *DisputeGameProxyFilterer) WatchImplementationSet(opts *bind.WatchOpts, sink chan<- *DisputeGameProxyImplementationSet, impl []common.Address, gameType []uint32) (event.Subscription, error) {
-
 	var implRule []interface{}
 	for _, implItem := range impl {
 		implRule = append(implRule, implItem)
@@ -1020,7 +1006,6 @@ type DisputeGameProxyInitBondUpdated struct {
 //
 // Solidity: event InitBondUpdated(uint32 indexed gameType, uint256 indexed newBond)
 func (_DisputeGameProxy *DisputeGameProxyFilterer) FilterInitBondUpdated(opts *bind.FilterOpts, gameType []uint32, newBond []*big.Int) (*DisputeGameProxyInitBondUpdatedIterator, error) {
-
 	var gameTypeRule []interface{}
 	for _, gameTypeItem := range gameType {
 		gameTypeRule = append(gameTypeRule, gameTypeItem)
@@ -1041,7 +1026,6 @@ func (_DisputeGameProxy *DisputeGameProxyFilterer) FilterInitBondUpdated(opts *b
 //
 // Solidity: event InitBondUpdated(uint32 indexed gameType, uint256 indexed newBond)
 func (_DisputeGameProxy *DisputeGameProxyFilterer) WatchInitBondUpdated(opts *bind.WatchOpts, sink chan<- *DisputeGameProxyInitBondUpdated, gameType []uint32, newBond []*big.Int) (event.Subscription, error) {
-
 	var gameTypeRule []interface{}
 	for _, gameTypeItem := range gameType {
 		gameTypeRule = append(gameTypeRule, gameTypeItem)
@@ -1172,7 +1156,6 @@ type DisputeGameProxyInitialized struct {
 //
 // Solidity: event Initialized(uint8 version)
 func (_DisputeGameProxy *DisputeGameProxyFilterer) FilterInitialized(opts *bind.FilterOpts) (*DisputeGameProxyInitializedIterator, error) {
-
 	logs, sub, err := _DisputeGameProxy.contract.FilterLogs(opts, "Initialized")
 	if err != nil {
 		return nil, err
@@ -1184,7 +1167,6 @@ func (_DisputeGameProxy *DisputeGameProxyFilterer) FilterInitialized(opts *bind.
 //
 // Solidity: event Initialized(uint8 version)
 func (_DisputeGameProxy *DisputeGameProxyFilterer) WatchInitialized(opts *bind.WatchOpts, sink chan<- *DisputeGameProxyInitialized) (event.Subscription, error) {
-
 	logs, sub, err := _DisputeGameProxy.contract.WatchLogs(opts, "Initialized")
 	if err != nil {
 		return nil, err
@@ -1307,7 +1289,6 @@ type DisputeGameProxyOwnershipTransferred struct {
 //
 // Solidity: event OwnershipTransferred(address indexed previousOwner, address indexed newOwner)
 func (_DisputeGameProxy *DisputeGameProxyFilterer) FilterOwnershipTransferred(opts *bind.FilterOpts, previousOwner []common.Address, newOwner []common.Address) (*DisputeGameProxyOwnershipTransferredIterator, error) {
-
 	var previousOwnerRule []interface{}
 	for _, previousOwnerItem := range previousOwner {
 		previousOwnerRule = append(previousOwnerRule, previousOwnerItem)
@@ -1328,7 +1309,6 @@ func (_DisputeGameProxy *DisputeGameProxyFilterer) FilterOwnershipTransferred(op
 //
 // Solidity: event OwnershipTransferred(address indexed previousOwner, address indexed newOwner)
 func (_DisputeGameProxy *DisputeGameProxyFilterer) WatchOwnershipTransferred(opts *bind.WatchOpts, sink chan<- *DisputeGameProxyOwnershipTransferred, previousOwner []common.Address, newOwner []common.Address) (event.Subscription, error) {
-
 	var previousOwnerRule []interface{}
 	for _, previousOwnerItem := range previousOwner {
 		previousOwnerRule = append(previousOwnerRule, previousOwnerItem)

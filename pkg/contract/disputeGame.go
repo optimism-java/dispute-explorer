@@ -194,7 +194,6 @@ func (_DisputeGame *DisputeGameTransactorRaw) Transact(opts *bind.TransactOpts, 
 func (_DisputeGame *DisputeGameCaller) AbsolutePrestate(opts *bind.CallOpts) ([32]byte, error) {
 	var out []interface{}
 	err := _DisputeGame.contract.Call(opts, &out, "absolutePrestate")
-
 	if err != nil {
 		return *new([32]byte), err
 	}
@@ -202,7 +201,6 @@ func (_DisputeGame *DisputeGameCaller) AbsolutePrestate(opts *bind.CallOpts) ([3
 	out0 := *abi.ConvertType(out[0], new([32]byte)).(*[32]byte)
 
 	return out0, err
-
 }
 
 // AbsolutePrestate is a free data retrieval call binding the contract method 0x8d450a95.
@@ -225,7 +223,6 @@ func (_DisputeGame *DisputeGameCallerSession) AbsolutePrestate() ([32]byte, erro
 func (_DisputeGame *DisputeGameCaller) AnchorStateRegistry(opts *bind.CallOpts) (common.Address, error) {
 	var out []interface{}
 	err := _DisputeGame.contract.Call(opts, &out, "anchorStateRegistry")
-
 	if err != nil {
 		return *new(common.Address), err
 	}
@@ -233,7 +230,6 @@ func (_DisputeGame *DisputeGameCaller) AnchorStateRegistry(opts *bind.CallOpts) 
 	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
 
 	return out0, err
-
 }
 
 // AnchorStateRegistry is a free data retrieval call binding the contract method 0x5c0cba33.
@@ -261,7 +257,8 @@ func (_DisputeGame *DisputeGameCaller) ClaimData(opts *bind.CallOpts, arg0 *big.
 	Claim       [32]byte
 	Position    *big.Int
 	Clock       *big.Int
-}, error) {
+}, error,
+) {
 	var out []interface{}
 	err := _DisputeGame.contract.Call(opts, &out, "claimData", arg0)
 
@@ -287,7 +284,6 @@ func (_DisputeGame *DisputeGameCaller) ClaimData(opts *bind.CallOpts, arg0 *big.
 	outstruct.Clock = *abi.ConvertType(out[6], new(*big.Int)).(**big.Int)
 
 	return *outstruct, err
-
 }
 
 // ClaimData is a free data retrieval call binding the contract method 0xc6f0308c.
@@ -301,7 +297,8 @@ func (_DisputeGame *DisputeGameSession) ClaimData(arg0 *big.Int) (struct {
 	Claim       [32]byte
 	Position    *big.Int
 	Clock       *big.Int
-}, error) {
+}, error,
+) {
 	return _DisputeGame.Contract.ClaimData(&_DisputeGame.CallOpts, arg0)
 }
 
@@ -316,7 +313,8 @@ func (_DisputeGame *DisputeGameCallerSession) ClaimData(arg0 *big.Int) (struct {
 	Claim       [32]byte
 	Position    *big.Int
 	Clock       *big.Int
-}, error) {
+}, error,
+) {
 	return _DisputeGame.Contract.ClaimData(&_DisputeGame.CallOpts, arg0)
 }
 
@@ -326,7 +324,6 @@ func (_DisputeGame *DisputeGameCallerSession) ClaimData(arg0 *big.Int) (struct {
 func (_DisputeGame *DisputeGameCaller) ClaimDataLen(opts *bind.CallOpts) (*big.Int, error) {
 	var out []interface{}
 	err := _DisputeGame.contract.Call(opts, &out, "claimDataLen")
-
 	if err != nil {
 		return *new(*big.Int), err
 	}
@@ -334,7 +331,6 @@ func (_DisputeGame *DisputeGameCaller) ClaimDataLen(opts *bind.CallOpts) (*big.I
 	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
 
 	return out0, err
-
 }
 
 // ClaimDataLen is a free data retrieval call binding the contract method 0x8980e0cc.
@@ -357,7 +353,6 @@ func (_DisputeGame *DisputeGameCallerSession) ClaimDataLen() (*big.Int, error) {
 func (_DisputeGame *DisputeGameCaller) Claims(opts *bind.CallOpts, arg0 [32]byte) (bool, error) {
 	var out []interface{}
 	err := _DisputeGame.contract.Call(opts, &out, "claims", arg0)
-
 	if err != nil {
 		return *new(bool), err
 	}
@@ -365,7 +360,6 @@ func (_DisputeGame *DisputeGameCaller) Claims(opts *bind.CallOpts, arg0 [32]byte
 	out0 := *abi.ConvertType(out[0], new(bool)).(*bool)
 
 	return out0, err
-
 }
 
 // Claims is a free data retrieval call binding the contract method 0xeff0f592.
@@ -388,7 +382,6 @@ func (_DisputeGame *DisputeGameCallerSession) Claims(arg0 [32]byte) (bool, error
 func (_DisputeGame *DisputeGameCaller) ClockExtension(opts *bind.CallOpts) (uint64, error) {
 	var out []interface{}
 	err := _DisputeGame.contract.Call(opts, &out, "clockExtension")
-
 	if err != nil {
 		return *new(uint64), err
 	}
@@ -396,7 +389,6 @@ func (_DisputeGame *DisputeGameCaller) ClockExtension(opts *bind.CallOpts) (uint
 	out0 := *abi.ConvertType(out[0], new(uint64)).(*uint64)
 
 	return out0, err
-
 }
 
 // ClockExtension is a free data retrieval call binding the contract method 0x6b6716c0.
@@ -419,7 +411,6 @@ func (_DisputeGame *DisputeGameCallerSession) ClockExtension() (uint64, error) {
 func (_DisputeGame *DisputeGameCaller) CreatedAt(opts *bind.CallOpts) (uint64, error) {
 	var out []interface{}
 	err := _DisputeGame.contract.Call(opts, &out, "createdAt")
-
 	if err != nil {
 		return *new(uint64), err
 	}
@@ -427,7 +418,6 @@ func (_DisputeGame *DisputeGameCaller) CreatedAt(opts *bind.CallOpts) (uint64, e
 	out0 := *abi.ConvertType(out[0], new(uint64)).(*uint64)
 
 	return out0, err
-
 }
 
 // CreatedAt is a free data retrieval call binding the contract method 0xcf09e0d0.
@@ -450,7 +440,6 @@ func (_DisputeGame *DisputeGameCallerSession) CreatedAt() (uint64, error) {
 func (_DisputeGame *DisputeGameCaller) Credit(opts *bind.CallOpts, arg0 common.Address) (*big.Int, error) {
 	var out []interface{}
 	err := _DisputeGame.contract.Call(opts, &out, "credit", arg0)
-
 	if err != nil {
 		return *new(*big.Int), err
 	}
@@ -458,7 +447,6 @@ func (_DisputeGame *DisputeGameCaller) Credit(opts *bind.CallOpts, arg0 common.A
 	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
 
 	return out0, err
-
 }
 
 // Credit is a free data retrieval call binding the contract method 0xd5d44d80.
@@ -481,7 +469,6 @@ func (_DisputeGame *DisputeGameCallerSession) Credit(arg0 common.Address) (*big.
 func (_DisputeGame *DisputeGameCaller) ExtraData(opts *bind.CallOpts) ([]byte, error) {
 	var out []interface{}
 	err := _DisputeGame.contract.Call(opts, &out, "extraData")
-
 	if err != nil {
 		return *new([]byte), err
 	}
@@ -489,7 +476,6 @@ func (_DisputeGame *DisputeGameCaller) ExtraData(opts *bind.CallOpts) ([]byte, e
 	out0 := *abi.ConvertType(out[0], new([]byte)).(*[]byte)
 
 	return out0, err
-
 }
 
 // ExtraData is a free data retrieval call binding the contract method 0x609d3334.
@@ -512,7 +498,6 @@ func (_DisputeGame *DisputeGameCallerSession) ExtraData() ([]byte, error) {
 func (_DisputeGame *DisputeGameCaller) GameCreator(opts *bind.CallOpts) (common.Address, error) {
 	var out []interface{}
 	err := _DisputeGame.contract.Call(opts, &out, "gameCreator")
-
 	if err != nil {
 		return *new(common.Address), err
 	}
@@ -520,7 +505,6 @@ func (_DisputeGame *DisputeGameCaller) GameCreator(opts *bind.CallOpts) (common.
 	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
 
 	return out0, err
-
 }
 
 // GameCreator is a free data retrieval call binding the contract method 0x37b1b229.
@@ -544,7 +528,8 @@ func (_DisputeGame *DisputeGameCaller) GameData(opts *bind.CallOpts) (struct {
 	GameType  uint32
 	RootClaim [32]byte
 	ExtraData []byte
-}, error) {
+}, error,
+) {
 	var out []interface{}
 	err := _DisputeGame.contract.Call(opts, &out, "gameData")
 
@@ -562,7 +547,6 @@ func (_DisputeGame *DisputeGameCaller) GameData(opts *bind.CallOpts) (struct {
 	outstruct.ExtraData = *abi.ConvertType(out[2], new([]byte)).(*[]byte)
 
 	return *outstruct, err
-
 }
 
 // GameData is a free data retrieval call binding the contract method 0xfa24f743.
@@ -572,7 +556,8 @@ func (_DisputeGame *DisputeGameSession) GameData() (struct {
 	GameType  uint32
 	RootClaim [32]byte
 	ExtraData []byte
-}, error) {
+}, error,
+) {
 	return _DisputeGame.Contract.GameData(&_DisputeGame.CallOpts)
 }
 
@@ -583,7 +568,8 @@ func (_DisputeGame *DisputeGameCallerSession) GameData() (struct {
 	GameType  uint32
 	RootClaim [32]byte
 	ExtraData []byte
-}, error) {
+}, error,
+) {
 	return _DisputeGame.Contract.GameData(&_DisputeGame.CallOpts)
 }
 
@@ -593,7 +579,6 @@ func (_DisputeGame *DisputeGameCallerSession) GameData() (struct {
 func (_DisputeGame *DisputeGameCaller) GameType(opts *bind.CallOpts) (uint32, error) {
 	var out []interface{}
 	err := _DisputeGame.contract.Call(opts, &out, "gameType")
-
 	if err != nil {
 		return *new(uint32), err
 	}
@@ -601,7 +586,6 @@ func (_DisputeGame *DisputeGameCaller) GameType(opts *bind.CallOpts) (uint32, er
 	out0 := *abi.ConvertType(out[0], new(uint32)).(*uint32)
 
 	return out0, err
-
 }
 
 // GameType is a free data retrieval call binding the contract method 0xbbdc02db.
@@ -624,7 +608,6 @@ func (_DisputeGame *DisputeGameCallerSession) GameType() (uint32, error) {
 func (_DisputeGame *DisputeGameCaller) GetChallengerDuration(opts *bind.CallOpts, _claimIndex *big.Int) (uint64, error) {
 	var out []interface{}
 	err := _DisputeGame.contract.Call(opts, &out, "getChallengerDuration", _claimIndex)
-
 	if err != nil {
 		return *new(uint64), err
 	}
@@ -632,7 +615,6 @@ func (_DisputeGame *DisputeGameCaller) GetChallengerDuration(opts *bind.CallOpts
 	out0 := *abi.ConvertType(out[0], new(uint64)).(*uint64)
 
 	return out0, err
-
 }
 
 // GetChallengerDuration is a free data retrieval call binding the contract method 0xbd8da956.
@@ -655,7 +637,6 @@ func (_DisputeGame *DisputeGameCallerSession) GetChallengerDuration(_claimIndex 
 func (_DisputeGame *DisputeGameCaller) GetNumToResolve(opts *bind.CallOpts, _claimIndex *big.Int) (*big.Int, error) {
 	var out []interface{}
 	err := _DisputeGame.contract.Call(opts, &out, "getNumToResolve", _claimIndex)
-
 	if err != nil {
 		return *new(*big.Int), err
 	}
@@ -663,7 +644,6 @@ func (_DisputeGame *DisputeGameCaller) GetNumToResolve(opts *bind.CallOpts, _cla
 	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
 
 	return out0, err
-
 }
 
 // GetNumToResolve is a free data retrieval call binding the contract method 0x5a5fa2d9.
@@ -686,7 +666,6 @@ func (_DisputeGame *DisputeGameCallerSession) GetNumToResolve(_claimIndex *big.I
 func (_DisputeGame *DisputeGameCaller) GetRequiredBond(opts *bind.CallOpts, _position *big.Int) (*big.Int, error) {
 	var out []interface{}
 	err := _DisputeGame.contract.Call(opts, &out, "getRequiredBond", _position)
-
 	if err != nil {
 		return *new(*big.Int), err
 	}
@@ -694,7 +673,6 @@ func (_DisputeGame *DisputeGameCaller) GetRequiredBond(opts *bind.CallOpts, _pos
 	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
 
 	return out0, err
-
 }
 
 // GetRequiredBond is a free data retrieval call binding the contract method 0xc395e1ca.
@@ -717,7 +695,6 @@ func (_DisputeGame *DisputeGameCallerSession) GetRequiredBond(_position *big.Int
 func (_DisputeGame *DisputeGameCaller) L1Head(opts *bind.CallOpts) ([32]byte, error) {
 	var out []interface{}
 	err := _DisputeGame.contract.Call(opts, &out, "l1Head")
-
 	if err != nil {
 		return *new([32]byte), err
 	}
@@ -725,7 +702,6 @@ func (_DisputeGame *DisputeGameCaller) L1Head(opts *bind.CallOpts) ([32]byte, er
 	out0 := *abi.ConvertType(out[0], new([32]byte)).(*[32]byte)
 
 	return out0, err
-
 }
 
 // L1Head is a free data retrieval call binding the contract method 0x6361506d.
@@ -748,7 +724,6 @@ func (_DisputeGame *DisputeGameCallerSession) L1Head() ([32]byte, error) {
 func (_DisputeGame *DisputeGameCaller) L2BlockNumber(opts *bind.CallOpts) (*big.Int, error) {
 	var out []interface{}
 	err := _DisputeGame.contract.Call(opts, &out, "l2BlockNumber")
-
 	if err != nil {
 		return *new(*big.Int), err
 	}
@@ -756,7 +731,6 @@ func (_DisputeGame *DisputeGameCaller) L2BlockNumber(opts *bind.CallOpts) (*big.
 	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
 
 	return out0, err
-
 }
 
 // L2BlockNumber is a free data retrieval call binding the contract method 0x8b85902b.
@@ -779,7 +753,6 @@ func (_DisputeGame *DisputeGameCallerSession) L2BlockNumber() (*big.Int, error) 
 func (_DisputeGame *DisputeGameCaller) L2BlockNumberChallenged(opts *bind.CallOpts) (bool, error) {
 	var out []interface{}
 	err := _DisputeGame.contract.Call(opts, &out, "l2BlockNumberChallenged")
-
 	if err != nil {
 		return *new(bool), err
 	}
@@ -787,7 +760,6 @@ func (_DisputeGame *DisputeGameCaller) L2BlockNumberChallenged(opts *bind.CallOp
 	out0 := *abi.ConvertType(out[0], new(bool)).(*bool)
 
 	return out0, err
-
 }
 
 // L2BlockNumberChallenged is a free data retrieval call binding the contract method 0x3e3ac912.
@@ -810,7 +782,6 @@ func (_DisputeGame *DisputeGameCallerSession) L2BlockNumberChallenged() (bool, e
 func (_DisputeGame *DisputeGameCaller) L2BlockNumberChallenger(opts *bind.CallOpts) (common.Address, error) {
 	var out []interface{}
 	err := _DisputeGame.contract.Call(opts, &out, "l2BlockNumberChallenger")
-
 	if err != nil {
 		return *new(common.Address), err
 	}
@@ -818,7 +789,6 @@ func (_DisputeGame *DisputeGameCaller) L2BlockNumberChallenger(opts *bind.CallOp
 	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
 
 	return out0, err
-
 }
 
 // L2BlockNumberChallenger is a free data retrieval call binding the contract method 0x30dbe570.
@@ -841,7 +811,6 @@ func (_DisputeGame *DisputeGameCallerSession) L2BlockNumberChallenger() (common.
 func (_DisputeGame *DisputeGameCaller) L2ChainId(opts *bind.CallOpts) (*big.Int, error) {
 	var out []interface{}
 	err := _DisputeGame.contract.Call(opts, &out, "l2ChainId")
-
 	if err != nil {
 		return *new(*big.Int), err
 	}
@@ -849,7 +818,6 @@ func (_DisputeGame *DisputeGameCaller) L2ChainId(opts *bind.CallOpts) (*big.Int,
 	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
 
 	return out0, err
-
 }
 
 // L2ChainId is a free data retrieval call binding the contract method 0xd6ae3cd5.
@@ -872,7 +840,6 @@ func (_DisputeGame *DisputeGameCallerSession) L2ChainId() (*big.Int, error) {
 func (_DisputeGame *DisputeGameCaller) MaxClockDuration(opts *bind.CallOpts) (uint64, error) {
 	var out []interface{}
 	err := _DisputeGame.contract.Call(opts, &out, "maxClockDuration")
-
 	if err != nil {
 		return *new(uint64), err
 	}
@@ -880,7 +847,6 @@ func (_DisputeGame *DisputeGameCaller) MaxClockDuration(opts *bind.CallOpts) (ui
 	out0 := *abi.ConvertType(out[0], new(uint64)).(*uint64)
 
 	return out0, err
-
 }
 
 // MaxClockDuration is a free data retrieval call binding the contract method 0xdabd396d.
@@ -903,7 +869,6 @@ func (_DisputeGame *DisputeGameCallerSession) MaxClockDuration() (uint64, error)
 func (_DisputeGame *DisputeGameCaller) MaxGameDepth(opts *bind.CallOpts) (*big.Int, error) {
 	var out []interface{}
 	err := _DisputeGame.contract.Call(opts, &out, "maxGameDepth")
-
 	if err != nil {
 		return *new(*big.Int), err
 	}
@@ -911,7 +876,6 @@ func (_DisputeGame *DisputeGameCaller) MaxGameDepth(opts *bind.CallOpts) (*big.I
 	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
 
 	return out0, err
-
 }
 
 // MaxGameDepth is a free data retrieval call binding the contract method 0xfa315aa9.
@@ -936,7 +900,8 @@ func (_DisputeGame *DisputeGameCaller) ResolutionCheckpoints(opts *bind.CallOpts
 	SubgameIndex              uint32
 	LeftmostPosition          *big.Int
 	CounteredBy               common.Address
-}, error) {
+}, error,
+) {
 	var out []interface{}
 	err := _DisputeGame.contract.Call(opts, &out, "resolutionCheckpoints", arg0)
 
@@ -956,7 +921,6 @@ func (_DisputeGame *DisputeGameCaller) ResolutionCheckpoints(opts *bind.CallOpts
 	outstruct.CounteredBy = *abi.ConvertType(out[3], new(common.Address)).(*common.Address)
 
 	return *outstruct, err
-
 }
 
 // ResolutionCheckpoints is a free data retrieval call binding the contract method 0xa445ece6.
@@ -967,7 +931,8 @@ func (_DisputeGame *DisputeGameSession) ResolutionCheckpoints(arg0 *big.Int) (st
 	SubgameIndex              uint32
 	LeftmostPosition          *big.Int
 	CounteredBy               common.Address
-}, error) {
+}, error,
+) {
 	return _DisputeGame.Contract.ResolutionCheckpoints(&_DisputeGame.CallOpts, arg0)
 }
 
@@ -979,7 +944,8 @@ func (_DisputeGame *DisputeGameCallerSession) ResolutionCheckpoints(arg0 *big.In
 	SubgameIndex              uint32
 	LeftmostPosition          *big.Int
 	CounteredBy               common.Address
-}, error) {
+}, error,
+) {
 	return _DisputeGame.Contract.ResolutionCheckpoints(&_DisputeGame.CallOpts, arg0)
 }
 
@@ -989,7 +955,6 @@ func (_DisputeGame *DisputeGameCallerSession) ResolutionCheckpoints(arg0 *big.In
 func (_DisputeGame *DisputeGameCaller) ResolvedAt(opts *bind.CallOpts) (uint64, error) {
 	var out []interface{}
 	err := _DisputeGame.contract.Call(opts, &out, "resolvedAt")
-
 	if err != nil {
 		return *new(uint64), err
 	}
@@ -997,7 +962,6 @@ func (_DisputeGame *DisputeGameCaller) ResolvedAt(opts *bind.CallOpts) (uint64, 
 	out0 := *abi.ConvertType(out[0], new(uint64)).(*uint64)
 
 	return out0, err
-
 }
 
 // ResolvedAt is a free data retrieval call binding the contract method 0x19effeb4.
@@ -1020,7 +984,6 @@ func (_DisputeGame *DisputeGameCallerSession) ResolvedAt() (uint64, error) {
 func (_DisputeGame *DisputeGameCaller) ResolvedSubgames(opts *bind.CallOpts, arg0 *big.Int) (bool, error) {
 	var out []interface{}
 	err := _DisputeGame.contract.Call(opts, &out, "resolvedSubgames", arg0)
-
 	if err != nil {
 		return *new(bool), err
 	}
@@ -1028,7 +991,6 @@ func (_DisputeGame *DisputeGameCaller) ResolvedSubgames(opts *bind.CallOpts, arg
 	out0 := *abi.ConvertType(out[0], new(bool)).(*bool)
 
 	return out0, err
-
 }
 
 // ResolvedSubgames is a free data retrieval call binding the contract method 0xfe2bbeb2.
@@ -1051,7 +1013,6 @@ func (_DisputeGame *DisputeGameCallerSession) ResolvedSubgames(arg0 *big.Int) (b
 func (_DisputeGame *DisputeGameCaller) RootClaim(opts *bind.CallOpts) ([32]byte, error) {
 	var out []interface{}
 	err := _DisputeGame.contract.Call(opts, &out, "rootClaim")
-
 	if err != nil {
 		return *new([32]byte), err
 	}
@@ -1059,7 +1020,6 @@ func (_DisputeGame *DisputeGameCaller) RootClaim(opts *bind.CallOpts) ([32]byte,
 	out0 := *abi.ConvertType(out[0], new([32]byte)).(*[32]byte)
 
 	return out0, err
-
 }
 
 // RootClaim is a free data retrieval call binding the contract method 0xbcef3b55.
@@ -1082,7 +1042,6 @@ func (_DisputeGame *DisputeGameCallerSession) RootClaim() ([32]byte, error) {
 func (_DisputeGame *DisputeGameCaller) SplitDepth(opts *bind.CallOpts) (*big.Int, error) {
 	var out []interface{}
 	err := _DisputeGame.contract.Call(opts, &out, "splitDepth")
-
 	if err != nil {
 		return *new(*big.Int), err
 	}
@@ -1090,7 +1049,6 @@ func (_DisputeGame *DisputeGameCaller) SplitDepth(opts *bind.CallOpts) (*big.Int
 	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
 
 	return out0, err
-
 }
 
 // SplitDepth is a free data retrieval call binding the contract method 0xec5e6308.
@@ -1113,7 +1071,6 @@ func (_DisputeGame *DisputeGameCallerSession) SplitDepth() (*big.Int, error) {
 func (_DisputeGame *DisputeGameCaller) StartingBlockNumber(opts *bind.CallOpts) (*big.Int, error) {
 	var out []interface{}
 	err := _DisputeGame.contract.Call(opts, &out, "startingBlockNumber")
-
 	if err != nil {
 		return *new(*big.Int), err
 	}
@@ -1121,7 +1078,6 @@ func (_DisputeGame *DisputeGameCaller) StartingBlockNumber(opts *bind.CallOpts) 
 	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
 
 	return out0, err
-
 }
 
 // StartingBlockNumber is a free data retrieval call binding the contract method 0x70872aa5.
@@ -1144,7 +1100,8 @@ func (_DisputeGame *DisputeGameCallerSession) StartingBlockNumber() (*big.Int, e
 func (_DisputeGame *DisputeGameCaller) StartingOutputRoot(opts *bind.CallOpts) (struct {
 	Root          [32]byte
 	L2BlockNumber *big.Int
-}, error) {
+}, error,
+) {
 	var out []interface{}
 	err := _DisputeGame.contract.Call(opts, &out, "startingOutputRoot")
 
@@ -1160,7 +1117,6 @@ func (_DisputeGame *DisputeGameCaller) StartingOutputRoot(opts *bind.CallOpts) (
 	outstruct.L2BlockNumber = *abi.ConvertType(out[1], new(*big.Int)).(**big.Int)
 
 	return *outstruct, err
-
 }
 
 // StartingOutputRoot is a free data retrieval call binding the contract method 0x57da950e.
@@ -1169,7 +1125,8 @@ func (_DisputeGame *DisputeGameCaller) StartingOutputRoot(opts *bind.CallOpts) (
 func (_DisputeGame *DisputeGameSession) StartingOutputRoot() (struct {
 	Root          [32]byte
 	L2BlockNumber *big.Int
-}, error) {
+}, error,
+) {
 	return _DisputeGame.Contract.StartingOutputRoot(&_DisputeGame.CallOpts)
 }
 
@@ -1179,7 +1136,8 @@ func (_DisputeGame *DisputeGameSession) StartingOutputRoot() (struct {
 func (_DisputeGame *DisputeGameCallerSession) StartingOutputRoot() (struct {
 	Root          [32]byte
 	L2BlockNumber *big.Int
-}, error) {
+}, error,
+) {
 	return _DisputeGame.Contract.StartingOutputRoot(&_DisputeGame.CallOpts)
 }
 
@@ -1189,7 +1147,6 @@ func (_DisputeGame *DisputeGameCallerSession) StartingOutputRoot() (struct {
 func (_DisputeGame *DisputeGameCaller) StartingRootHash(opts *bind.CallOpts) ([32]byte, error) {
 	var out []interface{}
 	err := _DisputeGame.contract.Call(opts, &out, "startingRootHash")
-
 	if err != nil {
 		return *new([32]byte), err
 	}
@@ -1197,7 +1154,6 @@ func (_DisputeGame *DisputeGameCaller) StartingRootHash(opts *bind.CallOpts) ([3
 	out0 := *abi.ConvertType(out[0], new([32]byte)).(*[32]byte)
 
 	return out0, err
-
 }
 
 // StartingRootHash is a free data retrieval call binding the contract method 0x25fc2ace.
@@ -1220,7 +1176,6 @@ func (_DisputeGame *DisputeGameCallerSession) StartingRootHash() ([32]byte, erro
 func (_DisputeGame *DisputeGameCaller) Status(opts *bind.CallOpts) (uint8, error) {
 	var out []interface{}
 	err := _DisputeGame.contract.Call(opts, &out, "status")
-
 	if err != nil {
 		return *new(uint8), err
 	}
@@ -1228,7 +1183,6 @@ func (_DisputeGame *DisputeGameCaller) Status(opts *bind.CallOpts) (uint8, error
 	out0 := *abi.ConvertType(out[0], new(uint8)).(*uint8)
 
 	return out0, err
-
 }
 
 // Status is a free data retrieval call binding the contract method 0x200d2ed2.
@@ -1251,7 +1205,6 @@ func (_DisputeGame *DisputeGameCallerSession) Status() (uint8, error) {
 func (_DisputeGame *DisputeGameCaller) Subgames(opts *bind.CallOpts, arg0 *big.Int, arg1 *big.Int) (*big.Int, error) {
 	var out []interface{}
 	err := _DisputeGame.contract.Call(opts, &out, "subgames", arg0, arg1)
-
 	if err != nil {
 		return *new(*big.Int), err
 	}
@@ -1259,7 +1212,6 @@ func (_DisputeGame *DisputeGameCaller) Subgames(opts *bind.CallOpts, arg0 *big.I
 	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
 
 	return out0, err
-
 }
 
 // Subgames is a free data retrieval call binding the contract method 0x2ad69aeb.
@@ -1282,7 +1234,6 @@ func (_DisputeGame *DisputeGameCallerSession) Subgames(arg0 *big.Int, arg1 *big.
 func (_DisputeGame *DisputeGameCaller) Version(opts *bind.CallOpts) (string, error) {
 	var out []interface{}
 	err := _DisputeGame.contract.Call(opts, &out, "version")
-
 	if err != nil {
 		return *new(string), err
 	}
@@ -1290,7 +1241,6 @@ func (_DisputeGame *DisputeGameCaller) Version(opts *bind.CallOpts) (string, err
 	out0 := *abi.ConvertType(out[0], new(string)).(*string)
 
 	return out0, err
-
 }
 
 // Version is a free data retrieval call binding the contract method 0x54fd4d50.
@@ -1313,7 +1263,6 @@ func (_DisputeGame *DisputeGameCallerSession) Version() (string, error) {
 func (_DisputeGame *DisputeGameCaller) Vm(opts *bind.CallOpts) (common.Address, error) {
 	var out []interface{}
 	err := _DisputeGame.contract.Call(opts, &out, "vm")
-
 	if err != nil {
 		return *new(common.Address), err
 	}
@@ -1321,7 +1270,6 @@ func (_DisputeGame *DisputeGameCaller) Vm(opts *bind.CallOpts) (common.Address, 
 	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
 
 	return out0, err
-
 }
 
 // Vm is a free data retrieval call binding the contract method 0x3a768463.
@@ -1344,7 +1292,6 @@ func (_DisputeGame *DisputeGameCallerSession) Vm() (common.Address, error) {
 func (_DisputeGame *DisputeGameCaller) Weth(opts *bind.CallOpts) (common.Address, error) {
 	var out []interface{}
 	err := _DisputeGame.contract.Call(opts, &out, "weth")
-
 	if err != nil {
 		return *new(common.Address), err
 	}
@@ -1352,7 +1299,6 @@ func (_DisputeGame *DisputeGameCaller) Weth(opts *bind.CallOpts) (common.Address
 	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
 
 	return out0, err
-
 }
 
 // Weth is a free data retrieval call binding the contract method 0x3fc8cef3.
@@ -1658,7 +1604,6 @@ type DisputeGameMove struct {
 //
 // Solidity: event Move(uint256 indexed parentIndex, bytes32 indexed claim, address indexed claimant)
 func (_DisputeGame *DisputeGameFilterer) FilterMove(opts *bind.FilterOpts, parentIndex []*big.Int, claim [][32]byte, claimant []common.Address) (*DisputeGameMoveIterator, error) {
-
 	var parentIndexRule []interface{}
 	for _, parentIndexItem := range parentIndex {
 		parentIndexRule = append(parentIndexRule, parentIndexItem)
@@ -1683,7 +1628,6 @@ func (_DisputeGame *DisputeGameFilterer) FilterMove(opts *bind.FilterOpts, paren
 //
 // Solidity: event Move(uint256 indexed parentIndex, bytes32 indexed claim, address indexed claimant)
 func (_DisputeGame *DisputeGameFilterer) WatchMove(opts *bind.WatchOpts, sink chan<- *DisputeGameMove, parentIndex []*big.Int, claim [][32]byte, claimant []common.Address) (event.Subscription, error) {
-
 	var parentIndexRule []interface{}
 	for _, parentIndexItem := range parentIndex {
 		parentIndexRule = append(parentIndexRule, parentIndexItem)
@@ -1818,7 +1762,6 @@ type DisputeGameResolved struct {
 //
 // Solidity: event Resolved(uint8 indexed status)
 func (_DisputeGame *DisputeGameFilterer) FilterResolved(opts *bind.FilterOpts, status []uint8) (*DisputeGameResolvedIterator, error) {
-
 	var statusRule []interface{}
 	for _, statusItem := range status {
 		statusRule = append(statusRule, statusItem)
@@ -1835,7 +1778,6 @@ func (_DisputeGame *DisputeGameFilterer) FilterResolved(opts *bind.FilterOpts, s
 //
 // Solidity: event Resolved(uint8 indexed status)
 func (_DisputeGame *DisputeGameFilterer) WatchResolved(opts *bind.WatchOpts, sink chan<- *DisputeGameResolved, status []uint8) (event.Subscription, error) {
-
 	var statusRule []interface{}
 	for _, statusItem := range status {
 		statusRule = append(statusRule, statusItem)
