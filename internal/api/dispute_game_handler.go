@@ -211,7 +211,7 @@ func (h DisputeGameHandler) GetBondInProgressPerDays(c *gin.Context) {
 	res := make([]AmountPerDay, 0)
 	h.DB.Raw(" select sum(a.bond) amount, DATE_FORMAT(FROM_UNIXTIME(se.block_time),'%Y-%m-%d') date " +
 		" from game_claim_data a left join sync_events se on a.event_id = se.id" +
-		" left join dispute_game dg on a.game_contract = dg.game_contract where dg.status=0 group by date order by date desc").Scan(&res)
+		" left join dispute_game dg on a.game_contract = dg.game_contract where dg.status=0 group by date").Scan(&res)
 	c.JSON(http.StatusOK, gin.H{
 		"data": res,
 	})
