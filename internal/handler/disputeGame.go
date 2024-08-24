@@ -61,10 +61,11 @@ func (r *RetryDisputeGameClient) ProcessDisputeGameMove(ctx context.Context, evt
 	if err != nil {
 		return fmt.Errorf("[processDisputeGameMove] event data to disputeGameMove err: %s", err)
 	}
-	index := disputeGameMove.ParentIndex.Add(disputeGameMove.ParentIndex, big.NewInt(1))
-	data, err := r.Client.RetryClaimData(ctx, &bind.CallOpts{}, index)
+	var storageClaimSize int64
+	r.DB.Where("game_contract=?", evt.ContractAddress).Count(&storageClaimSize)
+	data, err := r.Client.RetryClaimData(ctx, &bind.CallOpts{}, big.NewInt(storageClaimSize))
 	if err != nil {
-		return fmt.Errorf("[processDisputeGameMove] contract: %s, index: %d move event get claim data err: %s", evt.ContractAddress, index, errors.WithStack(err))
+		return fmt.Errorf("[processDisputeGameMove] contract: %s, index: %d move event get claim data err: %s", evt.ContractAddress, storageClaimSize, errors.WithStack(err))
 	}
 
 	pos := types.NewPositionFromGIndex(data.Position)
@@ -88,7 +89,7 @@ func (r *RetryDisputeGameClient) ProcessDisputeGameMove(ctx context.Context, evt
 	}
 	claimData := &schema.GameClaimData{
 		GameContract: evt.ContractAddress,
-		DataIndex:    index.Int64(),
+		DataIndex:    storageClaimSize,
 		ParentIndex:  data.ParentIndex,
 		CounteredBy:  data.CounteredBy.Hex(),
 		Claimant:     data.Claimant.Hex(),
