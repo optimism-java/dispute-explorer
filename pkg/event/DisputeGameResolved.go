@@ -2,6 +2,7 @@ package event
 
 import (
 	"encoding/json"
+	"github.com/spf13/cast"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
@@ -36,7 +37,7 @@ func (t *DisputeGameResolved) ToObj(data string) error {
 
 func (*DisputeGameResolved) Data(log types.Log) (string, error) {
 	transfer := &DisputeGameResolved{
-		Status: uint8(TopicToInt64(log, 1)),
+		Status: cast.ToUint8(TopicToInt64(log, 1)),
 	}
 	data, err := ToJSON(transfer)
 	if err != nil {
