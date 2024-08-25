@@ -1,7 +1,6 @@
 package v3
 
 import (
-	"fmt"
 	"github.com/go-gormigrate/gormigrate/v2"
 	"github.com/optimism-java/dispute-explorer/migration"
 	"gorm.io/gorm"
