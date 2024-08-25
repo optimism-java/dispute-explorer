@@ -4,9 +4,10 @@ import (
 	"context"
 	"encoding/hex"
 	"fmt"
-	"github.com/spf13/cast"
 	"math/big"
 	"strings"
+
+	"github.com/spf13/cast"
 
 	"github.com/ethereum-optimism/optimism/op-challenger/game/fault/types"
 
