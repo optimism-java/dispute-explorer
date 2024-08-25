@@ -20,7 +20,4 @@ var UpdateLostBondAndClaimDataTable = gormigrate.Migration{
 		}
 		return tx.AutoMigrate(&GameLostBond{}, &GameClaimData{})
 	},
-	Rollback: func(db *gorm.DB) error {
-		return fmt.Errorf("update column type error")
-	},
 }
