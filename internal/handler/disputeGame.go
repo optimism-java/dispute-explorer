@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/hex"
 	"fmt"
+	"github.com/spf13/cast"
 	"math/big"
 	"strings"
 
@@ -93,7 +94,7 @@ func (r *RetryDisputeGameClient) ProcessDisputeGameMove(ctx context.Context, evt
 		ParentIndex:  data.ParentIndex,
 		CounteredBy:  data.CounteredBy.Hex(),
 		Claimant:     data.Claimant.Hex(),
-		Bond:         data.Bond.Uint64(),
+		Bond:         cast.ToString(data.Bond),
 		Claim:        hex.EncodeToString(data.Claim[:]),
 		Position:     data.Position.Uint64(),
 		Clock:        data.Clock.Int64(),
@@ -172,7 +173,7 @@ func (r *RetryDisputeGameClient) addDisputeGame(ctx context.Context, evt *schema
 		ParentIndex:  claimData.ParentIndex,
 		CounteredBy:  claimData.CounteredBy.Hex(),
 		Claimant:     claimData.Claimant.Hex(),
-		Bond:         claimData.Bond.Uint64(),
+		Bond:         cast.ToString(claimData.Bond),
 		Claim:        hex.EncodeToString(claimData.Claim[:]),
 		Position:     claimData.Position.Uint64(),
 		Clock:        claimData.Clock.Int64(),

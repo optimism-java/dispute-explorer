@@ -7,7 +7,7 @@ type GameClaimData struct {
 	ParentIndex  uint32 `json:"parent_index"`
 	CounteredBy  string `json:"countered_by"`
 	Claimant     string `json:"claimant"`
-	Bond         uint64 `json:"bond"`
+	Bond         string `json:"bond"`
 	Claim        string `json:"claim"`
 	Position     uint64 `json:"position"`
 	Clock        int64  `json:"clock"`
