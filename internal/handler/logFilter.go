@@ -2,6 +2,9 @@ package handler
 
 import (
 	"context"
+	"math/big"
+	"strings"
+
 	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
@@ -12,8 +15,6 @@ import (
 	"github.com/optimism-java/dispute-explorer/pkg/log"
 	"github.com/pkg/errors"
 	"github.com/spf13/cast"
-	"math/big"
-	"strings"
 )
 
 func LogFilter(ctx *svc.ServiceContext, block schema.SyncBlock, addresses []common.Address, topics [][]common.Hash) ([]*schema.SyncEvent, error) {
