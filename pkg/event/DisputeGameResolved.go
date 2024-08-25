@@ -2,6 +2,7 @@ package event
 
 import (
 	"encoding/json"
+
 	"github.com/spf13/cast"
 
 	"github.com/ethereum/go-ethereum/common"
