@@ -16,12 +16,12 @@ type Config struct {
 	MySQLMaxOpenConns        int    `env:"MYSQL_MAX_OPEN_CONNS" envDefault:"20"`
 	MySQLConnMaxLifetime     int    `env:"MYSQL_CONN_MAX_LIFETIME" envDefault:"3600"`
 	Blockchain               string `env:"BLOCKCHAIN" envDefault:"sepolia"`
-	L1RPCUrl                 string `env:"L1_RPC_URL" envDefault:"https://eth-sepolia.g.alchemy.com/v2/PNunSRFo0FWRJMu5yrwBd6jF7G78YHrv"`
-	L2RPCUrl                 string `env:"L2_RPC_URL" envDefault:"https://opt-sepolia.g.alchemy.com/v2/FPgbOkDCgG8t0ppZ6TwZXLucr1wl_us4"`
+	L1RPCUrl                 string `env:"L1_RPC_URL" envDefault:"https://eth-sepolia.g.alchemy.com/v2/RT1mCGRyVMx1F-XlY4Es4Zz-Q8Jrasg6"`
+	L2RPCUrl                 string `env:"L2_RPC_URL" envDefault:"https://opt-sepolia.g.alchemy.com/v2/RT1mCGRyVMx1F-XlY4Es4Zz-Q8Jrasg6"`
 	RPCRateLimit             int    `env:"RPC_RATE_LIMIT" envDefault:"15"`
 	RPCRateBurst             int    `env:"RPC_RATE_BURST" envDefault:"5"`
-	FromBlockNumber          int64  `env:"FROM_BLOCK_NUMBER" envDefault:"6034337"`
-	FromBlockHash            string `env:"FROM_BLOCK_HASH" envDefault:"0xafc3e42c5899591501d29649ffef0bfdec68f8d77e6d44ee00ef88cfb1a2f163"`
+	FromBlockNumber          int64  `env:"FROM_BLOCK_NUMBER" envDefault:"6553153"`
+	FromBlockHash            string `env:"FROM_BLOCK_HASH" envDefault:"0xa70d3e1ce45374951bc9f830ce926442cf30b61d4cffc8f3a027bd3d7e60d560"`
 	DisputeGameProxyContract string `env:"DISPUTE_GAME_PROXY_CONTRACT" envDefault:"0x05F9613aDB30026FFd634f38e5C4dFd30a197Fa1"`
 	APIPort                  string `env:"API_PORT" envDefault:"8088"`
 }

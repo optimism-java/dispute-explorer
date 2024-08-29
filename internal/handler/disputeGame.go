@@ -64,7 +64,7 @@ func (r *RetryDisputeGameClient) ProcessDisputeGameMove(ctx context.Context, evt
 		return fmt.Errorf("[processDisputeGameMove] event data to disputeGameMove err: %s", err)
 	}
 	var storageClaimSize int64
-	r.DB.Where("game_contract=?", evt.ContractAddress).Count(&storageClaimSize)
+	r.DB.Model(&schema.GameClaimData{}).Where("game_contract=?", evt.ContractAddress).Count(&storageClaimSize)
 	data, err := r.Client.RetryClaimData(ctx, &bind.CallOpts{}, big.NewInt(storageClaimSize))
 	if err != nil {
 		return fmt.Errorf("[processDisputeGameMove] contract: %s, index: %d move event get claim data err: %s", evt.ContractAddress, storageClaimSize, errors.WithStack(err))

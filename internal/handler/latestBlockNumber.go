@@ -12,7 +12,7 @@ import (
 
 func LatestBlackNumber(ctx *svc.ServiceContext) {
 	for {
-		blockJSON, err := rpc.HTTPPostJSON("", ctx.Config.L1RPCUrl, "{\"jsonrpc\":\"2.0\",\"method\":\"eth_getBlockByNumber\",\"params\":[\"safe\", false],\"id\":1}")
+		blockJSON, err := rpc.HTTPPostJSON("", ctx.Config.L1RPCUrl, "{\"jsonrpc\":\"2.0\",\"method\":\"eth_getBlockByNumber\",\"params\":[\"finalized\", false],\"id\":1}")
 		if err != nil {
 			log.Errorf("[Handler.LatestBlackNumber] Syncing block by number error: %s\n", errors.WithStack(err))
 			time.Sleep(3 * time.Second)
