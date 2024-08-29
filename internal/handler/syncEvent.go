@@ -1,13 +1,14 @@
 package handler
 
 import (
-	"sync"
-	"time"
-
+	"fmt"
 	"github.com/optimism-java/dispute-explorer/internal/blockchain"
 	"github.com/optimism-java/dispute-explorer/internal/schema"
 	"github.com/optimism-java/dispute-explorer/internal/svc"
+	evt "github.com/optimism-java/dispute-explorer/pkg/event"
 	"github.com/optimism-java/dispute-explorer/pkg/log"
+	"sync"
+	"time"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/pkg/errors"
@@ -84,6 +85,14 @@ func HandlePendingBlock(ctx *svc.ServiceContext, block schema.SyncBlock) error {
 			} else if err == gorm.ErrRecordNotFound {
 				BatchEvents = append(BatchEvents, event)
 				log.Infof("[Handler.SyncEvent.PendingBlock]block %d, BatchEvents len is %d:", block.BlockNumber, len(BatchEvents))
+				if event.EventName == "DisputeGameCreated" {
+					dispute := evt.DisputeGameCreated{}
+					err := dispute.ToObj(event.Data)
+					if err != nil {
+						return fmt.Errorf("[processDisputeGameCreated] event data to DisputeGameCreated err: %s", err)
+					}
+					blockchain.AddContract(dispute.DisputeProxy)
+				}
 			}
 		}
 		if len(BatchEvents) > 0 {

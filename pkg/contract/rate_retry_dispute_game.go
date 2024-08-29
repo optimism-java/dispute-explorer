@@ -184,3 +184,23 @@ func (s *RateAndRetryDisputeGameClient) startingBlockNumber(ctx context.Context,
 	opts.Context = cCtx
 	return s.disputeGame.StartingBlockNumber(opts)
 }
+
+func (s *RateAndRetryDisputeGameClient) RetryMaxSplitDepth(ctx context.Context, opts *bind.CallOpts) (*big.Int, error) {
+	return retry.Do(ctx, maxAttempts, s.strategy, func() (*big.Int, error) {
+		res, err := s.maxSplitDepth(ctx, opts)
+		if err != nil {
+			log.Errorf("Failed to splitDepth info %s", err)
+		}
+		return res, err
+	})
+}
+
+func (s *RateAndRetryDisputeGameClient) maxSplitDepth(ctx context.Context, opts *bind.CallOpts) (*big.Int, error) {
+	if err := s.rl.Wait(ctx); err != nil {
+		return nil, err
+	}
+	cCtx, cancel := context.WithTimeout(ctx, 10*time.Second)
+	defer cancel()
+	opts.Context = cCtx
+	return s.disputeGame.MaxGameDepth(opts)
+}

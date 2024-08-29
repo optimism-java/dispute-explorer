@@ -53,7 +53,6 @@ func (r *RetryDisputeGameClient) ProcessDisputeGameCreated(ctx context.Context, 
 	if err != nil {
 		return fmt.Errorf("[processDisputeGameCreated] addDisputeGame err: %s", err)
 	}
-	blockchain.AddContract(dispute.DisputeProxy)
 	return nil
 }
 
@@ -76,6 +75,7 @@ func (r *RetryDisputeGameClient) ProcessDisputeGameMove(ctx context.Context, evt
 		return fmt.Errorf("[processDisputeGameMove] contract: %s, get splitDepth error: %s", evt.ContractAddress, errors.WithStack(err))
 	}
 	splitDepths := types.Depth(splitDepth.Uint64())
+
 	poststateBlock, err := r.Client.RetryL2BlockNumber(ctx, &bind.CallOpts{})
 	if err != nil {
 		return fmt.Errorf("[processDisputeGameMove] GET game poststateBlock err: %s", err)
@@ -85,10 +85,13 @@ func (r *RetryDisputeGameClient) ProcessDisputeGameMove(ctx context.Context, evt
 	if err != nil {
 		return fmt.Errorf("[processDisputeGameMove] GET prestateBlock err: %s", err)
 	}
-	outputblock, err := claimedBlockNumber(pos, splitDepths, prestateBlock.Uint64(), poststateBlock.Uint64())
-	if err != nil {
-		return fmt.Errorf("[processDisputeGameMove] GET outputblock err: %s", err)
+	var outputblock uint64
+	if pos.Depth() > splitDepths {
+		outputblock = 0
+	} else {
+		outputblock, _ = claimedBlockNumber(pos, splitDepths, prestateBlock.Uint64(), poststateBlock.Uint64())
 	}
+
 	claimData := &schema.GameClaimData{
 		GameContract: evt.ContractAddress,
 		DataIndex:    storageClaimSize,
@@ -97,7 +100,7 @@ func (r *RetryDisputeGameClient) ProcessDisputeGameMove(ctx context.Context, evt
 		Claimant:     data.Claimant.Hex(),
 		Bond:         cast.ToString(data.Bond),
 		Claim:        hex.EncodeToString(data.Claim[:]),
-		Position:     data.Position.Uint64(),
+		Position:     cast.ToString(data.Position),
 		Clock:        data.Clock.Int64(),
 		OutputBlock:  outputblock,
 		EventID:      evt.ID,
@@ -176,7 +179,7 @@ func (r *RetryDisputeGameClient) addDisputeGame(ctx context.Context, evt *schema
 		Claimant:     claimData.Claimant.Hex(),
 		Bond:         cast.ToString(claimData.Bond),
 		Claim:        hex.EncodeToString(claimData.Claim[:]),
-		Position:     claimData.Position.Uint64(),
+		Position:     cast.ToString(claimData.Position),
 		Clock:        claimData.Clock.Int64(),
 		OutputBlock:  l2Block.Uint64(),
 		EventID:      evt.ID,

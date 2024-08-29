@@ -9,7 +9,7 @@ type GameClaimData struct {
 	Claimant     string `json:"claimant"`
 	Bond         string `json:"bond"`
 	Claim        string `json:"claim"`
-	Position     uint64 `json:"position"`
+	Position     string `json:"position"`
 	Clock        int64  `json:"clock"`
 	OutputBlock  uint64 `json:"output_block"`
 	EventID      int64  `json:"event_id"`
