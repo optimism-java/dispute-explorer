@@ -2,13 +2,14 @@ package handler
 
 import (
 	"fmt"
+	"sync"
+	"time"
+
 	"github.com/optimism-java/dispute-explorer/internal/blockchain"
 	"github.com/optimism-java/dispute-explorer/internal/schema"
 	"github.com/optimism-java/dispute-explorer/internal/svc"
 	evt "github.com/optimism-java/dispute-explorer/pkg/event"
 	"github.com/optimism-java/dispute-explorer/pkg/log"
-	"sync"
-	"time"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/pkg/errors"
