@@ -6,6 +6,9 @@ const (
 	DisputeGameStatusInProgress    = 0
 	DisputeGameStatusChallengerWin = 1
 	DisputeGameStatusDefenderWin   = 2
+
+	DisputeGameOnChainStatusValid    = "valid"
+	DisputeGameOnChainStatusRollBack = "rollback"
 )
 
 type DisputeGame struct {
@@ -27,6 +30,7 @@ type DisputeGame struct {
 	Status          uint8  `json:"status"`
 	Computed        bool   `json:"computed"`
 	CalculateLost   bool   `json:"calculate_lost"`
+	OnChainStatus   string `json:"on_chain_status"`
 }
 
 func (DisputeGame) TableName() string {

@@ -1,27 +1,26 @@
 package handler
 
 import (
+	"context"
 	"time"
-
-	"github.com/optimism-java/dispute-explorer/pkg/rpc"
-	"github.com/pkg/errors"
 
 	"github.com/optimism-java/dispute-explorer/internal/svc"
 	"github.com/optimism-java/dispute-explorer/pkg/log"
+	"github.com/pkg/errors"
+	"github.com/spf13/cast"
 )
 
 func LatestBlackNumber(ctx *svc.ServiceContext) {
 	for {
-		blockJSON, err := rpc.HTTPPostJSON("", ctx.Config.L1RPCUrl, "{\"jsonrpc\":\"2.0\",\"method\":\"eth_getBlockByNumber\",\"params\":[\"finalized\", false],\"id\":1}")
+		latest, err := ctx.L1RPC.BlockNumber(context.Background())
 		if err != nil {
 			log.Errorf("[Handler.LatestBlackNumber] Syncing block by number error: %s\n", errors.WithStack(err))
 			time.Sleep(3 * time.Second)
 			continue
 		}
-		block := rpc.ParseJSONBlock(string(blockJSON))
 
-		ctx.LatestBlockNumber = block.Number()
-		log.Infof("[Handle.LatestBlackNumber] Syncing latest block number: %d \n", block.Number())
+		ctx.LatestBlockNumber = cast.ToInt64(latest)
+		log.Infof("[Handle.LatestBlackNumber] Syncing latest block number: %d \n", latest)
 		time.Sleep(3 * time.Second)
 	}
 }

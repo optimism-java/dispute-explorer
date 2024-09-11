@@ -14,7 +14,7 @@ import (
 )
 
 func SyncBlock(ctx *svc.ServiceContext) {
-	// 防止服务启停切换时同时存在2个服务同步数据
+	// Prevent data synchronization between two services during service start/stop switchover
 	time.Sleep(10 * time.Second)
 	var syncedBlock schema.SyncBlock
 	err := ctx.DB.Where("status = ? or status = ? ", schema.BlockValid, schema.BlockPending).Order("block_number desc").First(&syncedBlock).Error
@@ -54,6 +54,7 @@ func SyncBlock(ctx *svc.ServiceContext) {
 
 		if common.HexToHash(block.ParentHash()) != ctx.SyncedBlockHash {
 			log.Errorf("[Handler.SyncBlock] ParentHash of the block being synchronized is inconsistent: %s \n", ctx.SyncedBlockHash)
+			rollbackBlock(ctx)
 			continue
 		}
 
@@ -78,5 +79,48 @@ func SyncBlock(ctx *svc.ServiceContext) {
 
 		ctx.SyncedBlockNumber = block.Number()
 		ctx.SyncedBlockHash = common.HexToHash(block.Hash())
+	}
+}
+
+func rollbackBlock(ctx *svc.ServiceContext) {
+	for {
+		rollbackBlockNumber := ctx.SyncedBlockNumber
+
+		log.Infof("[Handler.SyncBlock.RollBackBlock]  Try to rollback block number: %d\n", rollbackBlockNumber)
+
+		blockJSON, err := rpc.HTTPPostJSON("", ctx.Config.L1RPCUrl, "{\"jsonrpc\":\"2.0\",\"method\":\"eth_getBlockByNumber\",\"params\":[\""+fmt.Sprintf("0x%X", rollbackBlockNumber)+"\", true],\"id\":1}")
+		if err != nil {
+			log.Errorf("[Handler.SyncBlock.RollRackBlock]Rollback block by number error: %s\n", errors.WithStack(err))
+			continue
+		}
+
+		rollbackBlock := rpc.ParseJSONBlock(string(blockJSON))
+		log.Errorf("[Handler.SyncBlock.RollRackBlock] rollbackBlock: %s, syncedBlockHash: %s \n", rollbackBlock.Hash(), ctx.SyncedBlockHash)
+
+		if common.HexToHash(rollbackBlock.Hash()) == ctx.SyncedBlockHash {
+			err = ctx.DB.Transaction(func(tx *gorm.DB) error {
+				err = tx.Model(schema.SyncBlock{}).Where(" (status = ? or status = ?) AND block_number>?",
+					schema.BlockValid, schema.BlockPending, ctx.SyncedBlockNumber).Update("status", schema.BlockRollback).Error
+				if err != nil {
+					log.Errorf("[Handler.SyncBlock.RollRackBlock] Rollback Block err: %s\n", errors.WithStack(err))
+					return err
+				}
+				return nil
+			})
+			if err != nil {
+				log.Errorf("[Handler.SyncBlock.RollRackBlock] Rollback db transaction err: %s\n", errors.WithStack(err))
+				continue
+			}
+			log.Infof("[Handler.SyncBlock.RollRackBlock] Rollback blocks is Stop\n")
+			return
+		}
+		var previousBlock schema.SyncBlock
+		rest := ctx.DB.Where("block_number = ? AND (status = ? or status = ?) ", rollbackBlockNumber-1, schema.BlockValid, schema.BlockPending).First(&previousBlock)
+		if rest.Error != nil {
+			log.Errorf("[Handler.RollRackBlock] Previous block by number error: %s\n", errors.WithStack(rest.Error))
+			continue
+		}
+		ctx.SyncedBlockNumber = previousBlock.BlockNumber
+		ctx.SyncedBlockHash = common.HexToHash(previousBlock.BlockHash)
 	}
 }
