@@ -2,12 +2,13 @@ package handler
 
 import (
 	"fmt"
-	"github.com/optimism-java/dispute-explorer/internal/blockchain"
-	"github.com/pkg/errors"
-	"gorm.io/gorm"
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/optimism-java/dispute-explorer/internal/blockchain"
+	"github.com/pkg/errors"
+	"gorm.io/gorm"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/optimism-java/dispute-explorer/internal/schema"

@@ -123,5 +123,4 @@ func rollbackBlock(ctx *svc.ServiceContext) {
 		ctx.SyncedBlockNumber = previousBlock.BlockNumber
 		ctx.SyncedBlockHash = common.HexToHash(previousBlock.BlockHash)
 	}
-
 }
