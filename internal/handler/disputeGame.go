@@ -63,10 +63,12 @@ func (r *RetryDisputeGameClient) ProcessDisputeGameMove(ctx context.Context, evt
 		return fmt.Errorf("[processDisputeGameMove] event data to disputeGameMove err: %s", err)
 	}
 	var storageClaimSize int64
-	r.DB.Model(&schema.GameClaimData{}).Where("game_contract=?", evt.ContractAddress).Count(&storageClaimSize)
+	r.DB.Model(&schema.GameClaimData{}).Where("game_contract=? and on_chain_status = ?",
+		evt.ContractAddress, schema.GameClaimDataOnChainStatusValid).Count(&storageClaimSize)
 	data, err := r.Client.RetryClaimData(ctx, &bind.CallOpts{}, big.NewInt(storageClaimSize))
 	if err != nil {
-		return fmt.Errorf("[processDisputeGameMove] contract: %s, index: %d move event get claim data err: %s", evt.ContractAddress, storageClaimSize, errors.WithStack(err))
+		return fmt.Errorf("[processDisputeGameMove] contract: %s, index: %d move event get claim data err: %s",
+			evt.ContractAddress, storageClaimSize, errors.WithStack(err))
 	}
 
 	pos := types.NewPositionFromGIndex(data.Position)
@@ -172,17 +174,18 @@ func (r *RetryDisputeGameClient) addDisputeGame(ctx context.Context, evt *schema
 	}
 
 	gameClaim := &schema.GameClaimData{
-		GameContract: strings.ToLower(disputeGame.DisputeProxy),
-		DataIndex:    0,
-		ParentIndex:  claimData.ParentIndex,
-		CounteredBy:  claimData.CounteredBy.Hex(),
-		Claimant:     claimData.Claimant.Hex(),
-		Bond:         cast.ToString(claimData.Bond),
-		Claim:        hex.EncodeToString(claimData.Claim[:]),
-		Position:     cast.ToString(claimData.Position),
-		Clock:        claimData.Clock.Int64(),
-		OutputBlock:  l2Block.Uint64(),
-		EventID:      evt.ID,
+		GameContract:  strings.ToLower(disputeGame.DisputeProxy),
+		DataIndex:     0,
+		ParentIndex:   claimData.ParentIndex,
+		CounteredBy:   claimData.CounteredBy.Hex(),
+		Claimant:      claimData.Claimant.Hex(),
+		Bond:          cast.ToString(claimData.Bond),
+		Claim:         hex.EncodeToString(claimData.Claim[:]),
+		Position:      cast.ToString(claimData.Position),
+		Clock:         claimData.Clock.Int64(),
+		OutputBlock:   l2Block.Uint64(),
+		EventID:       evt.ID,
+		OnChainStatus: schema.GameClaimDataOnChainStatusValid,
 	}
 
 	game := &schema.DisputeGame{
@@ -201,6 +204,7 @@ func (r *RetryDisputeGameClient) addDisputeGame(ctx context.Context, evt *schema
 		GameType:        disputeGame.GameType,
 		L2BlockNumber:   l2Block.Int64(),
 		Status:          schema.DisputeGameStatusInProgress,
+		OnChainStatus:   schema.DisputeGameOnChainStatusValid,
 	}
 	err = r.DB.Transaction(func(tx *gorm.DB) error {
 		err = tx.Save(gameClaim).Error
