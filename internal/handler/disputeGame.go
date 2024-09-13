@@ -103,7 +103,7 @@ func (r *RetryDisputeGameClient) ProcessDisputeGameMove(ctx context.Context, evt
 		Bond:         cast.ToString(data.Bond),
 		Claim:        hex.EncodeToString(data.Claim[:]),
 		Position:     cast.ToString(data.Position),
-		Clock:        data.Clock.Int64(),
+		Clock:        cast.ToString(data.Clock),
 		OutputBlock:  outputblock,
 		EventID:      evt.ID,
 	}
@@ -182,7 +182,7 @@ func (r *RetryDisputeGameClient) addDisputeGame(ctx context.Context, evt *schema
 		Bond:          cast.ToString(claimData.Bond),
 		Claim:         hex.EncodeToString(claimData.Claim[:]),
 		Position:      cast.ToString(claimData.Position),
-		Clock:         claimData.Clock.Int64(),
+		Clock:         cast.ToString(claimData.Clock),
 		OutputBlock:   l2Block.Uint64(),
 		EventID:       evt.ID,
 		OnChainStatus: schema.GameClaimDataOnChainStatusValid,
