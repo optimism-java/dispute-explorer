@@ -95,17 +95,18 @@ func (r *RetryDisputeGameClient) ProcessDisputeGameMove(ctx context.Context, evt
 	}
 
 	claimData := &schema.GameClaimData{
-		GameContract: evt.ContractAddress,
-		DataIndex:    storageClaimSize,
-		ParentIndex:  data.ParentIndex,
-		CounteredBy:  data.CounteredBy.Hex(),
-		Claimant:     data.Claimant.Hex(),
-		Bond:         cast.ToString(data.Bond),
-		Claim:        hex.EncodeToString(data.Claim[:]),
-		Position:     cast.ToString(data.Position),
-		Clock:        data.Clock.Int64(),
-		OutputBlock:  outputblock,
-		EventID:      evt.ID,
+		GameContract:  evt.ContractAddress,
+		DataIndex:     storageClaimSize,
+		ParentIndex:   data.ParentIndex,
+		CounteredBy:   data.CounteredBy.Hex(),
+		Claimant:      data.Claimant.Hex(),
+		Bond:          cast.ToString(data.Bond),
+		Claim:         hex.EncodeToString(data.Claim[:]),
+		Position:      cast.ToString(data.Position),
+		Clock:         cast.ToString(data.Clock),
+		OutputBlock:   outputblock,
+		EventID:       evt.ID,
+		OnChainStatus: schema.GameClaimDataOnChainStatusValid,
 	}
 	err = r.DB.Transaction(func(tx *gorm.DB) error {
 		err = tx.Save(claimData).Error
@@ -182,7 +183,7 @@ func (r *RetryDisputeGameClient) addDisputeGame(ctx context.Context, evt *schema
 		Bond:          cast.ToString(claimData.Bond),
 		Claim:         hex.EncodeToString(claimData.Claim[:]),
 		Position:      cast.ToString(claimData.Position),
-		Clock:         claimData.Clock.Int64(),
+		Clock:         cast.ToString(claimData.Clock),
 		OutputBlock:   l2Block.Uint64(),
 		EventID:       evt.ID,
 		OnChainStatus: schema.GameClaimDataOnChainStatusValid,

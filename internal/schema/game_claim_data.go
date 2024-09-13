@@ -15,7 +15,7 @@ type GameClaimData struct {
 	Bond          string `json:"bond"`
 	Claim         string `json:"claim"`
 	Position      string `json:"position"`
-	Clock         int64  `json:"clock"`
+	Clock         string `json:"clock"`
 	OutputBlock   uint64 `json:"output_block"`
 	EventID       int64  `json:"event_id"`
 	OnChainStatus string `json:"on_chain_status"`
