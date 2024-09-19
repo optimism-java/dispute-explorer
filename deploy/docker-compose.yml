@@ -15,7 +15,7 @@ services:
 
   node1:
     container_name: dispute-explorer-backend
-    image: ghcr.io/optimism-java/dispute-explorer:sha-8918beb
+    image: ghcr.io/optimism-java/dispute-explorer:sha-01ae5fc
     restart: on-failure
     depends_on:
       - mysql
