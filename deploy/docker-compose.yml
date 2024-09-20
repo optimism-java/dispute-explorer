@@ -7,6 +7,7 @@ services:
     image: mysql:8.0.28
     environment:
       MYSQL_ROOT_PASSWORD: "root"
+    restart: always
     ports:
       - "3367:3306"
     volumes:
@@ -21,6 +22,32 @@ services:
       - mysql
     env_file:
       - ../.env
+    network_mode: host
+
+  meiliSearch:
+    container_name: meilisearch
+    image: getmeili/meilisearch:v1.8
+    restart: always
+    depends_on:
+      - mysql
+      - node1
+    environment:
+      - MEILI_MASTER_KEY=123456
+    ports:
+      - "7700:7700"
+    volumes:
+      - ./meili_data:/meili_data
+
+  meiliSync:
+    platform: linux/x86_64
+    image: long2ice/meilisync:sha-fc1877d
+    restart: on-failure
+    depends_on:
+      - mysql
+      - node1
+      - meiliSearch
+    volumes:
+      - ./config.yml:/meilisync/config.yml
     network_mode: host
 
 

@@ -11,8 +11,8 @@ source:
   password: root
   database: dispute_explorer
 meilisearch:
-  api_url: http://localhost:7701
-  api_key: 2b85b8c251421e43808ee9e20e34e6b001268cee726845d3ba9b40a83fa728e9
+  api_url: http://localhost:7700
+  api_key: 56313adcb3ebc9220c6b225f7a17d4a1f84183a64ddecac62d179486ed1f0114
 sync:
   - table: dispute_game
     index: disputegames
@@ -60,8 +60,3 @@ sync:
   - table: sync_events
     index: syncevents
     full: true
-
-
-
-
-
