@@ -57,72 +57,19 @@ Now, this project is running now.
 
 Tip: if you just need a backend service to collect all data, Run Step 1 and Step 2.
 
-# Step 3. Run meiliSearch 
+# Step 3. Run the deployment script 
 
-Run a meiliSearch service to sync MySql data for front service to search quickly
-
-```
-cd deploy
-docker-compose -f docker-compose-meiliSearch.yml up -d meiliSearch
-```
-
-Now, meiliSearch is running. 
-
-# Step 4. Run meiliSync
-
-first, we need to find the api_key of meiliSearch 
-
-```
-curl -H "Authorization: Bearer <Token>" http://localhost:port/keys
-```
-
-You should get a result, similar to :
-
-```json
-{
-	"results": [{
-		"name": "Default Search API Key",
-		"description": "Use it to search from the frontend",
-		"key": "d09536ef1e2742b4792c607465dc169f659f1b2dcb0107bfdce2542b602ed534",
-		"uid": "675ff658-9e73-460c-a3be-c6fcee624edf",
-		"actions": ["search"],
-		"indexes": ["*"],
-		"expiresAt": null,
-		"createdAt": "2024-08-06T08:47:38.225365511Z",
-		"updatedAt": "2024-08-06T08:47:38.225365511Z"
-	}, {
-		"name": "Default Admin API Key",
-		"description": "Use it for anything that is not a search operation. Caution! Do not expose it on a public frontend",
-		"key": "abc40e8457b32aa86d20ab0db0b42a86298b253209c4c31d9936b378e686d132",
-		"uid": "db1499f6-59a1-42c7-a13a-e18e191f456c",
-		"actions": ["*"],
-		"indexes": ["*"],
-		"expiresAt": null,
-		"createdAt": "2024-08-06T08:47:38.225052792Z",
-		"updatedAt": "2024-08-06T08:47:38.225052792Z"
-	}],
-	"offset": 0,
-	"limit": 20,
-	"total": 2
-}
-```
-
-And, use `Default Admin API Key`, `key` to update config.yml
-
-```
-meilisearch:
-  api_url: http://localhost:7701  
-  api_key: abc40e8457b32aa86d20ab0db0b42a86298b253209c4c31d9936b378e686d132
-```
-
-launch the meiliSync service
+Run the script to launch the service
 
 ```
 cd deploy
-docker-compose -f docker-compose-meiliSearch up -d meiliSync
+./star.sh
 ```
 
-# Step 5. Validate meiliSync Service
+Now, this project is running. 
+
+
+# Step 4. Validate meiliSync Service
 
 We can visit meiliSearch api to validate meiliSync service. more [meiliSearch docs](https://www.meilisearch.com/docs/reference/api/overview)
 
@@ -166,5 +113,5 @@ You should get a result, similar to :
 }
 ```
 
-If you get information like this, it means our deploy it`s success.
+If you get information like this, it means our deployment it`s success.
 
