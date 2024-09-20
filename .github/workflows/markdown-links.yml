@@ -13,6 +13,9 @@ on:
 jobs:
   markdown-link-check:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [ 20.x ]
     steps:
       - uses: actions/checkout@v3
       - uses: technote-space/get-diff-action@v6.1.2
@@ -26,4 +29,5 @@ jobs:
           check-modified-files-only: "yes"
           use-quiet-mode: "yes"
           base-branch: "dev"
+          node-version: ${{ matrix.node-version }}
         if: env.GIT_DIFF
