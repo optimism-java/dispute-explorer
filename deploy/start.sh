@@ -1,5 +1,19 @@
 #!/bin/bash
 
+# Install yq if not already installed
+if ! [ -x "$(command -v yq)" ]; then
+  echo 'Error: yq is not installed. Installing yq...' >&2
+  if [ -x "$(command -v brew)" ]; then
+    brew install yq
+  elif [ -x "$(command -v apt)" ]; then
+    sudo apt update
+    sudo apt install yq
+  else
+    echo 'Error: Package manager not found. Please install yq manually.' >&2
+    exit 1
+  fi
+fi
+
 docker-compose -f docker-compose.yml up -d
 
 sleep 5

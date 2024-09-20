@@ -42,20 +42,17 @@ func SyncDispute(ctx *svc.ServiceContext) {
 					err = HandlePendingEvent(ctx, event)
 					if err != nil {
 						log.Errorf("[Handler.SyncEvent] HandlePendingBlock err: %s\n", errors.WithStack(err))
-						time.Sleep(500 * time.Millisecond)
 					}
 				} else if event.Status == schema.EventRollback {
 					// event.status=rollback & block.status=invalid
 					err = HandleRollbackEvent(ctx, event)
 					if err != nil {
 						log.Errorf("[Handler.SyncEvent] HandleRollbackBlock err: %s\n", errors.WithStack(err))
-						time.Sleep(500 * time.Millisecond)
 					}
 				}
 			}(&wg, ctx, event)
 		}
 		wg.Wait()
-		time.Sleep(3 * time.Second)
 	}
 }
 
