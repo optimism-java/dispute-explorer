@@ -7,13 +7,13 @@ import (
 	"net/http"
 
 	"github.com/ethereum-optimism/optimism/op-challenger/game/fault/types"
-	"github.com/ethereum/go-ethereum/accounts/abi/bind"
-	"github.com/optimism-java/dispute-explorer/pkg/contract"
-
 	"github.com/ethereum-optimism/optimism/op-service/eth"
 	"github.com/ethereum-optimism/optimism/op-service/predeploys"
+	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
+	config "github.com/optimism-java/dispute-explorer/internal/types"
+	"github.com/optimism-java/dispute-explorer/pkg/contract"
 	"github.com/pkg/errors"
 
 	"github.com/spf13/cast"
@@ -25,16 +25,18 @@ import (
 )
 
 type DisputeGameHandler struct {
-	DB    *gorm.DB
-	L1RPC *ethclient.Client
-	L2RPC *ethclient.Client
+	Config *config.Config
+	DB     *gorm.DB
+	L1RPC  *ethclient.Client
+	L2RPC  *ethclient.Client
 }
 
-func NewDisputeGameHandler(db *gorm.DB, l1rpc *ethclient.Client, l2rpc *ethclient.Client) *DisputeGameHandler {
+func NewDisputeGameHandler(db *gorm.DB, l1rpc *ethclient.Client, l2rpc *ethclient.Client, config *config.Config) *DisputeGameHandler {
 	return &DisputeGameHandler{
-		DB:    db,
-		L1RPC: l1rpc,
-		L2RPC: l2rpc,
+		DB:     db,
+		L1RPC:  l1rpc,
+		L2RPC:  l2rpc,
+		Config: config,
 	}
 }
 
@@ -377,4 +379,17 @@ func (h DisputeGameHandler) gamesClaimByPosition(req *CalculateClaim) (string, e
 		return "", err
 	}
 	return root, nil
+}
+
+// @Summary get current block chain name
+// @Schemes
+// @Description get current block chain name
+// @Accept json
+// @Produce json
+// @Success 200
+// @Router	/disputegames/chainname  [get]
+func (h DisputeGameHandler) GetCurrentBlockChain(c *gin.Context) {
+	c.JSON(http.StatusOK, gin.H{
+		"blockchain": h.Config.Blockchain,
+	})
 }

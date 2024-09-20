@@ -98,13 +98,31 @@ const docTemplate = `{
         },
         "/disputegames/calculate/claim": {
             "post": {
-                "description": "calculate dispute game honest claim by postion",
+                "description": "calculate dispute game honest claim by position",
                 "consumes": [
                     "application/json"
                 ],
                 "produces": [
                     "application/json"
                 ],
+                "summary": "calculate claim by position",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/disputegames/chainname": {
+            "get": {
+                "description": "get current block chain name",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "get current block chain name",
                 "responses": {
                     "200": {
                         "description": "OK"

@@ -89,12 +89,24 @@ paths:
     post:
       consumes:
       - application/json
-      description: calculate dispute game honest claim by postion
+      description: calculate dispute game honest claim by position
       produces:
       - application/json
       responses:
         "200":
           description: OK
+      summary: calculate claim by position
+  /disputegames/chainname:
+    get:
+      consumes:
+      - application/json
+      description: get current block chain name
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: get current block chain name
   /disputegames/claimroot/:blockNumber:
     get:
       consumes:
