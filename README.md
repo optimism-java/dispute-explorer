@@ -57,7 +57,7 @@ Now, this project is running now.
 
 Tip: if you just need a backend service to collect all data, Run Step 1 and Step 2.
 
-# Step 3. Run the deployment script 
+# Step 3. Run the deployment script
 
 Run the script to launch the service
 
@@ -66,8 +66,7 @@ cd deploy
 ./star.sh
 ```
 
-Now, this project is running. 
-
+Now, this project is running.
 
 # Step 4. Validate meiliSync Service
 
@@ -114,4 +113,3 @@ You should get a result, similar to :
 ```
 
 If you get information like this, it means our deployment it`s success.
-
