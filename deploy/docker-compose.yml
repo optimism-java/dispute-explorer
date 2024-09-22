@@ -1,10 +1,9 @@
 version: "3"
 
 services:
-
   mysql:
     container_name: mysql
-    image: mysql:8.0.28
+    image: mysql:8.4.2
     environment:
       MYSQL_ROOT_PASSWORD: "root"
     restart: always
@@ -22,7 +21,8 @@ services:
       - mysql
     env_file:
       - ../.env
-    network_mode: host
+    ports:
+      - "8080:8080"
 
   meiliSearch:
     container_name: meilisearch
@@ -50,6 +50,14 @@ services:
       - ./config.yml:/meilisync/config.yml
     network_mode: host
 
-
-
-
+  frontend:
+    image: ghcr.io/optimism-java/dispute-explorer-frontend:development
+    restart: on-failure
+    depends_on:
+      - mysql
+      - node1
+      - meiliSearch
+    environment:
+      - ADMIN_KEY=123456
+    ports:
+      - "8888:80"
