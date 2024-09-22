@@ -20,8 +20,8 @@ type Config struct {
 	L2RPCUrl                 string `env:"L2_RPC_URL" envDefault:"https://opt-sepolia.g.alchemy.com/v2/RT1mCGRyVMx1F-XlY4Es4Zz-Q8Jrasg6"`
 	RPCRateLimit             int    `env:"RPC_RATE_LIMIT" envDefault:"15"`
 	RPCRateBurst             int    `env:"RPC_RATE_BURST" envDefault:"5"`
-	FromBlockNumber          int64  `env:"FROM_BLOCK_NUMBER" envDefault:"6670522"`
-	FromBlockHash            string `env:"FROM_BLOCK_HASH" envDefault:"0x7989e1ff25d1fb6e3391f51cba7c0438f487516eabd4a568f6cc778da73c145f"`
+	FromBlockNumber          int64  `env:"FROM_BLOCK_NUMBER" envDefault:"5515562"`
+	FromBlockHash            string `env:"FROM_BLOCK_HASH" envDefault:"0x5205c17557759edaef9120f56af802aeaa2827a60d674a0413e77e9c515bdfba"`
 	DisputeGameProxyContract string `env:"DISPUTE_GAME_PROXY_CONTRACT" envDefault:"0x05F9613aDB30026FFd634f38e5C4dFd30a197Fa1"`
 	APIPort                  string `env:"API_PORT" envDefault:"8088"`
 }

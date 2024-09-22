@@ -31,6 +31,8 @@ type DisputeGame struct {
 	Computed        bool   `json:"computed"`
 	CalculateLost   bool   `json:"calculate_lost"`
 	OnChainStatus   string `json:"on_chain_status"`
+	ClaimDataLen    int64  `json:"claim_data_len"`
+	GetLenStatus    bool   `json:"get_len_status"`
 }
 
 func (DisputeGame) TableName() string {

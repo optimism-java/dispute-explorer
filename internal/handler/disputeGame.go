@@ -70,6 +70,11 @@ func (r *RetryDisputeGameClient) ProcessDisputeGameMove(ctx context.Context, evt
 		return fmt.Errorf("[processDisputeGameMove] contract: %s, index: %d move event get claim data err: %s",
 			evt.ContractAddress, storageClaimSize, errors.WithStack(err))
 	}
+	var game schema.DisputeGame
+	rest := r.DB.Where("game_contract=?", evt.ContractAddress).First(&game)
+	if rest.Error != nil {
+		return fmt.Errorf("[processDisputeGameMove] find game error: %s", errors.WithStack(rest.Error))
+	}
 
 	pos := types.NewPositionFromGIndex(data.Position)
 	splitDepth, err := r.Client.RetrySplitDepth(ctx, &bind.CallOpts{})
@@ -94,6 +99,8 @@ func (r *RetryDisputeGameClient) ProcessDisputeGameMove(ctx context.Context, evt
 		outputblock, _ = claimedBlockNumber(pos, splitDepths, prestateBlock.Uint64(), poststateBlock.Uint64())
 	}
 
+	game.ClaimDataLen = storageClaimSize + 1
+
 	claimData := &schema.GameClaimData{
 		GameContract:  evt.ContractAddress,
 		DataIndex:     storageClaimSize,
@@ -117,6 +124,10 @@ func (r *RetryDisputeGameClient) ProcessDisputeGameMove(ctx context.Context, evt
 		err = tx.Save(evt).Error
 		if err != nil {
 			return fmt.Errorf("[processDisputeGameMove] save event err: %s\n ", err)
+		}
+		err = tx.Save(game).Error
+		if err != nil {
+			return fmt.Errorf("[processDisputeGameMove] update game claim len err: %s\n ", err)
 		}
 		return nil
 	})
@@ -206,6 +217,8 @@ func (r *RetryDisputeGameClient) addDisputeGame(ctx context.Context, evt *schema
 		L2BlockNumber:   l2Block.Int64(),
 		Status:          schema.DisputeGameStatusInProgress,
 		OnChainStatus:   schema.DisputeGameOnChainStatusValid,
+		ClaimDataLen:    1,
+		GetLenStatus:    false,
 	}
 	err = r.DB.Transaction(func(tx *gorm.DB) error {
 		err = tx.Save(gameClaim).Error

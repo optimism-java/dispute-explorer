@@ -3,7 +3,6 @@ package handler
 import (
 	"fmt"
 	"strings"
-	"sync"
 	"time"
 
 	"github.com/optimism-java/dispute-explorer/internal/blockchain"
@@ -32,27 +31,22 @@ func SyncDispute(ctx *svc.ServiceContext) {
 			continue
 		}
 
-		var wg sync.WaitGroup
 		for _, event := range events {
-			wg.Add(1)
-			go func(_wg *sync.WaitGroup, ctx *svc.ServiceContext, event schema.SyncEvent) {
-				defer _wg.Done()
-				if event.Status == schema.EventPending {
-					// add events & block.status= valid
-					err = HandlePendingEvent(ctx, event)
-					if err != nil {
-						log.Errorf("[Handler.SyncEvent] HandlePendingBlock err: %s\n", errors.WithStack(err))
-					}
-				} else if event.Status == schema.EventRollback {
-					// event.status=rollback & block.status=invalid
-					err = HandleRollbackEvent(ctx, event)
-					if err != nil {
-						log.Errorf("[Handler.SyncEvent] HandleRollbackBlock err: %s\n", errors.WithStack(err))
-					}
+			if event.Status == schema.EventPending {
+				// add events & block.status= valid
+				err = HandlePendingEvent(ctx, event)
+				if err != nil {
+					log.Errorf("[Handler.SyncEvent] HandlePendingBlock err: %s\n", errors.WithStack(err))
 				}
-			}(&wg, ctx, event)
+			} else if event.Status == schema.EventRollback {
+				// event.status=rollback & block.status=invalid
+				err = HandleRollbackEvent(ctx, event)
+				if err != nil {
+					log.Errorf("[Handler.SyncEvent] HandleRollbackBlock err: %s\n", errors.WithStack(err))
+				}
+			}
 		}
-		wg.Wait()
+		time.Sleep(3 * time.Second)
 	}
 }
 

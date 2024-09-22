@@ -17,4 +17,6 @@ func Run(ctx *svc.ServiceContext) {
 	go SyncCredit(ctx)
 	// calculate lost bond
 	go CalculateLostBond(ctx)
+	// sync claim len
+	go SyncClaimDataLen(ctx)
 }
