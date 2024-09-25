@@ -55,4 +55,19 @@ echo "$sortEventRsp"
 
 sortGamesUrl="http://localhost:7700/indexes/disputegames/settings/sortable-attributes"
 sortGamesRsp=$(curl -X PUT $sortGamesUrl -H "Content-Type: application/json" -H "Authorization: Bearer $bearer_token" -d "$sortable_attributes")
-echo $sortGamesRsp
+echo "$sortGamesRsp"
+
+maxEventTotalHits='{ "maxTotalHits": 100000 }'
+totalEventHitsUrl="http://localhost:7700/indexes/syncevents/settings/sortable-attributes"
+maxEventsRsp=$(curl -X PATCH $totalEventHitsUrl -H "Content-Type: application/json" -H "Authorization: Bearer $bearer_token" -d "$maxEventTotalHits")
+echo "$maxEventsRsp"
+
+maxGamesTotalHits='{ "maxTotalHits": 100000 }'
+totalGamesHitsUrl="http://localhost:7700/indexes/disputegames/settings/sortable-attributes"
+maxGamesRsp=$(curl -X PATCH $totalGamesHitsUrl -H "Content-Type: application/json" -H "Authorization: Bearer $bearer_token" -d "$maxGamesTotalHits")
+echo "$maxGamesRsp"
+
+setFilter='["id","block_number","get_len_status","claim_data_len"]'
+setFilterUrl="http://localhost:7700/indexes/disputegames/settings/filterable-attributes"
+setFilterRsp=$(curl -X PUT $setFilterUrl -H "Content-Type: application/json" -H "Authorization: Bearer $bearer_token" -d "$setFilter")
+echo "$setFilterRsp"
