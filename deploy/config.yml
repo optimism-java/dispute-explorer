@@ -12,7 +12,7 @@ source:
   database: dispute_explorer
 meilisearch:
   api_url: http://localhost:7700
-  api_key: 56313adcb3ebc9220c6b225f7a17d4a1f84183a64ddecac62d179486ed1f0114
+  api_key: 2938b40b6c8a907ca74408c51951bd136e50c3f86d6d85a239e83745a89bdf31
 sync:
   - table: dispute_game
     index: disputegames

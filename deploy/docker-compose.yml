@@ -9,16 +9,22 @@ services:
     restart: always
     ports:
       - "3367:3306"
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 45s
+      interval: 10s
+      retries: 10
     volumes:
       - ./mysql/datadir:/var/lib/mysql
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
 
   node1:
     container_name: dispute-explorer-backend
-    image: ghcr.io/optimism-java/dispute-explorer:sha-01ae5fc
+    image: ghcr.io/optimism-java/dispute-explorer:sha-a666742
     restart: on-failure
     depends_on:
-      - mysql
+      mysql:
+        condition: service_healthy
     env_file:
       - ../.env
     ports:
