@@ -15,12 +15,12 @@ func LatestBlackNumber(ctx *svc.ServiceContext) {
 		latest, err := ctx.L1RPC.BlockNumber(context.Background())
 		if err != nil {
 			log.Errorf("[Handler.LatestBlackNumber] Syncing block by number error: %s\n", errors.WithStack(err))
-			time.Sleep(3 * time.Second)
+			time.Sleep(12 * time.Second)
 			continue
 		}
 
 		ctx.LatestBlockNumber = cast.ToInt64(latest)
 		log.Infof("[Handle.LatestBlackNumber] Syncing latest block number: %d \n", latest)
-		time.Sleep(3 * time.Second)
+		time.Sleep(12 * time.Second)
 	}
 }
