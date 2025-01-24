@@ -1,6 +1,16 @@
 # dispute-explorer
 
-This is a dispute explorer for showing dispute games information who use op stack
+This is a dispute explorer for displaying information about dispute games that utilize the OP Stack.
+
+https://www.superproof.wtf/
+
+Superproof is an convenient tool for blockchain developers working with the OP stack, as well as for individuals eager to engage in dispute games.
+
+For developers, Superproof provides real-time data on dispute games, allowing them to monitor key metrics such as the total games played and win numbers for both "Attackers" and "Defenders." This visibility is easy for understanding game dynamics on the blockchain.
+
+For users, Superproof simplifies participation in the fault-proof module, making it easy to invoke game methods like "attack" and "defend." It also facilitates obtaining honest claims, ensuring transparency in the gaming process. Additionally, the platform offers clear visualizations that detail each step in the dispute process, enhancing user comprehension.
+
+In summary, Superproof not only helps developers easily access vital information but also streamlines user participation in dispute games, benefiting all involved in fault-proof interactions.
 
 You can use Docker to run this.
 
