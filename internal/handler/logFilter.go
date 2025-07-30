@@ -46,11 +46,32 @@ func LogsToEvents(ctx *svc.ServiceContext, logs []types.Log, syncBlockID int64) 
 
 		blockTime := blockTimes[cast.ToInt64(vlog.BlockNumber)]
 		if blockTime == 0 {
-			block, err := ctx.L1RPC.BlockByNumber(context.Background(), big.NewInt(cast.ToInt64(vlog.BlockNumber)))
+			blockNumber := cast.ToInt64(vlog.BlockNumber)
+			log.Infof("[LogsToEvents] Fetching block info for block number: %d, txHash: %s", blockNumber, vlog.TxHash.Hex())
+
+			// Try to get block using L1RPC client first
+			block, err := ctx.L1RPC.BlockByNumber(context.Background(), big.NewInt(blockNumber))
 			if err != nil {
-				return nil, errors.WithStack(err)
+				log.Errorf("[LogsToEvents] BlockByNumber failed for block %d, txHash: %s, error: %s", blockNumber, vlog.TxHash.Hex(), err.Error())
+
+				// If error contains "transaction type not supported", try alternative approach
+				if strings.Contains(err.Error(), "transaction type not supported") {
+					log.Infof("[LogsToEvents] Attempting to get block timestamp using header only for block %d", blockNumber)
+					header, headerErr := ctx.L1RPC.HeaderByNumber(context.Background(), big.NewInt(blockNumber))
+					if headerErr != nil {
+						log.Errorf("[LogsToEvents] HeaderByNumber also failed for block %d: %s", blockNumber, headerErr.Error())
+						return nil, errors.WithStack(err)
+					}
+					blockTime = cast.ToInt64(header.Time)
+					blockTimes[blockNumber] = blockTime
+					log.Infof("[LogsToEvents] Successfully got block timestamp %d for block %d using header", blockTime, blockNumber)
+				} else {
+					return nil, errors.WithStack(err)
+				}
+			} else {
+				blockTime = cast.ToInt64(block.Time())
+				blockTimes[blockNumber] = blockTime
 			}
-			blockTime = cast.ToInt64(block.Time())
 		}
 		data, err := Event.Data(vlog)
 		if err != nil {

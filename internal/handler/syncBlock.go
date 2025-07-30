@@ -34,6 +34,22 @@ func SyncBlock(ctx *svc.ServiceContext) {
 	log.Infof("[Handler.SyncBlock]SyncedBlockHash:%s", ctx.SyncedBlockHash.String())
 
 	for {
+		// Check pending blocks count before syncing new blocks
+		var pendingCount int64
+		err := ctx.DB.Model(&schema.SyncBlock{}).Where("status = ?", schema.BlockPending).Count(&pendingCount).Error
+		if err != nil {
+			log.Errorf("[Handler.SyncBlock] Check pending blocks count error: %s\n", errors.WithStack(err))
+			time.Sleep(3 * time.Second)
+			continue
+		}
+
+		// If pending blocks reach 40, pause block sync to save RPC traffic for other processing
+		if pendingCount >= 40 {
+			log.Infof("[Handler.SyncBlock] Pending blocks count (%d) reached limit (40), pausing block sync\n", pendingCount)
+			time.Sleep(10 * time.Second)
+			continue
+		}
+
 		syncingBlockNumber := ctx.SyncedBlockNumber + 1
 		log.Infof("[Handler.SyncBlock] Try to sync block number: %d\n", syncingBlockNumber)
 
