@@ -29,5 +29,4 @@ jobs:
           check-modified-files-only: "yes"
           use-quiet-mode: "yes"
           base-branch: "dev"
-          node-version: ${{ matrix.node-version }}
         if: env.GIT_DIFF
