@@ -2,6 +2,7 @@ run:
   tests: false
   # timeout for analysis, e.g. 30s, 5m, default is 1m
   # timeout: 5m
+  go: "1.21"
 
 linters:
   enable:
@@ -22,7 +23,6 @@ linters:
     - misspell
     - nakedret
     - prealloc
-    - exportloopref
     - staticcheck
     - stylecheck
     - typecheck
@@ -31,7 +31,6 @@ linters:
     - unused
     - nolintlint
     - asciicheck
-    - exportloopref
     - gofumpt
     - gomodguard
     - whitespace
@@ -63,7 +62,7 @@ linters-settings:
     require-explanation: false
     require-specific: false
   gofumpt:
-    lang-version: "1.21"
+    # lang-version option is deprecated, use global run.go instead
   gomodguard:
     blocked:
       versions: # List of blocked module version constraints

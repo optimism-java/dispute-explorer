@@ -1,7 +1,7 @@
 package v1
 
 import (
-	"github.com/go-gormigrate/gormigrate/v2"
+	gormigrate "github.com/go-gormigrate/gormigrate/v2"
 	"github.com/optimism-java/dispute-explorer/migration"
 	"gorm.io/gorm"
 )

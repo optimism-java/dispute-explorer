@@ -40,9 +40,10 @@ func SyncEvent(ctx *svc.ServiceContext) {
 				defer _wg.Done()
 				if block.Status == schema.BlockPending {
 					// add events & block.status= valid
+					log.Infof("[Handler.SyncEvent] Processing pending block %d (hash: %s)", block.BlockNumber, block.BlockHash)
 					err = HandlePendingBlock(ctx, block)
 					if err != nil {
-						log.Errorf("[Handler.SyncEvent] HandlePendingBlock err: %s\n", errors.WithStack(err))
+						log.Errorf("[Handler.SyncEvent] HandlePendingBlock err for block %d (hash: %s): %s\n", block.BlockNumber, block.BlockHash, errors.WithStack(err))
 						time.Sleep(500 * time.Millisecond)
 					}
 				} else if block.Status == schema.BlockRollback {
@@ -63,10 +64,12 @@ func HandlePendingBlock(ctx *svc.ServiceContext, block schema.SyncBlock) error {
 	log.Infof("[Handler.SyncEvent.PendingBlock]Start: %d, %s \n", block.BlockNumber, block.BlockHash)
 	log.Infof("[Handler.SyncEvent.PendingBlock]GetContracts: %v\n", blockchain.GetContracts())
 	log.Infof("[Handler.SyncEvent.PendingBlock]GetEvents: %v\n", blockchain.GetEvents())
+
+	log.Infof("[Handler.SyncEvent.PendingBlock] About to call LogFilter for block %d", block.BlockNumber)
 	events, err := LogFilter(ctx, block, blockchain.GetContracts(), [][]common.Hash{blockchain.GetEvents()})
 	log.Infof("[Handler.SyncEvent.PendingBlock] block %d, events number is %d:", block.BlockNumber, len(events))
 	if err != nil {
-		log.Errorf("[Handler.SyncEvent.PendingBlock] Log filter err: %s\n", err)
+		log.Errorf("[Handler.SyncEvent.PendingBlock] Log filter err for block %d (hash: %s): %s\n", block.BlockNumber, block.BlockHash, err)
 		return errors.WithStack(err)
 	}
 	eventCount := len(events)

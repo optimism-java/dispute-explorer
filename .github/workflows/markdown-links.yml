@@ -6,7 +6,6 @@ on:
   push:
     branches:
       - main
-      - dev
     paths:
       - '**.md'
 
@@ -28,6 +27,5 @@ jobs:
           folder-path: "docs"
           check-modified-files-only: "yes"
           use-quiet-mode: "yes"
-          base-branch: "dev"
-          node-version: ${{ matrix.node-version }}
+          base-branch: "main"
         if: env.GIT_DIFF
