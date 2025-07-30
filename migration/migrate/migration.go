@@ -3,7 +3,7 @@ package migrate
 import (
 	"log"
 
-	"github.com/go-gormigrate/gormigrate/v2"
+	gormigrate "github.com/go-gormigrate/gormigrate/v2"
 	"github.com/optimism-java/dispute-explorer/migration/version"
 	v0 "github.com/optimism-java/dispute-explorer/migration/version/v0"
 	"gorm.io/gorm"
