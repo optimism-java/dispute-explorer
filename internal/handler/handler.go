@@ -30,7 +30,7 @@ func Run(ctx *svc.ServiceContext) {
 // startRPCMonitoring starts RPC monitoring (internal function)
 func startRPCMonitoring(ctx *svc.ServiceContext) {
 	// Create monitor, output statistics every 30 seconds
-	monitor := rpc.NewMonitor(ctx.RpcManager, 30*time.Second)
+	monitor := rpc.NewMonitor(ctx.RPCManager, 30*time.Second)
 
 	// Start monitoring
 	monitor.Start(ctx.Context)

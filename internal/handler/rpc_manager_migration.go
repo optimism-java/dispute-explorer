@@ -16,7 +16,7 @@ import (
 func LatestBlockNumberWithRateLimit(ctx *svc.ServiceContext) {
 	for {
 		// use unified RPC manager to get L1 latest block number (with rate limiting)
-		latest, err := ctx.RpcManager.GetLatestBlockNumber(context.Background(), true)
+		latest, err := ctx.RPCManager.GetLatestBlockNumber(context.Background(), true)
 		if err != nil {
 			log.Errorf("[Handler.LatestBlockNumberWithRateLimit] Get latest block number error: %s\n", errors.WithStack(err))
 			time.Sleep(12 * time.Second)
@@ -44,7 +44,7 @@ func SyncBlockWithRateLimit(ctx *svc.ServiceContext) {
 		}
 
 		// Use unified RPC manager to get block (automatically handles rate limiting)
-		block, err := ctx.RpcManager.GetBlockByNumber(context.Background(), big.NewInt(syncingBlockNumber), true)
+		block, err := ctx.RPCManager.GetBlockByNumber(context.Background(), big.NewInt(syncingBlockNumber), true)
 		if err != nil {
 			log.Errorf("[Handler.SyncBlockWithRateLimit] Get block by number error: %s\n", errors.WithStack(err))
 			time.Sleep(3 * time.Second)
@@ -80,7 +80,7 @@ func GetBlockByNumberHTTP(ctx *svc.ServiceContext, blockNumber int64) ([]byte, e
 		cast.ToString(blockNumber) + "\", true],\"id\":1}"
 
 	// Use unified RPC manager for HTTP calls (automatically handles rate limiting)
-	return ctx.RpcManager.HTTPPostJSON(context.Background(), requestBody, true)
+	return ctx.RPCManager.HTTPPostJSON(context.Background(), requestBody, true)
 }
 
 // MigrateExistingHandlers example of migrating existing handlers
@@ -100,7 +100,7 @@ func MigrateExistingHandlers(ctx *svc.ServiceContext) {
 // StartRPCMonitoring starts RPC monitoring
 func StartRPCMonitoring(ctx *svc.ServiceContext) {
 	// Create monitor
-	monitor := rpc.NewMonitor(ctx.RpcManager, 30*time.Second)
+	monitor := rpc.NewMonitor(ctx.RPCManager, 30*time.Second)
 
 	// Start monitoring
 	monitor.Start(ctx.Context)
@@ -109,10 +109,10 @@ func StartRPCMonitoring(ctx *svc.ServiceContext) {
 // Compatibility functions: provide smooth migration for existing code
 func GetL1Client(ctx *svc.ServiceContext) interface{} {
 	// Return rate-limited client wrapper
-	return ctx.RpcManager.GetRawClient(true)
+	return ctx.RPCManager.GetRawClient(true)
 }
 
 func GetL2Client(ctx *svc.ServiceContext) interface{} {
 	// Return rate-limited client wrapper
-	return ctx.RpcManager.GetRawClient(false)
+	return ctx.RPCManager.GetRawClient(false)
 }

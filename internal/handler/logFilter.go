@@ -25,7 +25,7 @@ func LogFilter(ctx *svc.ServiceContext, block schema.SyncBlock, addresses []comm
 		Addresses: addresses,
 	}
 	// use unified RPC manager to filter logs (automatically applies rate limiting)
-	logs, err := ctx.RpcManager.FilterLogs(context.Background(), query, true) // true indicates L1
+	logs, err := ctx.RPCManager.FilterLogs(context.Background(), query, true) // true indicates L1
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
@@ -51,14 +51,14 @@ func LogsToEvents(ctx *svc.ServiceContext, logs []types.Log, syncBlockID int64) 
 			log.Infof("[LogsToEvents] Fetching block info for block number: %d, txHash: %s", blockNumber, vlog.TxHash.Hex())
 
 			// Use unified RPC manager to get block (automatically applies rate limiting)
-			block, err := ctx.RpcManager.GetBlockByNumber(context.Background(), big.NewInt(blockNumber), true) // true indicates L1
+			block, err := ctx.RPCManager.GetBlockByNumber(context.Background(), big.NewInt(blockNumber), true) // true indicates L1
 			if err != nil {
 				log.Errorf("[LogsToEvents] GetBlockByNumber failed for block %d, txHash: %s, error: %s (via RPC Manager)", blockNumber, vlog.TxHash.Hex(), err.Error())
 
 				// If error contains "transaction type not supported", try alternative approach
 				if strings.Contains(err.Error(), "transaction type not supported") {
 					log.Infof("[LogsToEvents] Attempting to get block timestamp using header only for block %d", blockNumber)
-					header, headerErr := ctx.RpcManager.HeaderByNumber(context.Background(), big.NewInt(blockNumber), true) // true indicates L1
+					header, headerErr := ctx.RPCManager.HeaderByNumber(context.Background(), big.NewInt(blockNumber), true) // true indicates L1
 					if headerErr != nil {
 						log.Errorf("[LogsToEvents] HeaderByNumber also failed for block %d: %s (via RPC Manager)", blockNumber, headerErr.Error())
 						return nil, errors.WithStack(err)

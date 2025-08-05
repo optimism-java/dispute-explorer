@@ -21,7 +21,7 @@ func CreateManagerFromConfig(config *types.Config) (*Manager, error) {
 // CreateManagerWithSeparateLimits creates manager with different L1/L2 limits
 func CreateManagerWithSeparateLimits(
 	l1URL, l2URL string,
-	l1Rate, l1Burst, l2Rate, l2Burst int,
+	l1Rate, l1Burst, _, _ int, // l2Rate, l2Burst unused for now
 ) (*Manager, error) {
 	// Note: current implementation uses same limits for L1 and L2
 	// if different limits are needed, Manager structure needs to be modified
@@ -35,7 +35,7 @@ func CreateManagerWithSeparateLimits(
 }
 
 // WrapExistingClient wraps existing ethclient.Client (for backward compatibility)
-func WrapExistingClient(config *types.Config, existingL1, existingL2 interface{}) (*Manager, error) {
+func WrapExistingClient(config *types.Config, _, _ interface{}) (*Manager, error) {
 	// create new manager but maintain backward compatibility
 	manager, err := CreateManagerFromConfig(config)
 	if err != nil {

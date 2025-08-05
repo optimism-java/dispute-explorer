@@ -108,14 +108,13 @@ func (m *Manager) GetLatestBlockNumber(ctx context.Context, isL1 bool) (uint64, 
 		}
 		m.updateRequestStats(true)
 		return m.l1Client.BlockNumber(ctx)
-	} else {
-		if err := m.l2Limiter.Wait(ctx); err != nil {
-			m.updateRateLimitedStats(false)
-			return 0, fmt.Errorf("L2 rate limit exceeded: %w", err)
-		}
-		m.updateRequestStats(false)
-		return m.l2Client.BlockNumber(ctx)
 	}
+	if err := m.l2Limiter.Wait(ctx); err != nil {
+		m.updateRateLimitedStats(false)
+		return 0, fmt.Errorf("L2 rate limit exceeded: %w", err)
+	}
+	m.updateRequestStats(false)
+	return m.l2Client.BlockNumber(ctx)
 }
 
 // GetBlockByNumber gets a block by number (with rate limiting)
@@ -127,14 +126,13 @@ func (m *Manager) GetBlockByNumber(ctx context.Context, number *big.Int, isL1 bo
 		}
 		m.updateRequestStats(true)
 		return m.l1Client.BlockByNumber(ctx, number)
-	} else {
-		if err := m.l2Limiter.Wait(ctx); err != nil {
-			m.updateRateLimitedStats(false)
-			return nil, fmt.Errorf("L2 rate limit exceeded: %w", err)
-		}
-		m.updateRequestStats(false)
-		return m.l2Client.BlockByNumber(ctx, number)
 	}
+	if err := m.l2Limiter.Wait(ctx); err != nil {
+		m.updateRateLimitedStats(false)
+		return nil, fmt.Errorf("L2 rate limit exceeded: %w", err)
+	}
+	m.updateRequestStats(false)
+	return m.l2Client.BlockByNumber(ctx, number)
 }
 
 // GetBlockByHash gets a block by hash (with rate limiting)
@@ -146,14 +144,13 @@ func (m *Manager) GetBlockByHash(ctx context.Context, hash common.Hash, isL1 boo
 		}
 		m.updateRequestStats(true)
 		return m.l1Client.BlockByHash(ctx, hash)
-	} else {
-		if err := m.l2Limiter.Wait(ctx); err != nil {
-			m.updateRateLimitedStats(false)
-			return nil, fmt.Errorf("L2 rate limit exceeded: %w", err)
-		}
-		m.updateRequestStats(false)
-		return m.l2Client.BlockByHash(ctx, hash)
 	}
+	if err := m.l2Limiter.Wait(ctx); err != nil {
+		m.updateRateLimitedStats(false)
+		return nil, fmt.Errorf("L2 rate limit exceeded: %w", err)
+	}
+	m.updateRequestStats(false)
+	return m.l2Client.BlockByHash(ctx, hash)
 }
 
 // FilterLogs filters logs (with rate limiting)
@@ -165,14 +162,13 @@ func (m *Manager) FilterLogs(ctx context.Context, query ethereum.FilterQuery, is
 		}
 		m.updateRequestStats(true)
 		return m.l1Client.FilterLogs(ctx, query)
-	} else {
-		if err := m.l2Limiter.Wait(ctx); err != nil {
-			m.updateRateLimitedStats(false)
-			return nil, fmt.Errorf("L2 rate limit exceeded: %w", err)
-		}
-		m.updateRequestStats(false)
-		return m.l2Client.FilterLogs(ctx, query)
 	}
+	if err := m.l2Limiter.Wait(ctx); err != nil {
+		m.updateRateLimitedStats(false)
+		return nil, fmt.Errorf("L2 rate limit exceeded: %w", err)
+	}
+	m.updateRequestStats(false)
+	return m.l2Client.FilterLogs(ctx, query)
 }
 
 // HeaderByNumber gets a block header by number (with rate limiting)
@@ -184,14 +180,13 @@ func (m *Manager) HeaderByNumber(ctx context.Context, number *big.Int, isL1 bool
 		}
 		m.updateRequestStats(true)
 		return m.l1Client.HeaderByNumber(ctx, number)
-	} else {
-		if err := m.l2Limiter.Wait(ctx); err != nil {
-			m.updateRateLimitedStats(false)
-			return nil, fmt.Errorf("L2 rate limit exceeded: %w", err)
-		}
-		m.updateRequestStats(false)
-		return m.l2Client.HeaderByNumber(ctx, number)
 	}
+	if err := m.l2Limiter.Wait(ctx); err != nil {
+		m.updateRateLimitedStats(false)
+		return nil, fmt.Errorf("L2 rate limit exceeded: %w", err)
+	}
+	m.updateRequestStats(false)
+	return m.l2Client.HeaderByNumber(ctx, number)
 }
 
 // CallContract calls a smart contract (with rate limiting)
@@ -203,14 +198,13 @@ func (m *Manager) CallContract(ctx context.Context, call ethereum.CallMsg, block
 		}
 		m.updateRequestStats(true)
 		return m.l1Client.CallContract(ctx, call, blockNumber)
-	} else {
-		if err := m.l2Limiter.Wait(ctx); err != nil {
-			m.updateRateLimitedStats(false)
-			return nil, fmt.Errorf("L2 rate limit exceeded: %w", err)
-		}
-		m.updateRequestStats(false)
-		return m.l2Client.CallContract(ctx, call, blockNumber)
 	}
+	if err := m.l2Limiter.Wait(ctx); err != nil {
+		m.updateRateLimitedStats(false)
+		return nil, fmt.Errorf("L2 rate limit exceeded: %w", err)
+	}
+	m.updateRequestStats(false)
+	return m.l2Client.CallContract(ctx, call, blockNumber)
 }
 
 // HTTPPostJSON HTTP POST JSON request (with rate limiting)

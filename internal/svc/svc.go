@@ -21,7 +21,7 @@ type ServiceContext struct {
 	Config            *types.Config
 	L1RPC             *ethclient.Client // 保留向后兼容
 	L2RPC             *ethclient.Client // 保留向后兼容
-	RpcManager        *rpc.Manager      // 新增统一RPC管理器
+	RPCManager        *rpc.Manager      // 新增统一RPC管理器
 	DB                *gorm.DB
 	LatestBlockNumber int64
 	SyncedBlockNumber int64
@@ -68,7 +68,7 @@ func NewServiceContext(ctx context.Context, cfg *types.Config) *ServiceContext {
 		Config:     cfg,
 		L1RPC:      l1Client,   // 保留向后兼容
 		L2RPC:      l2Client,   // 保留向后兼容
-		RpcManager: rpcManager, // 新的统一管理器
+		RPCManager: rpcManager, // 新的统一管理器
 		DB:         storage,
 		Context:    ctx,
 	}

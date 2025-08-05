@@ -61,7 +61,7 @@ func SyncBlock(ctx *svc.ServiceContext) {
 
 		// use unified RPC manager to get block (automatically applies rate limiting)
 		requestBody := "{\"jsonrpc\":\"2.0\",\"method\":\"eth_getBlockByNumber\",\"params\":[\"" + fmt.Sprintf("0x%X", syncingBlockNumber) + "\", true],\"id\":1}"
-		blockJSON, err := ctx.RpcManager.HTTPPostJSON(context.Background(), requestBody, true) // true indicates L1
+		blockJSON, err := ctx.RPCManager.HTTPPostJSON(context.Background(), requestBody, true) // true indicates L1
 		if err != nil {
 			log.Errorf("[Handler.SyncBlock] Syncing block by number error (with rate limit): %s\n", errors.WithStack(err))
 			time.Sleep(3 * time.Second)
@@ -108,7 +108,7 @@ func rollbackBlock(ctx *svc.ServiceContext) {
 
 		// use unified RPC manager for rollback operation (automatically applies rate limiting)
 		requestBody := "{\"jsonrpc\":\"2.0\",\"method\":\"eth_getBlockByNumber\",\"params\":[\"" + fmt.Sprintf("0x%X", rollbackBlockNumber) + "\", true],\"id\":1}"
-		blockJSON, err := ctx.RpcManager.HTTPPostJSON(context.Background(), requestBody, true) // true indicates L1
+		blockJSON, err := ctx.RPCManager.HTTPPostJSON(context.Background(), requestBody, true) // true indicates L1
 		if err != nil {
 			log.Errorf("[Handler.SyncBlock.RollBackBlock] Rollback block by number error (with rate limit): %s\n", errors.WithStack(err))
 			continue

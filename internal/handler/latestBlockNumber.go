@@ -13,7 +13,7 @@ import (
 func LatestBlackNumber(ctx *svc.ServiceContext) {
 	for {
 		// use unified RPC manager to get latest block number (automatically applies rate limiting)
-		latest, err := ctx.RpcManager.GetLatestBlockNumber(context.Background(), true) // true indicates L1
+		latest, err := ctx.RPCManager.GetLatestBlockNumber(context.Background(), true) // true indicates L1
 		if err != nil {
 			log.Errorf("[Handler.LatestBlackNumber] Get latest block number error (with rate limit): %s\n", errors.WithStack(err))
 			time.Sleep(12 * time.Second)
