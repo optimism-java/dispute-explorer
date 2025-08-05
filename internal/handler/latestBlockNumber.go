@@ -12,15 +12,16 @@ import (
 
 func LatestBlackNumber(ctx *svc.ServiceContext) {
 	for {
-		latest, err := ctx.L1RPC.BlockNumber(context.Background())
+		// use unified RPC manager to get latest block number (automatically applies rate limiting)
+		latest, err := ctx.RPCManager.GetLatestBlockNumber(context.Background(), true) // true indicates L1
 		if err != nil {
-			log.Errorf("[Handler.LatestBlackNumber] Syncing block by number error: %s\n", errors.WithStack(err))
+			log.Errorf("[Handler.LatestBlackNumber] Get latest block number error (with rate limit): %s\n", errors.WithStack(err))
 			time.Sleep(12 * time.Second)
 			continue
 		}
 
 		ctx.LatestBlockNumber = cast.ToInt64(latest)
-		log.Infof("[Handle.LatestBlackNumber] Syncing latest block number: %d \n", latest)
+		log.Infof("[Handler.LatestBlackNumber] Latest block number: %d (via RPC Manager)\n", latest)
 		time.Sleep(12 * time.Second)
 	}
 }

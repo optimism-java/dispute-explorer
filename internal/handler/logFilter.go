@@ -24,11 +24,12 @@ func LogFilter(ctx *svc.ServiceContext, block schema.SyncBlock, addresses []comm
 		Topics:    topics,
 		Addresses: addresses,
 	}
-	logs, err := ctx.L1RPC.FilterLogs(context.Background(), query)
+	// use unified RPC manager to filter logs (automatically applies rate limiting)
+	logs, err := ctx.RPCManager.FilterLogs(context.Background(), query, true) // true indicates L1
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
-	log.Infof("[CancelOrder.Handle] Cancel Pending List Length is %d ,block number is %d \n", len(logs), block.BlockNumber)
+	log.Infof("[LogFilter] Event logs length is %d, block number is %d (via RPC Manager)\n", len(logs), block.BlockNumber)
 	return LogsToEvents(ctx, logs, block.ID)
 }
 
@@ -49,22 +50,22 @@ func LogsToEvents(ctx *svc.ServiceContext, logs []types.Log, syncBlockID int64) 
 			blockNumber := cast.ToInt64(vlog.BlockNumber)
 			log.Infof("[LogsToEvents] Fetching block info for block number: %d, txHash: %s", blockNumber, vlog.TxHash.Hex())
 
-			// Try to get block using L1RPC client first
-			block, err := ctx.L1RPC.BlockByNumber(context.Background(), big.NewInt(blockNumber))
+			// Use unified RPC manager to get block (automatically applies rate limiting)
+			block, err := ctx.RPCManager.GetBlockByNumber(context.Background(), big.NewInt(blockNumber), true) // true indicates L1
 			if err != nil {
-				log.Errorf("[LogsToEvents] BlockByNumber failed for block %d, txHash: %s, error: %s", blockNumber, vlog.TxHash.Hex(), err.Error())
+				log.Errorf("[LogsToEvents] GetBlockByNumber failed for block %d, txHash: %s, error: %s (via RPC Manager)", blockNumber, vlog.TxHash.Hex(), err.Error())
 
 				// If error contains "transaction type not supported", try alternative approach
 				if strings.Contains(err.Error(), "transaction type not supported") {
 					log.Infof("[LogsToEvents] Attempting to get block timestamp using header only for block %d", blockNumber)
-					header, headerErr := ctx.L1RPC.HeaderByNumber(context.Background(), big.NewInt(blockNumber))
+					header, headerErr := ctx.RPCManager.HeaderByNumber(context.Background(), big.NewInt(blockNumber), true) // true indicates L1
 					if headerErr != nil {
-						log.Errorf("[LogsToEvents] HeaderByNumber also failed for block %d: %s", blockNumber, headerErr.Error())
+						log.Errorf("[LogsToEvents] HeaderByNumber also failed for block %d: %s (via RPC Manager)", blockNumber, headerErr.Error())
 						return nil, errors.WithStack(err)
 					}
 					blockTime = cast.ToInt64(header.Time)
 					blockTimes[blockNumber] = blockTime
-					log.Infof("[LogsToEvents] Successfully got block timestamp %d for block %d using header", blockTime, blockNumber)
+					log.Infof("[LogsToEvents] Successfully got block timestamp %d for block %d using header (via RPC Manager)", blockTime, blockNumber)
 				} else {
 					return nil, errors.WithStack(err)
 				}
