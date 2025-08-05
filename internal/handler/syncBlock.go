@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"context"
 	"fmt"
 	"time"
 
@@ -58,15 +59,16 @@ func SyncBlock(ctx *svc.ServiceContext) {
 			continue
 		}
 
-		// block, err := ctx.RPC.BlockByNumber(context.Background(), big.NewInt(syncingBlockNumber))
-		blockJSON, err := rpc.HTTPPostJSON("", ctx.Config.L1RPCUrl, "{\"jsonrpc\":\"2.0\",\"method\":\"eth_getBlockByNumber\",\"params\":[\""+fmt.Sprintf("0x%X", syncingBlockNumber)+"\", true],\"id\":1}")
+		// use unified RPC manager to get block (automatically applies rate limiting)
+		requestBody := "{\"jsonrpc\":\"2.0\",\"method\":\"eth_getBlockByNumber\",\"params\":[\"" + fmt.Sprintf("0x%X", syncingBlockNumber) + "\", true],\"id\":1}"
+		blockJSON, err := ctx.RpcManager.HTTPPostJSON(context.Background(), requestBody, true) // true indicates L1
 		if err != nil {
-			log.Errorf("[Handler.SyncBlock] Syncing block by number error: %s\n", errors.WithStack(err))
+			log.Errorf("[Handler.SyncBlock] Syncing block by number error (with rate limit): %s\n", errors.WithStack(err))
 			time.Sleep(3 * time.Second)
 			continue
 		}
 		block := rpc.ParseJSONBlock(string(blockJSON))
-		log.Infof("[Handler.SyncBlock] Syncing block number: %d, hash: %v, parent hash: %v \n", block.Number(), block.Hash(), block.ParentHash())
+		log.Infof("[Handler.SyncBlock] Syncing block number: %d, hash: %v, parent hash: %v (via RPC Manager)\n", block.Number(), block.Hash(), block.ParentHash())
 
 		if common.HexToHash(block.ParentHash()) != ctx.SyncedBlockHash {
 			log.Errorf("[Handler.SyncBlock] ParentHash of the block being synchronized is inconsistent: %s \n", ctx.SyncedBlockHash)
@@ -102,16 +104,18 @@ func rollbackBlock(ctx *svc.ServiceContext) {
 	for {
 		rollbackBlockNumber := ctx.SyncedBlockNumber
 
-		log.Infof("[Handler.SyncBlock.RollBackBlock]  Try to rollback block number: %d\n", rollbackBlockNumber)
+		log.Infof("[Handler.SyncBlock.RollBackBlock] Try to rollback block number: %d\n", rollbackBlockNumber)
 
-		blockJSON, err := rpc.HTTPPostJSON("", ctx.Config.L1RPCUrl, "{\"jsonrpc\":\"2.0\",\"method\":\"eth_getBlockByNumber\",\"params\":[\""+fmt.Sprintf("0x%X", rollbackBlockNumber)+"\", true],\"id\":1}")
+		// use unified RPC manager for rollback operation (automatically applies rate limiting)
+		requestBody := "{\"jsonrpc\":\"2.0\",\"method\":\"eth_getBlockByNumber\",\"params\":[\"" + fmt.Sprintf("0x%X", rollbackBlockNumber) + "\", true],\"id\":1}"
+		blockJSON, err := ctx.RpcManager.HTTPPostJSON(context.Background(), requestBody, true) // true indicates L1
 		if err != nil {
-			log.Errorf("[Handler.SyncBlock.RollRackBlock]Rollback block by number error: %s\n", errors.WithStack(err))
+			log.Errorf("[Handler.SyncBlock.RollBackBlock] Rollback block by number error (with rate limit): %s\n", errors.WithStack(err))
 			continue
 		}
 
 		rollbackBlock := rpc.ParseJSONBlock(string(blockJSON))
-		log.Errorf("[Handler.SyncBlock.RollRackBlock] rollbackBlock: %s, syncedBlockHash: %s \n", rollbackBlock.Hash(), ctx.SyncedBlockHash)
+		log.Errorf("[Handler.SyncBlock.RollBackBlock] rollbackBlock: %s, syncedBlockHash: %s (via RPC Manager)\n", rollbackBlock.Hash(), ctx.SyncedBlockHash)
 
 		if common.HexToHash(rollbackBlock.Hash()) == ctx.SyncedBlockHash {
 			err = ctx.DB.Transaction(func(tx *gorm.DB) error {

@@ -1,10 +1,16 @@
 package handler
 
 import (
+	"time"
+
 	"github.com/optimism-java/dispute-explorer/internal/svc"
+	"github.com/optimism-java/dispute-explorer/pkg/rpc"
 )
 
 func Run(ctx *svc.ServiceContext) {
+	// Start RPC monitoring
+	go startRPCMonitoring(ctx)
+
 	// query last block number
 	go LatestBlackNumber(ctx)
 	// sync blocks
@@ -19,4 +25,13 @@ func Run(ctx *svc.ServiceContext) {
 	go CalculateLostBond(ctx)
 	// sync claim len
 	go SyncClaimDataLen(ctx)
+}
+
+// startRPCMonitoring starts RPC monitoring (internal function)
+func startRPCMonitoring(ctx *svc.ServiceContext) {
+	// Create monitor, output statistics every 30 seconds
+	monitor := rpc.NewMonitor(ctx.RpcManager, 30*time.Second)
+
+	// Start monitoring
+	monitor.Start(ctx.Context)
 }
