@@ -25,6 +25,13 @@ func main() {
 	handler.Run(sCtx)
 	log.Info("listener running...\n")
 	router := gin.Default()
+
+	// Add middleware to pass service context
+	router.Use(func(c *gin.Context) {
+		c.Set("service_context", sCtx)
+		c.Next()
+	})
+
 	disputeGameHandler := api.NewDisputeGameHandler(sCtx.DB, sCtx.L1RPC, sCtx.L2RPC, cfg)
 	docs.SwaggerInfo.Title = "Dispute Game Swagger API"
 	docs.SwaggerInfo.Description = "This is a dispute-explorer server."
@@ -42,6 +49,7 @@ func main() {
 	router.GET("/disputegames/claimroot/:blockNumber", disputeGameHandler.GetClaimRoot)
 	router.POST("/disputegames/calculate/claim", disputeGameHandler.GetGamesClaimByPosition)
 	router.GET("/disputegames/chainname", disputeGameHandler.GetCurrentBlockChain)
+	router.GET("/disputegames/rpc-status", disputeGameHandler.GetRPCStatus)
 
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 

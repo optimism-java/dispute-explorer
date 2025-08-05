@@ -12,6 +12,7 @@ import (
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
+	"github.com/optimism-java/dispute-explorer/internal/svc"
 	config "github.com/optimism-java/dispute-explorer/internal/types"
 	"github.com/optimism-java/dispute-explorer/pkg/contract"
 	"github.com/pkg/errors"
@@ -392,4 +393,42 @@ func (h DisputeGameHandler) GetCurrentBlockChain(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"blockchain": h.Config.Blockchain,
 	})
+}
+
+// @Summary get RPC status
+// @Schemes
+// @Description get RPC endpoints status and health information
+// @Accept json
+// @Produce json
+// @Success 200
+// @Router	/disputegames/rpc-status  [get]
+func (h DisputeGameHandler) GetRPCStatus(c *gin.Context) {
+	status := gin.H{
+		"l1_rpc": gin.H{
+			"primary_url": h.Config.L1RPCUrl,
+		},
+		"l2_rpc": gin.H{
+			"primary_url": h.Config.L2RPCUrl,
+		},
+	}
+
+	// Get service context
+	sCtx := c.MustGet("service_context")
+	if sCtx != nil {
+		if serviceCtx, ok := sCtx.(*svc.ServiceContext); ok {
+			// L1 RPC manager status
+			if serviceCtx.L1RPCManager != nil {
+				status["l1_rpc"].(gin.H)["manager_status"] = serviceCtx.L1RPCManager.GetStatus()
+				status["l1_rpc"].(gin.H)["healthy_count"] = serviceCtx.L1RPCManager.GetHealthyClientCount()
+			}
+
+			// L2 RPC manager status
+			if serviceCtx.L2RPCManager != nil {
+				status["l2_rpc"].(gin.H)["manager_status"] = serviceCtx.L2RPCManager.GetStatus()
+				status["l2_rpc"].(gin.H)["healthy_count"] = serviceCtx.L2RPCManager.GetHealthyClientCount()
+			}
+		}
+	}
+
+	c.JSON(http.StatusOK, status)
 }

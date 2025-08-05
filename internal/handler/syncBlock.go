@@ -58,8 +58,15 @@ func SyncBlock(ctx *svc.ServiceContext) {
 			continue
 		}
 
-		// block, err := ctx.RPC.BlockByNumber(context.Background(), big.NewInt(syncingBlockNumber))
-		blockJSON, err := rpc.HTTPPostJSON("", ctx.Config.L1RPCUrl, "{\"jsonrpc\":\"2.0\",\"method\":\"eth_getBlockByNumber\",\"params\":[\""+fmt.Sprintf("0x%X", syncingBlockNumber)+"\", true],\"id\":1}")
+		// Use unified RPC manager for failover
+		var blockJSON []byte
+		var err error
+		if ctx.L1RPCManager != nil {
+			blockJSON, err = ctx.L1RPCManager.HTTPPostJSONWithFailover("", "{\"jsonrpc\":\"2.0\",\"method\":\"eth_getBlockByNumber\",\"params\":[\""+fmt.Sprintf("0x%X", syncingBlockNumber)+"\", true],\"id\":1}")
+		} else {
+			// Fallback to original method
+			blockJSON, err = rpc.HTTPPostJSON("", ctx.Config.L1RPCUrl, "{\"jsonrpc\":\"2.0\",\"method\":\"eth_getBlockByNumber\",\"params\":[\""+fmt.Sprintf("0x%X", syncingBlockNumber)+"\", true],\"id\":1}")
+		}
 		if err != nil {
 			log.Errorf("[Handler.SyncBlock] Syncing block by number error: %s\n", errors.WithStack(err))
 			time.Sleep(3 * time.Second)
@@ -104,7 +111,15 @@ func rollbackBlock(ctx *svc.ServiceContext) {
 
 		log.Infof("[Handler.SyncBlock.RollBackBlock]  Try to rollback block number: %d\n", rollbackBlockNumber)
 
-		blockJSON, err := rpc.HTTPPostJSON("", ctx.Config.L1RPCUrl, "{\"jsonrpc\":\"2.0\",\"method\":\"eth_getBlockByNumber\",\"params\":[\""+fmt.Sprintf("0x%X", rollbackBlockNumber)+"\", true],\"id\":1}")
+		// Use unified RPC manager for failover
+		var blockJSON []byte
+		var err error
+		if ctx.L1RPCManager != nil {
+			blockJSON, err = ctx.L1RPCManager.HTTPPostJSONWithFailover("", "{\"jsonrpc\":\"2.0\",\"method\":\"eth_getBlockByNumber\",\"params\":[\""+fmt.Sprintf("0x%X", rollbackBlockNumber)+"\", true],\"id\":1}")
+		} else {
+			// Fallback to original method
+			blockJSON, err = rpc.HTTPPostJSON("", ctx.Config.L1RPCUrl, "{\"jsonrpc\":\"2.0\",\"method\":\"eth_getBlockByNumber\",\"params\":[\""+fmt.Sprintf("0x%X", rollbackBlockNumber)+"\", true],\"id\":1}")
+		}
 		if err != nil {
 			log.Errorf("[Handler.SyncBlock.RollRackBlock]Rollback block by number error: %s\n", errors.WithStack(err))
 			continue

@@ -17,9 +17,13 @@ type Config struct {
 	MySQLConnMaxLifetime     int    `env:"MYSQL_CONN_MAX_LIFETIME" envDefault:"3600"`
 	Blockchain               string `env:"BLOCKCHAIN" envDefault:"sepolia"`
 	L1RPCUrl                 string `env:"L1_RPC_URL" envDefault:"https://eth-sepolia.g.alchemy.com/v2/RT1mCGRyVMx1F-XlY4Es4Zz-Q8Jrasg6"`
+	L1RPCUrls                string `env:"L1_RPC_URLS" envDefault:""` // Multiple L1 RPC URLs, comma separated
 	L2RPCUrl                 string `env:"L2_RPC_URL" envDefault:"https://opt-sepolia.g.alchemy.com/v2/RT1mCGRyVMx1F-XlY4Es4Zz-Q8Jrasg6"`
+	L2RPCUrls                string `env:"L2_RPC_URLS" envDefault:""` // Multiple L2 RPC URLs, comma separated
 	RPCRateLimit             int    `env:"RPC_RATE_LIMIT" envDefault:"15"`
 	RPCRateBurst             int    `env:"RPC_RATE_BURST" envDefault:"5"`
+	RPCRetryDelay            int    `env:"RPC_RETRY_DELAY" envDefault:"1"` // RPC retry delay in seconds
+	RPCMaxRetries            int    `env:"RPC_MAX_RETRIES" envDefault:"3"` // RPC max retry count
 	FromBlockNumber          int64  `env:"FROM_BLOCK_NUMBER" envDefault:"5515562"`
 	FromBlockHash            string `env:"FROM_BLOCK_HASH" envDefault:"0x5205c17557759edaef9120f56af802aeaa2827a60d674a0413e77e9c515bdfba"`
 	DisputeGameProxyContract string `env:"DISPUTE_GAME_PROXY_CONTRACT" envDefault:"0x05F9613aDB30026FFd634f38e5C4dFd30a197Fa1"`
