@@ -23,6 +23,7 @@ type SyncEvent struct {
 	Data            string `json:"data"`
 	Status          string `json:"status"`
 	RetryCount      int64  `json:"retry_count"`
+	IsFromFrontend  bool   `json:"is_from_frontend" gorm:"default:false"` // Whether initiated from frontend
 }
 
 func (SyncEvent) TableName() string {

@@ -9,16 +9,17 @@ const (
 
 type SyncBlock struct {
 	Base
-	Blockchain  string `json:"blockchain"`
-	Miner       string `json:"miner"`
-	BlockTime   int64  `json:"block_time"`
-	BlockNumber int64  `json:"block_number"`
-	BlockHash   string `json:"block_hash"`
-	TxCount     int64  `json:"tx_count"`
-	EventCount  int64  `json:"event_count"`
-	ParentHash  string `json:"parent_hash"`
-	Status      string `json:"status"`
-	CheckCount  int64  `json:"check_count"`
+	Blockchain      string `json:"blockchain"`
+	Miner           string `json:"miner"`
+	BlockTime       int64  `json:"block_time"`
+	BlockNumber     int64  `json:"block_number"`
+	BlockHash       string `json:"block_hash"`
+	TxCount         int64  `json:"tx_count"`
+	EventCount      int64  `json:"event_count"`
+	ParentHash      string `json:"parent_hash"`
+	Status          string `json:"status"`
+	CheckCount      int64  `json:"check_count"`
+	HasFrontendMove bool   `json:"has_frontend_move" gorm:"default:false"` // Whether contains frontend-initiated move transactions
 }
 
 func (SyncBlock) TableName() string {
