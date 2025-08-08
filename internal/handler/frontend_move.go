@@ -10,6 +10,7 @@ import (
 	"github.com/optimism-java/dispute-explorer/internal/schema"
 	"github.com/optimism-java/dispute-explorer/internal/svc"
 	"github.com/optimism-java/dispute-explorer/pkg/log"
+
 	"gorm.io/gorm"
 )
 
@@ -121,7 +122,6 @@ func (h *FrontendMoveHandler) monitorTransactionStatus(recordID int64, txHash st
 		} else {
 			status = schema.FrontendMoveStatusFailed
 		}
-
 		err = h.svc.DB.Model(&schema.FrontendMoveTransaction{}).
 			Where("id = ?", recordID).
 			Updates(map[string]interface{}{
@@ -129,12 +129,10 @@ func (h *FrontendMoveHandler) monitorTransactionStatus(recordID int64, txHash st
 				"block_number": receipt.BlockNumber.Int64(),
 				"confirmed_at": confirmedAt,
 			}).Error
-
 		if err != nil {
 			log.Errorf("[FrontendMoveHandler] Failed to update transaction status for %s: %v", txHash, err)
 			return
 		}
-
 		log.Infof("[FrontendMoveHandler] Transaction %s status updated to %s", txHash, status)
 
 		// If transaction is successful, mark related records
