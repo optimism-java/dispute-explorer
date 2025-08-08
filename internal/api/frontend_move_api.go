@@ -64,7 +64,7 @@ func (api *FrontendMoveAPI) RecordMove(c *gin.Context) {
 		return
 	}
 
-	err := api.handler.RecordFrontendMove(c.Request.Context(), &req)
+	err := api.handler.RecordFrontendMove(&req)
 	if err != nil {
 		log.Errorf("[FrontendMoveAPI] Failed to record frontend move: %v", err)
 		c.JSON(http.StatusInternalServerError, RecordMoveResponse{

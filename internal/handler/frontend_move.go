@@ -43,7 +43,7 @@ func (h *FrontendMoveHandler) GetServiceContext() *svc.ServiceContext {
 }
 
 // RecordFrontendMove records frontend-initiated move transactions
-func (h *FrontendMoveHandler) RecordFrontendMove(ctx context.Context, req *FrontendMoveRequest) error {
+func (h *FrontendMoveHandler) RecordFrontendMove(req *FrontendMoveRequest) error {
 	// Validate contract address format
 	if !common.IsHexAddress(req.GameContract) {
 		return fmt.Errorf("invalid game contract address: %s", req.GameContract)
@@ -152,7 +152,6 @@ func (h *FrontendMoveHandler) monitorTransactionStatus(recordID int64, txHash st
 			"status":        schema.FrontendMoveStatusFailed,
 			"error_message": "Transaction timeout",
 		}).Error
-
 	if err != nil {
 		log.Errorf("[FrontendMoveHandler] Failed to update timeout status for %s: %v", txHash, err)
 	}

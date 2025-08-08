@@ -9,10 +9,8 @@ import (
 )
 
 var AddFrontendMoveTrackingTable = gormigrate.Migration{
-	ID: "20240805_add_frontend_move_tracking",
-	Migrate: func(db *gorm.DB) error {
-		return AddFrontendMoveTracking(db)
-	},
+	ID:      "20240805_add_frontend_move_tracking",
+	Migrate: AddFrontendMoveTracking,
 }
 
 func AddFrontendMoveTracking(db *gorm.DB) error {
