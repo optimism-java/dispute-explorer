@@ -27,6 +27,8 @@ mysql1
 meili_data
 postgres
 mysql
+MIGRATION_STATUS.md
+RPC_MANAGER_GUIDE.md
 .env
 FRONTEND_MOVE_API.md
 
