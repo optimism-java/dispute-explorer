@@ -33,6 +33,7 @@ type DisputeGame struct {
 	OnChainStatus   string `json:"on_chain_status"`
 	ClaimDataLen    int64  `json:"claim_data_len"`
 	GetLenStatus    bool   `json:"get_len_status"`
+	HasFrontendMove bool   `json:"has_frontend_move" gorm:"default:false"` // Whether contains frontend-initiated move transactions
 }
 
 func (DisputeGame) TableName() string {

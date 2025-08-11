@@ -160,7 +160,7 @@ func (h *FrontendMoveHandler) monitorTransactionStatus(recordID int64, txHash st
 // markRelatedRecords marks related block and event records
 func (h *FrontendMoveHandler) markRelatedRecords(txHash string, blockNumber int64) {
 	// Mark related blocks
-	err := h.svc.DB.Model(&schema.SyncBlock{}).
+	err := h.svc.DB.Model(&schema.DisputeGame{}).
 		Where("block_number = ?", blockNumber).
 		Update("has_frontend_move", true).Error
 	if err != nil {
@@ -168,7 +168,7 @@ func (h *FrontendMoveHandler) markRelatedRecords(txHash string, blockNumber int6
 	}
 
 	// Mark related events
-	err = h.svc.DB.Model(&schema.SyncEvent{}).
+	err = h.svc.DB.Model(&schema.GameClaimData{}).
 		Where("tx_hash = ?", txHash).
 		Update("is_from_frontend", true).Error
 	if err != nil {
