@@ -105,8 +105,6 @@ func Init(level, format string) {
 }
 
 // New create logger by opts which can custmoized by command arguments.
-//
-//nolint:revive
 func New(opts *Options) *zapLogger {
 	if opts == nil {
 		opts = NewOptions()
