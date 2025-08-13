@@ -26,6 +26,9 @@ func main() {
 	log.Info("listener running...\n")
 	router := gin.Default()
 	disputeGameHandler := api.NewDisputeGameHandler(sCtx.DB, sCtx.L1RPC, sCtx.L2RPC, cfg)
+
+	// 新增：前端 Move 交易处理器
+	frontendMoveAPI := api.NewFrontendMoveAPI(sCtx)
 	docs.SwaggerInfo.Title = "Dispute Game Swagger API"
 	docs.SwaggerInfo.Description = "This is a dispute-explorer server."
 	docs.SwaggerInfo.BasePath = "/"
@@ -42,6 +45,12 @@ func main() {
 	router.GET("/disputegames/claimroot/:blockNumber", disputeGameHandler.GetClaimRoot)
 	router.POST("/disputegames/calculate/claim", disputeGameHandler.GetGamesClaimByPosition)
 	router.GET("/disputegames/chainname", disputeGameHandler.GetCurrentBlockChain)
+
+	// 新增：前端 Move 交易相关路由
+	router.POST("/disputegames/frontend-move", frontendMoveAPI.RecordMove)                   // 记录前端发起的 move 交易
+	router.GET("/disputegames/:address/frontend-moves", frontendMoveAPI.GetMovesByGame)      // 获取指定游戏的前端 move 交易
+	router.GET("/disputegames/frontend-move/:txhash", frontendMoveAPI.GetMoveByTxHash)       // 根据交易哈希获取前端 move 交易详情
+	router.GET("/disputegames/with-frontend-flag", frontendMoveAPI.GetGamesWithFrontendFlag) // 获取带有前端发起标记的游戏列表
 
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 

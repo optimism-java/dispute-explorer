@@ -38,6 +38,7 @@ sync:
       on_chain_status:
       claim_data_len:
       get_len_status:
+      has_frontend_move:
   - table: game_claim_data
     index: gameclaims
     pk: id
@@ -54,6 +55,7 @@ sync:
       position:
       clock:
       output_block:
+      is_from_frontend:
   - table: game_credit
     index: gamecredits
     pk: id

@@ -104,9 +104,7 @@ func Init(level, format string) {
 	std = New(options)
 }
 
-// New create logger by opts which can custmoized by command arguments.
-//
-//nolint:revive
+//nolint:revive // Intentionally returning unexported type for internal use
 func New(opts *Options) *zapLogger {
 	if opts == nil {
 		opts = NewOptions()
@@ -294,16 +292,14 @@ func (l *zapLogger) Errorf(format string, v ...interface{}) {
 	l.zapLogger.Sugar().Errorf(format, v...)
 }
 
-//nolint:govet
 func ErrorR(format string, v ...interface{}) error {
 	std.zapLogger.Sugar().Errorf(format, v...)
-	return fmt.Errorf(format, v)
+	return fmt.Errorf(format, v...)
 }
 
-//nolint:govet
 func (l *zapLogger) ErrorR(format string, v ...interface{}) error {
 	l.zapLogger.Sugar().Errorf(format, v...)
-	return fmt.Errorf(format, v)
+	return fmt.Errorf(format, v...)
 }
 
 // Errorw method output error level log.
