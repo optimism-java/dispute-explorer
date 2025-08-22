@@ -18,7 +18,7 @@ type Config struct {
 	Blockchain               string `env:"BLOCKCHAIN" envDefault:"sepolia"`
 	L1RPCUrl                 string `env:"L1_RPC_URL" envDefault:"https://eth-sepolia.g.alchemy.com/v2/RT1mCGRyVMx1F-XlY4Es4Zz-Q8Jrasg6"`
 	L2RPCUrl                 string `env:"L2_RPC_URL" envDefault:"https://opt-sepolia.g.alchemy.com/v2/RT1mCGRyVMx1F-XlY4Es4Zz-Q8Jrasg6"`
-	NodeRpcUrl               string `env:"NODE_RPC_URL" envDefault:"https://light-radial-slug.optimism-sepolia.quiknode.pro/e9329f699b371572a8cc5dd22d19d5940bb842a5/"`
+	NodeRPCURL               string `env:"NODE_RPCURL" envDefault:"https://light-radial-slug.optimism-sepolia.quiknode.pro/e9329f699b371572a8cc5dd22d19d5940bb842a5/"`
 	RPCRateLimit             int    `env:"RPC_RATE_LIMIT" envDefault:"5"`
 	RPCRateBurst             int    `env:"RPC_RATE_BURST" envDefault:"2"`
 	FromBlockNumber          int64  `env:"FROM_BLOCK_NUMBER" envDefault:"5515562"`

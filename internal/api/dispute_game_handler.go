@@ -3,6 +3,7 @@ package api
 import (
 	"context"
 	"fmt"
+	"math"
 	"math/big"
 	"net/http"
 
@@ -294,12 +295,14 @@ func (h DisputeGameHandler) GetClaimRoot(c *gin.Context) {
 }
 
 func (h DisputeGameHandler) getClaimRoot(blockNumber int64) (string, error) {
-	// 使用 RollupClient 替代 eth_getProof
+	if blockNumber < 0 {
+		return "", fmt.Errorf("block number cannot be negative: %d", blockNumber)
+	}
+
 	output, err := h.RollupClient.OutputAtBlock(context.Background(), uint64(blockNumber))
 	if err != nil {
 		return "", fmt.Errorf("failed to get output at block %d: %w", blockNumber, err)
 	}
-
 	return output.OutputRoot.String(), nil
 }
 
@@ -365,7 +368,11 @@ func (h DisputeGameHandler) gamesClaimByPosition(req *CalculateClaim) (string, e
 		outputBlock = poststateBlock.Uint64()
 	}
 
-	root, err := h.getClaimRoot(cast.ToInt64(outputBlock))
+	if outputBlock > math.MaxInt64 {
+		return "", fmt.Errorf("output block number too large: %d", outputBlock)
+	}
+
+	root, err := h.getClaimRoot(int64(outputBlock))
 	if err != nil {
 		return "", err
 	}

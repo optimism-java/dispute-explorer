@@ -68,7 +68,7 @@ func main() {
 
 // 新增：初始化 RollupClient 的函数
 func initRollupClient(cfg *types.Config) *sources.RollupClient {
-	rpcClient, err := client.NewRPC(context.Background(), gethlog.New(), cfg.NodeRpcUrl)
+	rpcClient, err := client.NewRPC(context.Background(), gethlog.New(), cfg.NodeRPCURL)
 	if err != nil {
 		disputeLog.Errorf("failed to connect to node RPC: %v", err)
 		panic(err)
