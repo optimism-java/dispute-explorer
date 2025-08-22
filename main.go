@@ -10,24 +10,30 @@ import (
 	"github.com/optimism-java/dispute-explorer/internal/svc"
 	"github.com/optimism-java/dispute-explorer/internal/types"
 	"github.com/optimism-java/dispute-explorer/migration/migrate"
-	"github.com/optimism-java/dispute-explorer/pkg/log"
+	disputeLog "github.com/optimism-java/dispute-explorer/pkg/log"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
+
+	"github.com/ethereum-optimism/optimism/op-service/client"
+	"github.com/ethereum-optimism/optimism/op-service/sources"
+	gethlog "github.com/ethereum/go-ethereum/log"
 )
 
 func main() {
 	ctx := context.Background()
 	cfg := types.GetConfig()
-	log.Init(cfg.LogLevel, cfg.LogFormat)
-	log.Infof("config: %v\n", cfg)
+	disputeLog.Init(cfg.LogLevel, cfg.LogFormat)
+	disputeLog.Infof("config: %v\n", cfg)
 	sCtx := svc.NewServiceContext(ctx, cfg)
 	migrate.Migrate(sCtx.DB)
 	handler.Run(sCtx)
-	log.Info("listener running...\n")
-	router := gin.Default()
-	disputeGameHandler := api.NewDisputeGameHandler(sCtx.DB, sCtx.L1RPC, sCtx.L2RPC, cfg)
+	disputeLog.Info("listener running...\n")
 
-	// 新增：前端 Move 交易处理器
+	rollupClient := initRollupClient(cfg)
+
+	router := gin.Default()
+	disputeGameHandler := api.NewDisputeGameHandler(sCtx.DB, sCtx.L1RPC, sCtx.L2RPC, cfg, rollupClient)
+
 	frontendMoveAPI := api.NewFrontendMoveAPI(sCtx)
 	docs.SwaggerInfo.Title = "Dispute Game Swagger API"
 	docs.SwaggerInfo.Description = "This is a dispute-explorer server."
@@ -46,7 +52,6 @@ func main() {
 	router.POST("/disputegames/calculate/claim", disputeGameHandler.GetGamesClaimByPosition)
 	router.GET("/disputegames/chainname", disputeGameHandler.GetCurrentBlockChain)
 
-	// 新增：前端 Move 交易相关路由
 	router.POST("/disputegames/frontend-move", frontendMoveAPI.RecordMove)                   // 记录前端发起的 move 交易
 	router.GET("/disputegames/:address/frontend-moves", frontendMoveAPI.GetMovesByGame)      // 获取指定游戏的前端 move 交易
 	router.GET("/disputegames/frontend-move/:txhash", frontendMoveAPI.GetMoveByTxHash)       // 根据交易哈希获取前端 move 交易详情
@@ -56,7 +61,17 @@ func main() {
 
 	err := router.Run(":" + cfg.APIPort)
 	if err != nil {
-		log.Errorf("start error %s", err)
+		disputeLog.Errorf("start error %s", err)
 		return
 	}
+}
+
+// 新增：初始化 RollupClient 的函数
+func initRollupClient(cfg *types.Config) *sources.RollupClient {
+	rpcClient, err := client.NewRPC(context.Background(), gethlog.New(), cfg.NodeRpcUrl)
+	if err != nil {
+		disputeLog.Errorf("failed to connect to node RPC: %v", err)
+		panic(err)
+	}
+	return sources.NewRollupClient(rpcClient)
 }
