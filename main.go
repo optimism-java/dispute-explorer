@@ -52,10 +52,10 @@ func main() {
 	router.POST("/disputegames/calculate/claim", disputeGameHandler.GetGamesClaimByPosition)
 	router.GET("/disputegames/chainname", disputeGameHandler.GetCurrentBlockChain)
 
-	router.POST("/disputegames/frontend-move", frontendMoveAPI.RecordMove)                   // 记录前端发起的 move 交易
-	router.GET("/disputegames/:address/frontend-moves", frontendMoveAPI.GetMovesByGame)      // 获取指定游戏的前端 move 交易
-	router.GET("/disputegames/frontend-move/:txhash", frontendMoveAPI.GetMoveByTxHash)       // 根据交易哈希获取前端 move 交易详情
-	router.GET("/disputegames/with-frontend-flag", frontendMoveAPI.GetGamesWithFrontendFlag) // 获取带有前端发起标记的游戏列表
+	router.POST("/disputegames/frontend-move", frontendMoveAPI.RecordMove)
+	router.GET("/disputegames/:address/frontend-moves", frontendMoveAPI.GetMovesByGame)
+	router.GET("/disputegames/frontend-move/:txhash", frontendMoveAPI.GetMoveByTxHash)
+	router.GET("/disputegames/with-frontend-flag", frontendMoveAPI.GetGamesWithFrontendFlag)
 
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
@@ -66,7 +66,6 @@ func main() {
 	}
 }
 
-// 新增：初始化 RollupClient 的函数
 func initRollupClient(cfg *types.Config) *sources.RollupClient {
 	rpcClient, err := client.NewRPC(context.Background(), gethlog.New(), cfg.NodeRPCURL)
 	if err != nil {
