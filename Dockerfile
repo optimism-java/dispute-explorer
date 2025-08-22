@@ -1,4 +1,4 @@
-FROM golang:latest as builder
+FROM golang:1.21 AS builder
 ARG GOPROXY=https://goproxy.cn
 COPY . /src
 RUN apt-get update && apt install -y protobuf-compiler git && \
