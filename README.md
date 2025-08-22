@@ -38,6 +38,10 @@ BLOCKCHAIN=<block-chain-name>
 
 # l1 rpc url example: eth json rpc url
 L1_RPC_URL=<l1-rpc>
+# l2 rpc url example: op json rpc url
+L2_RPC_URL=<l2-rpc>
+
+NODE_RPCURL=<op-node-rpc>
 
 RPC_RATE_LIMIT=15
 RPC_RATE_BURST=5

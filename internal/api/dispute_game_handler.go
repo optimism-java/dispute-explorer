@@ -3,18 +3,17 @@ package api
 import (
 	"context"
 	"fmt"
+	"math"
 	"math/big"
 	"net/http"
 
 	"github.com/ethereum-optimism/optimism/op-challenger/game/fault/types"
-	"github.com/ethereum-optimism/optimism/op-service/eth"
-	"github.com/ethereum-optimism/optimism/op-service/predeploys"
+	"github.com/ethereum-optimism/optimism/op-service/sources" // 新增导入
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
 	config "github.com/optimism-java/dispute-explorer/internal/types"
 	"github.com/optimism-java/dispute-explorer/pkg/contract"
-	"github.com/pkg/errors"
 
 	"github.com/spf13/cast"
 
@@ -25,18 +24,20 @@ import (
 )
 
 type DisputeGameHandler struct {
-	Config *config.Config
-	DB     *gorm.DB
-	L1RPC  *ethclient.Client
-	L2RPC  *ethclient.Client
+	Config       *config.Config
+	DB           *gorm.DB
+	L1RPC        *ethclient.Client
+	L2RPC        *ethclient.Client
+	RollupClient *sources.RollupClient // 新增字段
 }
 
-func NewDisputeGameHandler(db *gorm.DB, l1rpc *ethclient.Client, l2rpc *ethclient.Client, config *config.Config) *DisputeGameHandler {
+func NewDisputeGameHandler(db *gorm.DB, l1rpc *ethclient.Client, l2rpc *ethclient.Client, config *config.Config, rollupClient *sources.RollupClient) *DisputeGameHandler {
 	return &DisputeGameHandler{
-		DB:     db,
-		L1RPC:  l1rpc,
-		L2RPC:  l2rpc,
-		Config: config,
+		DB:           db,
+		L1RPC:        l1rpc,
+		L2RPC:        l2rpc,
+		Config:       config,
+		RollupClient: rollupClient, // 新增赋值
 	}
 }
 
@@ -294,22 +295,15 @@ func (h DisputeGameHandler) GetClaimRoot(c *gin.Context) {
 }
 
 func (h DisputeGameHandler) getClaimRoot(blockNumber int64) (string, error) {
-	block, err := h.L2RPC.BlockByNumber(context.Background(), big.NewInt(cast.ToInt64(blockNumber)))
+	if blockNumber < 0 {
+		return "", fmt.Errorf("block number cannot be negative: %d", blockNumber)
+	}
+
+	output, err := h.RollupClient.OutputAtBlock(context.Background(), uint64(blockNumber))
 	if err != nil {
-		return "", fmt.Errorf("block number is nil %d", blockNumber)
+		return "", fmt.Errorf("failed to get output at block %d: %w", blockNumber, err)
 	}
-	var getProofResponse *eth.AccountResult
-	err = h.L2RPC.Client().CallContext(context.Background(), &getProofResponse, "eth_getProof",
-		predeploys.L2ToL1MessagePasserAddr, []common.Hash{}, block.Hash().String())
-	if err != nil {
-		return "", fmt.Errorf("call eth_getProof error:%s", errors.WithStack(err))
-	}
-	output := &eth.OutputV0{
-		StateRoot:                eth.Bytes32(block.Root()),
-		MessagePasserStorageRoot: eth.Bytes32(getProofResponse.StorageHash),
-		BlockHash:                block.Hash(),
-	}
-	return fmt.Sprint(eth.OutputRoot(output)), nil
+	return output.OutputRoot.String(), nil
 }
 
 type CalculateClaim struct {
@@ -374,7 +368,11 @@ func (h DisputeGameHandler) gamesClaimByPosition(req *CalculateClaim) (string, e
 		outputBlock = poststateBlock.Uint64()
 	}
 
-	root, err := h.getClaimRoot(cast.ToInt64(outputBlock))
+	if outputBlock > math.MaxInt64 {
+		return "", fmt.Errorf("output block number too large: %d", outputBlock)
+	}
+
+	root, err := h.getClaimRoot(int64(outputBlock))
 	if err != nil {
 		return "", err
 	}
