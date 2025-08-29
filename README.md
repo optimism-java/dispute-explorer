@@ -37,11 +37,11 @@ MYSQL_DATA_SOURCE=<data-source>
 BLOCKCHAIN=<block-chain-name>
 
 # l1 rpc url example: eth json rpc url
-L1_RPC_URL=<l1-rpc>
+L1_RPC_URLS=<l1-rpc>
 # l2 rpc url example: op json rpc url
-L2_RPC_URL=<l2-rpc>
+L2_RPC_URLS=<l2-rpc>
 
-NODE_RPCURL=<op-node-rpc>
+NODE_RPCURLS=<op-node-rpc>
 
 RPC_RATE_LIMIT=15
 RPC_RATE_BURST=5

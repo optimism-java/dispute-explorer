@@ -24,7 +24,7 @@ func LatestBlockNumberWithRateLimit(ctx *svc.ServiceContext) {
 		}
 
 		ctx.LatestBlockNumber = cast.ToInt64(latest)
-		log.Infof("[Handler.LatestBlockNumberWithRateLimit] Latest block number: %d (using RPC Manager)\n", latest)
+		log.Debugf("[Handler.LatestBlockNumberWithRateLimit] Latest block number: %d (using RPC Manager)\n", latest)
 		time.Sleep(12 * time.Second)
 	}
 }

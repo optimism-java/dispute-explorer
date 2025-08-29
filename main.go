@@ -13,10 +13,6 @@ import (
 	disputeLog "github.com/optimism-java/dispute-explorer/pkg/log"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
-
-	"github.com/ethereum-optimism/optimism/op-service/client"
-	"github.com/ethereum-optimism/optimism/op-service/sources"
-	gethlog "github.com/ethereum/go-ethereum/log"
 )
 
 func main() {
@@ -29,10 +25,8 @@ func main() {
 	handler.Run(sCtx)
 	disputeLog.Info("listener running...\n")
 
-	rollupClient := initRollupClient(cfg)
-
 	router := gin.Default()
-	disputeGameHandler := api.NewDisputeGameHandler(sCtx.DB, sCtx.L1RPC, sCtx.L2RPC, cfg, rollupClient)
+	disputeGameHandler := api.NewDisputeGameHandler(sCtx.DB, sCtx.RPCManager, cfg)
 
 	frontendMoveAPI := api.NewFrontendMoveAPI(sCtx)
 	docs.SwaggerInfo.Title = "Dispute Game Swagger API"
@@ -64,13 +58,4 @@ func main() {
 		disputeLog.Errorf("start error %s", err)
 		return
 	}
-}
-
-func initRollupClient(cfg *types.Config) *sources.RollupClient {
-	rpcClient, err := client.NewRPC(context.Background(), gethlog.New(), cfg.NodeRPCURL)
-	if err != nil {
-		disputeLog.Errorf("failed to connect to node RPC: %v", err)
-		panic(err)
-	}
-	return sources.NewRollupClient(rpcClient)
 }

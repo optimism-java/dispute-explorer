@@ -2,6 +2,7 @@ package types
 
 import (
 	"log"
+	"strings"
 
 	env "github.com/caarlos0/env/v6"
 )
@@ -16,9 +17,9 @@ type Config struct {
 	MySQLMaxOpenConns        int    `env:"MYSQL_MAX_OPEN_CONNS" envDefault:"20"`
 	MySQLConnMaxLifetime     int    `env:"MYSQL_CONN_MAX_LIFETIME" envDefault:"3600"`
 	Blockchain               string `env:"BLOCKCHAIN" envDefault:"sepolia"`
-	L1RPCUrl                 string `env:"L1_RPC_URL" envDefault:"https://eth-sepolia.g.alchemy.com/v2/RT1mCGRyVMx1F-XlY4Es4Zz-Q8Jrasg6"`
-	L2RPCUrl                 string `env:"L2_RPC_URL" envDefault:"https://opt-sepolia.g.alchemy.com/v2/RT1mCGRyVMx1F-XlY4Es4Zz-Q8Jrasg6"`
-	NodeRPCURL               string `env:"NODE_RPCURL" envDefault:"https://light-radial-slug.optimism-sepolia.quiknode.pro/e9329f699b371572a8cc5dd22d19d5940bb842a5/"`
+	L1RPCUrls                string `env:"L1_RPC_URLS" envDefault:"https://eth-sepolia.g.alchemy.com/v2/RT1mCGRyVMx1F-XlY4Es4Zz-Q8Jrasg6"`
+	L2RPCUrls                string `env:"L2_RPC_URLS" envDefault:"https://opt-sepolia.g.alchemy.com/v2/RT1mCGRyVMx1F-XlY4Es4Zz-Q8Jrasg6"`
+	NodeRPCUrls              string `env:"NODE_RPC_URLS" envDefault:"https://light-radial-slug.optimism-sepolia.quiknode.pro/e9329f699b371572a8cc5dd22d19d5940bb842a5/"`
 	RPCRateLimit             int    `env:"RPC_RATE_LIMIT" envDefault:"5"`
 	RPCRateBurst             int    `env:"RPC_RATE_BURST" envDefault:"2"`
 	FromBlockNumber          int64  `env:"FROM_BLOCK_NUMBER" envDefault:"5515562"`
@@ -39,4 +40,33 @@ func GetConfig() *Config {
 		config = cfg
 	}
 	return config
+}
+
+// GetL1RPCUrls 获取L1 RPC URL列表
+func (c *Config) GetL1RPCUrls() []string {
+	urls := strings.Split(c.L1RPCUrls, ",")
+	// 去除空格
+	for i, url := range urls {
+		urls[i] = strings.TrimSpace(url)
+	}
+	return urls
+}
+
+// GetL2RPCUrls 获取L2 RPC URL列表
+func (c *Config) GetL2RPCUrls() []string {
+	urls := strings.Split(c.L2RPCUrls, ",")
+	// 去除空格
+	for i, url := range urls {
+		urls[i] = strings.TrimSpace(url)
+	}
+	return urls
+}
+
+// GetNodeRPCUrls 获取Node RPC URL列表
+func (c *Config) GetNodeRPCUrls() []string {
+	urls := strings.Split(c.NodeRPCUrls, ",")
+	for i, url := range urls {
+		urls[i] = strings.TrimSpace(url)
+	}
+	return urls
 }

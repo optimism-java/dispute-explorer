@@ -9,9 +9,10 @@ import (
 // CreateManagerFromConfig creates RPC manager from configuration
 func CreateManagerFromConfig(config *types.Config) (*Manager, error) {
 	return NewManager(Config{
-		L1RPCUrl:    config.L1RPCUrl,
-		L2RPCUrl:    config.L2RPCUrl,
-		ProxyURL:    "", // if proxy is needed, can be added from configuration
+		L1RPCUrls:   config.GetL1RPCUrls(),
+		L2RPCUrls:   config.GetL2RPCUrls(),
+		NodeRPCUrls: config.GetNodeRPCUrls(),
+		ProxyURL:    "",
 		RateLimit:   config.RPCRateLimit,
 		RateBurst:   config.RPCRateBurst,
 		HTTPTimeout: 10 * time.Second,
@@ -26,8 +27,8 @@ func CreateManagerWithSeparateLimits(
 	// Note: current implementation uses same limits for L1 and L2
 	// if different limits are needed, Manager structure needs to be modified
 	return NewManager(Config{
-		L1RPCUrl:    l1URL,
-		L2RPCUrl:    l2URL,
+		L1RPCUrls:   []string{l1URL},
+		L2RPCUrls:   []string{l2URL},
 		RateLimit:   l1Rate, // 使用L1的限制作为默认
 		RateBurst:   l1Burst,
 		HTTPTimeout: 10 * time.Second,

@@ -21,7 +21,7 @@ func LatestBlackNumber(ctx *svc.ServiceContext) {
 		}
 
 		ctx.LatestBlockNumber = cast.ToInt64(latest)
-		log.Infof("[Handler.LatestBlackNumber] Latest block number: %d (via RPC Manager)\n", latest)
+		log.Debugf("[Handler.LatestBlackNumber] Latest block number: %d (via RPC Manager)\n", latest)
 		time.Sleep(12 * time.Second)
 	}
 }

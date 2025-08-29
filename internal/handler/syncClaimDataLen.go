@@ -20,7 +20,7 @@ func SyncClaimDataLen(ctx *svc.ServiceContext) {
 			continue
 		}
 		if len(disputeGames) == 0 {
-			log.Infof("[Handler.SyncClaimDataLen] Pending games count is 0\n")
+			log.Debugf("[Handler.SyncClaimDataLen] Pending games count is 0\n")
 			time.Sleep(2 * time.Second)
 			continue
 		}
@@ -38,5 +38,6 @@ func SyncClaimDataLen(ctx *svc.ServiceContext) {
 				log.Errorf("[Handler.SyncClaimDataLen] update claim len err", errors.WithStack(err))
 			}
 		}
+		time.Sleep(3 * time.Second)
 	}
 }
