@@ -29,7 +29,7 @@ func LogFilter(ctx *svc.ServiceContext, block schema.SyncBlock, addresses []comm
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
-	log.Infof("[LogFilter] Event logs length is %d, block number is %d (via RPC Manager)\n", len(logs), block.BlockNumber)
+	log.Debugf("[LogFilter] Event logs length is %d, block number is %d (via RPC Manager)\n", len(logs), block.BlockNumber)
 	return LogsToEvents(ctx, logs, block.ID)
 }
 
@@ -41,14 +41,14 @@ func LogsToEvents(ctx *svc.ServiceContext, logs []types.Log, syncBlockID int64) 
 		contractAddress := vlog.Address
 		Event := blockchain.GetEvent(eventHash)
 		if Event == nil {
-			log.Infof("[LogsToEvents] logs[txHash: %s, contractAddress:%s, eventHash: %s]\n", vlog.TxHash, strings.ToLower(contractAddress.Hex()), eventHash)
+			log.Debugf("[LogsToEvents] logs[txHash: %s, contractAddress:%s, eventHash: %s]\n", vlog.TxHash, strings.ToLower(contractAddress.Hex()), eventHash)
 			continue
 		}
 
 		blockTime := blockTimes[cast.ToInt64(vlog.BlockNumber)]
 		if blockTime == 0 {
 			blockNumber := cast.ToInt64(vlog.BlockNumber)
-			log.Infof("[LogsToEvents] Fetching block info for block number: %d, txHash: %s", blockNumber, vlog.TxHash.Hex())
+			log.Debugf("[LogsToEvents] Fetching block info for block number: %d, txHash: %s", blockNumber, vlog.TxHash.Hex())
 
 			// Use unified RPC manager to get block (automatically applies rate limiting)
 			block, err := ctx.RPCManager.GetBlockByNumber(context.Background(), big.NewInt(blockNumber), true) // true indicates L1

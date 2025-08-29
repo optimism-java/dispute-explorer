@@ -20,13 +20,13 @@ import (
 func SyncDispute(ctx *svc.ServiceContext) {
 	for {
 		var events []schema.SyncEvent
-		err := ctx.DB.Where("status=? OR status=?", schema.EventPending, schema.EventRollback).Order("block_number").Limit(50).Find(&events).Error
+		err := ctx.DB.Where("status=? OR status=?", schema.EventPending, schema.EventRollback).Order("block_number").Limit(20).Find(&events).Error
 		if err != nil {
 			time.Sleep(3 * time.Second)
 			continue
 		}
 		if len(events) == 0 {
-			log.Infof("[Handler.SyncDispute] Pending events count is 0\n")
+			log.Debugf("[Handler.SyncDispute] Pending events count is 0\n")
 			time.Sleep(2 * time.Second)
 			continue
 		}
@@ -45,6 +45,7 @@ func SyncDispute(ctx *svc.ServiceContext) {
 					log.Errorf("[Handler.SyncEvent] HandleRollbackBlock err: %s\n", errors.WithStack(err))
 				}
 			}
+			time.Sleep(1 * time.Second)
 		}
 		time.Sleep(3 * time.Second)
 	}
@@ -136,7 +137,7 @@ func HandlePendingEvent(ctx *svc.ServiceContext, event schema.SyncEvent) error {
 			return errors.WithStack(err)
 		}
 		disputeClient, err := NewRetryDisputeGameClient(ctx.DB, common.HexToAddress(disputeCreated.DisputeProxy),
-			ctx.L1RPC, rate.Limit(ctx.Config.RPCRateLimit), ctx.Config.RPCRateBurst)
+			ctx.RPCManager.GetRawClient(true), rate.Limit(ctx.Config.RPCRateLimit), ctx.Config.RPCRateBurst)
 		if err != nil {
 			log.Errorf("[handle.SyncDispute.HandlePendingEvent] init client for created err: %s", err)
 			return errors.WithStack(err)
@@ -148,7 +149,7 @@ func HandlePendingEvent(ctx *svc.ServiceContext, event schema.SyncEvent) error {
 		}
 	case event.EventName == disputeMove.Name() && event.EventHash == disputeMove.EventHash().String():
 		disputeClient, err := NewRetryDisputeGameClient(ctx.DB, common.HexToAddress(event.ContractAddress),
-			ctx.L1RPC, rate.Limit(ctx.Config.RPCRateLimit), ctx.Config.RPCRateBurst)
+			ctx.RPCManager.GetRawClient(true), rate.Limit(ctx.Config.RPCRateLimit), ctx.Config.RPCRateBurst)
 		if err != nil {
 			log.Errorf("[handle.SyncDispute.HandlePendingEvent] init client for move err: %s", err)
 			return errors.WithStack(err)
@@ -160,7 +161,7 @@ func HandlePendingEvent(ctx *svc.ServiceContext, event schema.SyncEvent) error {
 		}
 	case event.EventName == disputeResolved.Name() && event.EventHash == disputeResolved.EventHash().String():
 		disputeClient, err := NewRetryDisputeGameClient(ctx.DB, common.HexToAddress(event.ContractAddress),
-			ctx.L1RPC, rate.Limit(ctx.Config.RPCRateLimit), ctx.Config.RPCRateBurst)
+			ctx.RPCManager.GetRawClient(true), rate.Limit(ctx.Config.RPCRateLimit), ctx.Config.RPCRateBurst)
 		if err != nil {
 			log.Errorf("[handle.SyncDispute.HandlePendingEvent] init client for resolved err: %s", err)
 			return errors.WithStack(err)

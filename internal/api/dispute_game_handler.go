@@ -8,12 +8,14 @@ import (
 	"net/http"
 
 	"github.com/ethereum-optimism/optimism/op-challenger/game/fault/types"
-	"github.com/ethereum-optimism/optimism/op-service/sources" // 新增导入
+	"github.com/ethereum-optimism/optimism/op-service/client"
+	"github.com/ethereum-optimism/optimism/op-service/sources"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/ethclient"
+	gethlog "github.com/ethereum/go-ethereum/log"
 	config "github.com/optimism-java/dispute-explorer/internal/types"
 	"github.com/optimism-java/dispute-explorer/pkg/contract"
+	"github.com/optimism-java/dispute-explorer/pkg/rpc"
 
 	"github.com/spf13/cast"
 
@@ -24,20 +26,16 @@ import (
 )
 
 type DisputeGameHandler struct {
-	Config       *config.Config
-	DB           *gorm.DB
-	L1RPC        *ethclient.Client
-	L2RPC        *ethclient.Client
-	RollupClient *sources.RollupClient // 新增字段
+	Config     *config.Config
+	DB         *gorm.DB
+	RPCManager *rpc.Manager
 }
 
-func NewDisputeGameHandler(db *gorm.DB, l1rpc *ethclient.Client, l2rpc *ethclient.Client, config *config.Config, rollupClient *sources.RollupClient) *DisputeGameHandler {
+func NewDisputeGameHandler(db *gorm.DB, rpcManager *rpc.Manager, config *config.Config) *DisputeGameHandler {
 	return &DisputeGameHandler{
-		DB:           db,
-		L1RPC:        l1rpc,
-		L2RPC:        l2rpc,
-		Config:       config,
-		RollupClient: rollupClient, // 新增赋值
+		DB:         db,
+		RPCManager: rpcManager,
+		Config:     config,
 	}
 }
 
@@ -299,7 +297,17 @@ func (h DisputeGameHandler) getClaimRoot(blockNumber int64) (string, error) {
 		return "", fmt.Errorf("block number cannot be negative: %d", blockNumber)
 	}
 
-	output, err := h.RollupClient.OutputAtBlock(context.Background(), uint64(blockNumber))
+	// 使用RPCManager获取Node RPC URL，实现轮询
+	nodeRPCURL := h.RPCManager.GetNodeRPCURL()
+
+	// 创建RollupClient（每次使用不同的Node RPC）
+	rpcClient, err := client.NewRPC(context.Background(), gethlog.New(), nodeRPCURL)
+	if err != nil {
+		return "", fmt.Errorf("failed to connect to node RPC %s: %w", nodeRPCURL, err)
+	}
+	rollupClient := sources.NewRollupClient(rpcClient)
+
+	output, err := rollupClient.OutputAtBlock(context.Background(), uint64(blockNumber))
 	if err != nil {
 		return "", fmt.Errorf("failed to get output at block %d: %w", blockNumber, err)
 	}
@@ -340,7 +348,9 @@ func (h DisputeGameHandler) GetGamesClaimByPosition(c *gin.Context) {
 }
 
 func (h DisputeGameHandler) gamesClaimByPosition(req *CalculateClaim) (string, error) {
-	newDisputeGame, err := contract.NewDisputeGame(common.HexToAddress(req.DisputeGame), h.L1RPC)
+	// 获取L1客户端从RPCManager
+	l1Client := h.RPCManager.GetRawClient(true)
+	newDisputeGame, err := contract.NewDisputeGame(common.HexToAddress(req.DisputeGame), l1Client)
 	if err != nil {
 		return "", err
 	}

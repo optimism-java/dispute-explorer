@@ -8,7 +8,6 @@ import (
 	"gorm.io/driver/mysql"
 
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/optimism-java/dispute-explorer/internal/types"
 	"github.com/optimism-java/dispute-explorer/pkg/rpc"
 	"gorm.io/gorm"
@@ -19,9 +18,7 @@ var svc *ServiceContext
 
 type ServiceContext struct {
 	Config            *types.Config
-	L1RPC             *ethclient.Client // 保留向后兼容
-	L2RPC             *ethclient.Client // 保留向后兼容
-	RPCManager        *rpc.Manager      // 新增统一RPC管理器
+	RPCManager        *rpc.Manager // 统一RPC管理器
 	DB                *gorm.DB
 	LatestBlockNumber int64
 	SyncedBlockNumber int64
@@ -47,17 +44,6 @@ func NewServiceContext(ctx context.Context, cfg *types.Config) *ServiceContext {
 	// SetConnMaxLifetime
 	sqlDB.SetConnMaxLifetime(time.Duration(cfg.MySQLConnMaxLifetime) * time.Second)
 
-	// 创建原有的以太坊客户端（保持向后兼容）
-	l1Client, err := ethclient.Dial(cfg.L1RPCUrl)
-	if err != nil {
-		log.Panicf("[svc] get L1 eth client panic: %s\n", err)
-	}
-
-	l2Client, err := ethclient.Dial(cfg.L2RPCUrl)
-	if err != nil {
-		log.Panicf("[svc] get L2 eth client panic: %s\n", err)
-	}
-
 	// 创建统一的RPC管理器
 	rpcManager, err := rpc.CreateManagerFromConfig(cfg)
 	if err != nil {
@@ -66,9 +52,7 @@ func NewServiceContext(ctx context.Context, cfg *types.Config) *ServiceContext {
 
 	svc = &ServiceContext{
 		Config:     cfg,
-		L1RPC:      l1Client,   // 保留向后兼容
-		L2RPC:      l2Client,   // 保留向后兼容
-		RPCManager: rpcManager, // 新的统一管理器
+		RPCManager: rpcManager,
 		DB:         storage,
 		Context:    ctx,
 	}

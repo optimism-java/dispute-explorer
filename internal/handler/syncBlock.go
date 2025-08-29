@@ -31,8 +31,8 @@ func SyncBlock(ctx *svc.ServiceContext) {
 		ctx.SyncedBlockHash = common.HexToHash(syncedBlock.BlockHash)
 	}
 
-	log.Infof("[Handler.SyncBlock]SyncedBlockNumber: %d", ctx.SyncedBlockNumber)
-	log.Infof("[Handler.SyncBlock]SyncedBlockHash:%s", ctx.SyncedBlockHash.String())
+	log.Debugf("[Handler.SyncBlock]SyncedBlockNumber: %d", ctx.SyncedBlockNumber)
+	log.Debugf("[Handler.SyncBlock]SyncedBlockHash:%s", ctx.SyncedBlockHash.String())
 
 	for {
 		// Check pending blocks count before syncing new blocks
@@ -52,7 +52,7 @@ func SyncBlock(ctx *svc.ServiceContext) {
 		}
 
 		syncingBlockNumber := ctx.SyncedBlockNumber + 1
-		log.Infof("[Handler.SyncBlock] Try to sync block number: %d\n", syncingBlockNumber)
+		log.Debugf("[Handler.SyncBlock] Try to sync block number: %d\n", syncingBlockNumber)
 
 		if syncingBlockNumber > ctx.LatestBlockNumber {
 			time.Sleep(3 * time.Second)
@@ -68,7 +68,7 @@ func SyncBlock(ctx *svc.ServiceContext) {
 			continue
 		}
 		block := rpc.ParseJSONBlock(string(blockJSON))
-		log.Infof("[Handler.SyncBlock] Syncing block number: %d, hash: %v, parent hash: %v (via RPC Manager)\n", block.Number(), block.Hash(), block.ParentHash())
+		log.Debugf("[Handler.SyncBlock] Syncing block number: %d, hash: %v, parent hash: %v (via RPC Manager)\n", block.Number(), block.Hash(), block.ParentHash())
 
 		if common.HexToHash(block.ParentHash()) != ctx.SyncedBlockHash {
 			log.Errorf("[Handler.SyncBlock] ParentHash of the block being synchronized is inconsistent: %s \n", ctx.SyncedBlockHash)
@@ -104,7 +104,7 @@ func rollbackBlock(ctx *svc.ServiceContext) {
 	for {
 		rollbackBlockNumber := ctx.SyncedBlockNumber
 
-		log.Infof("[Handler.SyncBlock.RollBackBlock] Try to rollback block number: %d\n", rollbackBlockNumber)
+		log.Debugf("[Handler.SyncBlock.RollBackBlock] Try to rollback block number: %d\n", rollbackBlockNumber)
 
 		// use unified RPC manager for rollback operation (automatically applies rate limiting)
 		requestBody := "{\"jsonrpc\":\"2.0\",\"method\":\"eth_getBlockByNumber\",\"params\":[\"" + fmt.Sprintf("0x%X", rollbackBlockNumber) + "\", true],\"id\":1}"

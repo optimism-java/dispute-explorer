@@ -82,6 +82,7 @@ func (h *FrontendMoveHandler) RecordFrontendMove(req *FrontendMoveRequest) error
 		DisputedClaim:  req.DisputedClaim,
 		Status:         schema.FrontendMoveStatusPending,
 		SubmittedAt:    time.Now().Unix(),
+		IsSynced:       false, // 新记录默认未同步
 	}
 
 	// Save to database
@@ -106,8 +107,9 @@ func (h *FrontendMoveHandler) monitorTransactionStatus(recordID int64, txHash st
 	for i := 0; i < maxRetries; i++ {
 		time.Sleep(retryInterval)
 
-		// Query transaction status
-		receipt, err := h.svc.L1RPC.TransactionReceipt(context.Background(), common.HexToHash(txHash))
+		// Query transaction status using RPCManager
+		l1Client := h.svc.RPCManager.GetRawClient(true)
+		receipt, err := l1Client.TransactionReceipt(context.Background(), common.HexToHash(txHash))
 		if err != nil {
 			log.Debugf("[FrontendMoveHandler] Transaction %s not yet mined or error: %v", txHash, err)
 			continue

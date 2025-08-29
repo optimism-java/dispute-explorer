@@ -23,8 +23,10 @@ func SyncCredit(ctx *svc.ServiceContext) {
 		}
 		for _, disputeGame := range disputeGames {
 			game := common.HexToAddress(disputeGame.GameContract)
+			// 使用RPCManager获取L1客户端
+			l1Client := ctx.RPCManager.GetRawClient(true)
 			disputeClient, err := NewRetryDisputeGameClient(ctx.DB, game,
-				ctx.L1RPC, rate.Limit(ctx.Config.RPCRateLimit), ctx.Config.RPCRateBurst)
+				l1Client, rate.Limit(ctx.Config.RPCRateLimit), ctx.Config.RPCRateBurst)
 			if err != nil {
 				log.Errorf("[Handler.SyncCredit] NewRetryDisputeGameClient err: %s", err)
 				time.Sleep(5 * time.Second)
@@ -34,6 +36,7 @@ func SyncCredit(ctx *svc.ServiceContext) {
 			if err != nil {
 				log.Errorf("[Handler.SyncCredit] ProcessDisputeGameCredit err: %s", err)
 			}
+			time.Sleep(1 * time.Second)
 		}
 		time.Sleep(3 * time.Second)
 	}
