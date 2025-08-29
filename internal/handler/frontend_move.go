@@ -82,6 +82,7 @@ func (h *FrontendMoveHandler) RecordFrontendMove(req *FrontendMoveRequest) error
 		DisputedClaim:  req.DisputedClaim,
 		Status:         schema.FrontendMoveStatusPending,
 		SubmittedAt:    time.Now().Unix(),
+		IsSynced:       false, // 新记录默认未同步
 	}
 
 	// Save to database

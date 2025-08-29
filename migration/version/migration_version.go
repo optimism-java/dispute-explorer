@@ -10,6 +10,7 @@ import (
 	v6 "github.com/optimism-java/dispute-explorer/migration/version/v6"
 	v7 "github.com/optimism-java/dispute-explorer/migration/version/v7"
 	v8 "github.com/optimism-java/dispute-explorer/migration/version/v8"
+	v9 "github.com/optimism-java/dispute-explorer/migration/version/v9"
 )
 
 var ModelSchemaList = []*gormigrate.Migration{
@@ -21,4 +22,5 @@ var ModelSchemaList = []*gormigrate.Migration{
 	&v6.UpdateClaimDataClockColumnTable,
 	&v7.AddClaimDataLenForDisputeGameTable,
 	&v8.AddFrontendMoveTrackingTable,
+	&v9.AddIsSyncedFieldTable,
 }

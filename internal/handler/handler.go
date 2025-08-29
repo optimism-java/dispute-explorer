@@ -25,6 +25,8 @@ func Run(ctx *svc.ServiceContext) {
 	go CalculateLostBond(ctx)
 	// sync claim len
 	go SyncClaimDataLen(ctx)
+	// sync frontend move transactions
+	go SyncFrontendMoveTransactions(ctx)
 }
 
 // startRPCMonitoring starts RPC monitoring (internal function)

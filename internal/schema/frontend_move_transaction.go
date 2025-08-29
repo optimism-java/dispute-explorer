@@ -22,6 +22,7 @@ type FrontendMoveTransaction struct {
 	ErrorMessage   string `json:"error_message,omitempty"`                                  // Error message (if any)
 	SubmittedAt    int64  `json:"submitted_at"`                                             // Submission timestamp
 	ConfirmedAt    int64  `json:"confirmed_at,omitempty"`                                   // Confirmation timestamp
+	IsSynced       bool   `json:"is_synced" gorm:"default:false;index:idx_is_synced"`       // Whether synced to related tables
 }
 
 func (FrontendMoveTransaction) TableName() string {
