@@ -15,6 +15,11 @@ import (
 	"golang.org/x/time/rate"
 )
 
+const (
+	// RPC type constants
+	nodeRPCType = "Node"
+)
+
 // Manager unified RPC resource manager
 type Manager struct {
 	// Configuration
@@ -74,17 +79,17 @@ type Stats struct {
 func NewManager(config Config) (*Manager, error) {
 	// Validate configuration
 	if len(config.L1RPCUrls) == 0 {
-		return nil, fmt.Errorf("L1 RPC URLs cannot be empty")
+		return nil, fmt.Errorf("l1 RPC URLs cannot be empty")
 	}
 	if len(config.L2RPCUrls) == 0 {
-		return nil, fmt.Errorf("L2 RPC URLs cannot be empty")
+		return nil, fmt.Errorf("l2 RPC URLs cannot be empty")
 	}
 	if len(config.NodeRPCUrls) == 0 {
-		return nil, fmt.Errorf("Node RPC URLs cannot be empty")
+		return nil, fmt.Errorf("node RPC URLs cannot be empty")
 	}
 
 	// Create L1 client pool
-	var l1Clients []*ethclient.Client
+	l1Clients := make([]*ethclient.Client, 0, len(config.L1RPCUrls))
 	for _, url := range config.L1RPCUrls {
 		client, err := ethclient.Dial(url)
 		if err != nil {
@@ -94,7 +99,7 @@ func NewManager(config Config) (*Manager, error) {
 	}
 
 	// Create L2 client pool
-	var l2Clients []*ethclient.Client
+	l2Clients := make([]*ethclient.Client, 0, len(config.L2RPCUrls))
 	for _, url := range config.L2RPCUrls {
 		client, err := ethclient.Dial(url)
 		if err != nil {
@@ -104,11 +109,11 @@ func NewManager(config Config) (*Manager, error) {
 	}
 
 	// Create Node client pool
-	var nodeClients []*ethclient.Client
+	nodeClients := make([]*ethclient.Client, 0, len(config.NodeRPCUrls))
 	for _, url := range config.NodeRPCUrls {
 		client, err := ethclient.Dial(url)
 		if err != nil {
-			return nil, fmt.Errorf("failed to connect to Node RPC %s: %w", url, err)
+			return nil, fmt.Errorf("failed to connect to %s RPC %s: %w", nodeRPCType, url, err)
 		}
 		nodeClients = append(nodeClients, client)
 	}
@@ -361,7 +366,7 @@ func (m *Manager) UpdateRateLimit(rateLimit int, rateBurst int, rpcType string) 
 	case "L2":
 		m.l2Limiter.SetLimit(rate.Limit(rateLimit))
 		m.l2Limiter.SetBurst(rateBurst)
-	case "Node":
+	case nodeRPCType:
 		m.nodeLimiter.SetLimit(rate.Limit(rateLimit))
 		m.nodeLimiter.SetBurst(rateBurst)
 	}
@@ -377,7 +382,7 @@ func (m *Manager) GetRateLimit(rpcType string) (rateLimit float64, rateBurst int
 		return float64(m.l1Limiter.Limit()), m.l1Limiter.Burst()
 	case "L2":
 		return float64(m.l2Limiter.Limit()), m.l2Limiter.Burst()
-	case "Node":
+	case nodeRPCType:
 		return float64(m.nodeLimiter.Limit()), m.nodeLimiter.Burst()
 	default:
 		return 0, 0
@@ -391,7 +396,7 @@ func (m *Manager) GetTokens(rpcType string) float64 {
 		return m.l1Limiter.Tokens()
 	case "L2":
 		return m.l2Limiter.Tokens()
-	case "Node":
+	case nodeRPCType:
 		return m.nodeLimiter.Tokens()
 	default:
 		return 0
@@ -438,7 +443,7 @@ func (m *Manager) updateRequestStats(rpcType string) {
 		m.stats.L1RequestCount++
 	case "L2":
 		m.stats.L2RequestCount++
-	case "Node":
+	case nodeRPCType:
 		m.stats.NodeRequestCount++
 	}
 }
@@ -453,7 +458,7 @@ func (m *Manager) updateRateLimitedStats(rpcType string) {
 		m.stats.L1RateLimitedCount++
 	case "L2":
 		m.stats.L2RateLimitedCount++
-	case "Node":
+	case nodeRPCType:
 		m.stats.NodeRateLimitedCount++
 	}
 }

@@ -14,7 +14,7 @@ func SyncFrontendMoveTransactions(ctx *svc.ServiceContext) {
 	for {
 		select {
 		case <-ctx.Context.Done():
-			log.Infof("[Handler.SyncFrontendMoveTransactions] Context cancelled, stopping...")
+			log.Infof("[Handler.SyncFrontendMoveTransactions] Context canceled, stopping...")
 			return
 		default:
 			err := processFrontendMoveTransactions(ctx)
@@ -41,8 +41,9 @@ func processFrontendMoveTransactions(ctx *svc.ServiceContext) error {
 
 	log.Infof("[Handler.SyncFrontendMoveTransactions] Found %d unsynced transactions", len(unsyncedTransactions))
 
-	for _, transaction := range unsyncedTransactions {
-		err := syncSingleTransaction(ctx, &transaction)
+	for i := range unsyncedTransactions {
+		transaction := &unsyncedTransactions[i]
+		err := syncSingleTransaction(ctx, transaction)
 		if err != nil {
 			log.Errorf("[Handler.SyncFrontendMoveTransactions] Failed to sync transaction %s: %s", transaction.TxHash, err)
 			continue
