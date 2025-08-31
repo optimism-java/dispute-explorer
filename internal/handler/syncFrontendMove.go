@@ -1,7 +1,7 @@
 package handler
 
 import (
-	"strconv"
+	"fmt"
 	"time"
 
 	"github.com/optimism-java/dispute-explorer/internal/schema"
@@ -44,10 +44,12 @@ func processFrontendMoveTransactions(ctx *svc.ServiceContext) error {
 
 	for i := range unsyncedTransactions {
 		transaction := &unsyncedTransactions[i]
-		err := syncSingleTransaction(ctx, transaction)
-		if err != nil {
-			log.Errorf("[Handler.SyncFrontendMoveTransactions] Failed to sync transaction %s: %s", transaction.TxHash, err)
-			continue
+		if transaction.Status == schema.FrontendMoveStatusConfirmed {
+			err := syncSingleTransaction(ctx, transaction)
+			if err != nil {
+				log.Errorf("[Handler.SyncFrontendMoveTransactions] Failed to sync transaction %s: %s", transaction.TxHash, err)
+				continue
+			}
 		}
 	}
 
@@ -73,17 +75,19 @@ func syncSingleTransaction(ctx *svc.ServiceContext, transaction *schema.Frontend
 	}
 
 	// 2. update game_claim_data is_from_frontend column to true
-	parentIndexUint32, err := strconv.ParseUint(transaction.ParentIndex, 10, 32)
-	if err != nil {
-		return err
+	result := tx.Model(&schema.GameClaimData{}).
+		Where("game_contract = ? AND parent_index = ?", transaction.GameContract, transaction.ParentIndex).
+		Update("is_from_frontend", true)
+	if result.Error != nil {
+		tx.Rollback()
+		return result.Error
 	}
 
-	err = tx.Model(&schema.GameClaimData{}).
-		Where("game_contract = ? AND parent_index = ?", transaction.GameContract, uint32(parentIndexUint32)).
-		Update("is_from_frontend", true).Error
-	if err != nil {
+	if result.RowsAffected == 0 {
 		tx.Rollback()
-		return err
+		log.Warnf("[Handler.SyncFrontendMoveTransactions] No matching game_claim_data found for transaction %s (game: %s, parent_index: %s), will retry later",
+			transaction.TxHash, transaction.GameContract, transaction.ParentIndex)
+		return fmt.Errorf("no matching game_claim_data found, will retry later")
 	}
 
 	// 3. update frontend_move_transactions is_synced column to true
