@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"strconv"
 	"time"
 
 	"github.com/optimism-java/dispute-explorer/internal/schema"
@@ -72,8 +73,13 @@ func syncSingleTransaction(ctx *svc.ServiceContext, transaction *schema.Frontend
 	}
 
 	// 2. update game_claim_data is_from_frontend column to true
+	parentIndexUint32, err := strconv.ParseUint(transaction.ParentIndex, 10, 32)
+	if err != nil {
+		return err
+	}
+
 	err = tx.Model(&schema.GameClaimData{}).
-		Where("game_contract = ? AND parent_index = ?", transaction.GameContract, transaction.ParentIndex).
+		Where("game_contract = ? AND parent_index = ?", transaction.GameContract, uint32(parentIndexUint32)).
 		Update("is_from_frontend", true).Error
 	if err != nil {
 		tx.Rollback()
