@@ -159,7 +159,7 @@ func (h *FrontendMoveHandler) monitorTransactionStatus(recordID int64, txHash st
 	log.Warnf("[FrontendMoveHandler] Transaction %s monitoring timeout", txHash)
 }
 
-// markRelatedRecords marks related block and event records
+//nolint:unused
 func (h *FrontendMoveHandler) markRelatedRecords(txHash string, blockNumber int64) {
 	// Mark related blocks
 	err := h.svc.DB.Model(&schema.DisputeGame{}).
