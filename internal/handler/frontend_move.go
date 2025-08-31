@@ -138,9 +138,9 @@ func (h *FrontendMoveHandler) monitorTransactionStatus(recordID int64, txHash st
 		log.Infof("[FrontendMoveHandler] Transaction %s status updated to %s", txHash, status)
 
 		// If transaction is successful, mark related records
-		if receipt.Status == 1 {
-			h.markRelatedRecords(txHash, receipt.BlockNumber.Int64())
-		}
+		// if receipt.Status == 1 {
+		//	h.markRelatedRecords(txHash, receipt.BlockNumber.Int64())
+		// }
 
 		return
 	}
@@ -159,7 +159,7 @@ func (h *FrontendMoveHandler) monitorTransactionStatus(recordID int64, txHash st
 	log.Warnf("[FrontendMoveHandler] Transaction %s monitoring timeout", txHash)
 }
 
-// markRelatedRecords marks related block and event records
+//nolint:unused
 func (h *FrontendMoveHandler) markRelatedRecords(txHash string, blockNumber int64) {
 	// Mark related blocks
 	err := h.svc.DB.Model(&schema.DisputeGame{}).
