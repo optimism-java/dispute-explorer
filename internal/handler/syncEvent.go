@@ -18,6 +18,9 @@ import (
 
 func SyncEvent(ctx *svc.ServiceContext) {
 	log.Infof("Initializes the monitored contract address...\n")
+	// Ensure basic contract initialization
+	blockchain.InitContracts()
+	// Initialize monitored contracts
 	initMonitoredContract(ctx)
 	for {
 		var blocks []schema.SyncBlock
