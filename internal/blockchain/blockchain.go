@@ -2,6 +2,7 @@ package blockchain
 
 import (
 	"strings"
+	"sync"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
@@ -17,21 +18,29 @@ type Event interface {
 }
 
 var (
-	events    = make([]common.Hash, 0)
-	contracts = make([]common.Address, 0)
-	EventMap  = make(map[common.Hash][]Event, 0)
-	EIP1155   = make([]common.Address, 0)
+	events      = make([]common.Hash, 0)
+	contracts   = make([]common.Address, 0)
+	contractsMu sync.RWMutex // Protects concurrent access to contracts slice
+	initOnce    sync.Once    // Ensures initialization only runs once
+	EventMap    = make(map[common.Hash][]Event, 0)
+	EIP1155     = make([]common.Address, 0)
 )
 
 func init() {
 	Register(&event.DisputeGameCreated{})
 	Register(&event.DisputeGameMove{})
 	Register(&event.DisputeGameResolved{})
-	cfg := config.GetConfig()
-	disputeGameProxys := strings.Split(cfg.DisputeGameProxyContract, ",")
-	for _, one := range disputeGameProxys {
-		AddContract(one)
-	}
+}
+
+// InitContracts initializes contract addresses (runs only once)
+func InitContracts() {
+	initOnce.Do(func() {
+		cfg := config.GetConfig()
+		disputeGameProxys := strings.Split(cfg.DisputeGameProxyContract, ",")
+		for _, one := range disputeGameProxys {
+			AddContract(one)
+		}
+	})
 }
 
 func Register(event Event) {
@@ -42,19 +51,40 @@ func Register(event Event) {
 }
 
 func AddContract(contract string) {
-	contracts = append(contracts, common.HexToAddress(contract))
+	contractsMu.Lock()
+	defer contractsMu.Unlock()
+
+	addr := common.HexToAddress(contract)
+	// Check if already exists to prevent duplicate additions
+	for _, existing := range contracts {
+		if existing == addr {
+			return // Already exists, return directly
+		}
+	}
+	contracts = append(contracts, addr)
 }
 
 func RemoveContract(contract string) {
-	for index, ct := range contracts {
-		if ct == common.HexToAddress(contract) {
-			contracts = append(contracts[:index], contracts[index+1:]...)
+	contractsMu.Lock()
+	defer contractsMu.Unlock()
+
+	addr := common.HexToAddress(contract)
+	// Use reverse iteration to safely remove all matching contracts
+	for i := len(contracts) - 1; i >= 0; i-- {
+		if contracts[i] == addr {
+			contracts = append(contracts[:i], contracts[i+1:]...)
 		}
 	}
 }
 
 func GetContracts() []common.Address {
-	return contracts
+	contractsMu.RLock()
+	defer contractsMu.RUnlock()
+
+	// Return a copy to prevent external modifications
+	result := make([]common.Address, len(contracts))
+	copy(result, contracts)
+	return result
 }
 
 func GetEvents() []common.Hash {
